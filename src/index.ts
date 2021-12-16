@@ -4,6 +4,7 @@ import koaBody from 'koa-body';
 import Router from 'koa-router';
 import { getListOfPapers, loadAll } from './acm-dl-scrapper.js';
 import { processTemplate } from './templates.js';
+import { getConfiguration } from './util.js';
 
 const port = process.env.PORT || 33333;
 
@@ -14,13 +15,7 @@ const app = new Koa();
 const router = new Router();
 
 router.get('/', async (ctx) => {
-  ctx.body = processTemplate('index.html', {
-    data: JSON.stringify(
-      await getListOfPapers(
-        'https://dl.acm.org/doi/proceedings/10.1145/3357390'
-      )
-    )
-  });
+  ctx.body = processTemplate('index.html');
   ctx.type = 'html';
 });
 
@@ -36,6 +31,11 @@ router.post('/load-urls', koaBody(), async (ctx) => {
 
   ctx.type = 'json';
   ctx.body = { papers };
+});
+
+router.get('/configuration', async (ctx) => {
+  ctx.body = getConfiguration();
+  ctx.type = 'json';
 });
 
 app.use(router.routes());

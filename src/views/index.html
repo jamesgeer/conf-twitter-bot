@@ -5,12 +5,48 @@
   {{{headerHtml}}}
 </head>
 <script>
+  //@ts-check
   function paperDetails(d) {
     const result = $('<div>' + d.shortAbstract + '</div>');
     return result;
   }
 
   let paperTable = null;
+
+  function togglePaperDetails() {
+    const tr = $(this).closest('tr');
+    const row = paperTable.row(tr);
+
+    if (row.child.isShown()) {
+      row.child.hide();
+      tr.removeClass('shown');
+    } else {
+      row.child(paperDetails(row.data())).show();
+      tr.addClass('shown');
+    }
+  }
+
+  function togglePaperSelected() {
+    if ($(this).hasClass('selected')) {
+      $(this).removeClass('selected');
+    } else {
+      paperTable.$('tr.selected').removeClass('selected');
+      $(this).addClass('selected');
+
+      const tr = $(this).closest('tr');
+      const row = paperTable.row(tr);
+      renderPaperInTemplate(row.data());
+    }
+  }
+
+  function renderPaperInTemplate(paper) {
+    const template = $('#tweet-tpl').val();
+    if (template && template.length > 0) {
+      const tweet = Mustache.render(template, paper);
+      $('#tweet').val(tweet);
+      tweetLength();
+    }
+  }
 
   function createTable(data) {
     return $('#papers').DataTable({
@@ -35,38 +71,49 @@
     });
   }
 
-  $(function(){
-    paperTable = createTable({{{data}}});
+  async function loadPapers() {
+    const urls = $('#urls').text().trim();
+    const response = await fetch('/load-urls', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({urls})
+    });
+
+    const data = await response.json();
+
+    paperTable?.destroy();
+    paperTable = createTable(data.papers);
 
     // Add event listener for opening and closing details
-    $('#papers tbody').on('click', 'td.dt-control', function() {
-        const tr = $(this).closest('tr');
-        const row = paperTable.row( tr );
+    $('#papers tbody').on('click', 'td.dt-control', togglePaperDetails);
+    $('#papers tbody').on('click', 'tr', togglePaperSelected);
+  }
 
-        if (row.child.isShown()) {
-            row.child.hide();
-            tr.removeClass('shown');
-        } else {
-            row.child(paperDetails(row.data())).show();
-            tr.addClass('shown');
-        }
-    });
+  async function loadConfig() {
+    const response = await fetch('/configuration');
+    const data = await response.json();
 
-    $('#load-btn').click(async () => {
-      const urls = $('#urls').text().trim();
-      const response = await fetch('/load-urls', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({urls})
-      });
+    $('#tweet-tpl').val(data?.template);
+  }
 
-      const data = await response.json();
+  function tweetLength() {
+    const maxTweetLength = 280;
+    let length = $('#tweet').val().length;
+    $('#tweet-length').text(`${length} / ${maxTweetLength}`);
 
-      paperTable.destroy();
-      paperTable = createTable(data.papers);
-    });
+    length = $('#tweet-tpl').val().length;
+    $('#tweet-tpl-length').text(`${length} / ${maxTweetLength}`);
+  }
+
+  $(async function(){
+    $('#load-btn').click(loadPapers);
+    $('#tweet').keyup(tweetLength);
+    $('#tweet-tpl').keyup(tweetLength);
+
+    await loadConfig();
+    tweetLength();
   });
 </script>
 <body>
@@ -99,16 +146,30 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 </form>
 
 <table id="papers"></table>
+
+
+<form>
+  <textarea class="form-control" id="tweet" rows="6"></textarea>
+  <span class="float-right badge badge-secondary" id="tweet-length"></span>
+</form>
+
+<h3>Template</h3>
+<form>
+  <textarea class="form-control" id="tweet-tpl" rows="6"></textarea>
+  <span class="float-right badge badge-secondary" id="tweet-tpl-length"></span>
+
+  <button type="button" id="load-btn" class="btn btn-primary mb-2">Save</button>
+</form>
+<h2>TODO</h2>
 <pre>
-[ ] 1. Table of papers
+[x] 1. Table of papers
 [x]   - parse ACM DL overview page
-[ ]   - parse ACM DL paper pages
 [x]   - save data into JSON file
 [x]   - load data into table
 
-[ ] 2. Tweet Composer
-[ ]  - have preview window, with data from table
-[ ]  - have template window, with template from file, or json storage or so
+[x] 2. Tweet Composer
+[x]  - have preview window, with data from table
+[x]  - have template window, with template from file, or json storage or so
 
 [ ] 3. Tweet
 [ ]  - connect to twitter and send tweet
@@ -121,6 +182,9 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 [ ] 5. Database of Author Twitter Handles
 [ ]   - keep author name/email twitter handle mapping
 [ ]   - automatically search twitter for possible matches
+
+[ ] x. Postponed
+[ ]   - parse ACM DL paper pages
 </pre>
 </body>
 </html>
