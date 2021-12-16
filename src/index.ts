@@ -1,8 +1,9 @@
 import Koa from 'koa';
+import koaBody from 'koa-body';
 // import koaBody from 'koa-body';
 import Router from 'koa-router';
-import { getListOfPapers } from './acm-dl-scrapper';
-import { processTemplate } from './templates';
+import { getListOfPapers, loadAll } from './acm-dl-scrapper.js';
+import { processTemplate } from './templates.js';
 
 const port = process.env.PORT || 33333;
 
@@ -21,6 +22,20 @@ router.get('/', async (ctx) => {
     )
   });
   ctx.type = 'html';
+});
+
+router.post('/load-urls', koaBody(), async (ctx) => {
+  const data = await ctx.request.body;
+  const urls = data.urls.trim().split('\n');
+
+  for (const i in urls) {
+    urls[i] = urls[i].trim();
+  }
+
+  const papers = await loadAll(urls);
+
+  ctx.type = 'json';
+  ctx.body = { papers };
 });
 
 app.use(router.routes());

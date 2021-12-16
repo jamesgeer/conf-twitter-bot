@@ -1,9 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>CS Conference Twitter Bot</title>
+  {{{headerHtml}}}
+</head>
+<script>
+  function paperDetails(d) {
+    const result = $('<div>' + d.shortAbstract + '</div>');
+    return result;
+  }
+
+  let paperTable = null;
+
+  function createTable(data) {
+    return $('#papers').DataTable({
+      columns: [
+        {
+          className: 'dt-control',
+          orderable: false,
+          data: null,
+          defaultContent: ''
+        },
+        {title: "Title",    data: 'title'},
+        {title: "Type",     data: 'type',    visible: false},
+        {title: "URL",      data: 'url',     visible: false},
+        {title: "Authors",  data: 'authors'},
+        {title: "M/Y",      data: 'monthYear'},
+        {title: "Pages",    data: 'pages',   visible: false},
+        {title: "Abstract", data: 'shortAbstract', visible: false},
+        {title: "Cites",    data: 'citations'},
+        {title: "#Down",    data: 'downloads'}
+      ],
+      data: data
+    });
+  }
+
+  $(function(){
+    paperTable = createTable({{{data}}});
+
+    // Add event listener for opening and closing details
+    $('#papers tbody').on('click', 'td.dt-control', function() {
+        const tr = $(this).closest('tr');
+        const row = paperTable.row( tr );
+
+        if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass('shown');
+        } else {
+            row.child(paperDetails(row.data())).show();
+            tr.addClass('shown');
+        }
+    });
+
+    $('#load-btn').click(async () => {
+      const urls = $('#urls').text().trim();
+      const response = await fetch('/load-urls', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({urls})
+      });
+
+      const data = await response.json();
+
+      paperTable.destroy();
+      paperTable = createTable(data.papers);
+    });
+  });
+</script>
+<body>
+
+<form>
+  <div class="form-group">
+    <label for="urls">URLs to ACM DL Proceeding Pages</label>
+    <textarea class="form-control" id="urls" rows="3">
+https://dl.acm.org/doi/proceedings/10.1145/3475738
+https://dl.acm.org/doi/proceedings/10.1145/3426182
+https://dl.acm.org/doi/proceedings/10.1145/3357390
+https://dl.acm.org/doi/proceedings/10.1145/3237009
+https://dl.acm.org/doi/proceedings/10.1145/3132190
+https://dl.acm.org/doi/proceedings/10.1145/2972206
+https://dl.acm.org/doi/proceedings/10.1145/2807426
+https://dl.acm.org/doi/proceedings/10.1145/2647508
+https://dl.acm.org/doi/proceedings/10.1145/2500828
+https://dl.acm.org/doi/proceedings/10.1145/2093157
+https://dl.acm.org/doi/proceedings/10.1145/1852761
+https://dl.acm.org/doi/proceedings/10.1145/1596655
+https://dl.acm.org/doi/proceedings/10.1145/1411732
+https://dl.acm.org/doi/proceedings/10.1145/1294325
+https://dl.acm.org/doi/proceedings/10.1145/1168054
+https://dl.acm.org/doi/proceedings/10.5555/1071565
+https://dl.acm.org/doi/proceedings/10.5555/957289
+https://dl.acm.org/doi/proceedings/10.5555/638476
+    </textarea>
+  </div>
+  <button type="button" id="load-btn" class="btn btn-primary mb-2">Load</button>
+</form>
+
+<table id="papers"></table>
 <pre>
 [ ] 1. Table of papers
-[ ]   - parse ACM DL overview page
+[x]   - parse ACM DL overview page
 [ ]   - parse ACM DL paper pages
-[ ]   - save data into JSON file
-[ ]   - load data into table
+[x]   - save data into JSON file
+[x]   - load data into table
 
 [ ] 2. Tweet Composer
 [ ]  - have preview window, with data from table
@@ -21,6 +122,5 @@
 [ ]   - keep author name/email twitter handle mapping
 [ ]   - automatically search twitter for possible matches
 </pre>
-
-
-<code>{{ data }}</code>>
+</body>
+</html>
