@@ -11,13 +11,11 @@
       getFullAbstract(d);
     }
 
+    const content = renderPaper(d, $('#picture-tpl').val());
+
     const paper = `
-    <div>
-      <div class="p-details" contenteditable="true">
-        <div class="p-title">${d.title}</div>
-        <div class="p-authors">${d.authors.join(', ')}</div>
-        <div class="p-abstract">${d.shortAbstract}</div>
-      </div>
+    <div id="paper-${d.id}">
+      <div class="p-details" contenteditable="true">${content}</div>
       <button type="button" class="btn btn-outline-info btn-sm render-btn">render</button>
     </div>`;
     return $(paper);
@@ -84,12 +82,25 @@
   }
 
   function renderPaperInTemplate(paper) {
-    const template = $('#tweet-tpl').val();
+    const tweet = renderPaper(paper, $('#tweet-tpl').val());
+    $('#tweet').val(tweet);
+    tweetLength();
+  }
+
+  function renderPaper(paper, template) {
     if (template && template.length > 0) {
-      const tweet = Mustache.render(template, paper);
-      $('#tweet').val(tweet);
-      tweetLength();
+      const p = {...paper};
+      if (p.fullAbstract) {
+        p.abstract = p.fullAbstract;
+      } else {
+        p.abstract = p.shortAbstract;
+      }
+
+      p.fullAuthors = p.authors.join(', ');
+
+      return Mustache.render(template, p);
     }
+    return '';
   }
 
   function createTable(data) {
@@ -139,7 +150,28 @@
     const response = await fetch('/configuration');
     const data = await response.json();
 
-    $('#tweet-tpl').val(data?.template);
+    $('#tweet-tpl').val(data?.tweetTpl);
+    $('#picture-tpl').val(data?.pictureTpl);
+    $('#picture-style').val(data?.pictureStyle);
+  }
+
+  async function saveAndApplyConfig() {
+    const tweetTpl = $('#tweet-tpl').val();
+    const pictureTpl = $('#picture-tpl').val();
+    const pictureStyle = $('#picture-style').val();
+
+    $('#tweet-pic-style').text(pictureStyle);
+
+    const response = await fetch('/configuration', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        tweetTpl, pictureTpl, pictureStyle
+      })
+    });
+    const data = await response.json();
   }
 
   function tweetLength() {
@@ -153,6 +185,7 @@
 
   $(async function(){
     $('#load-btn').click(loadPapers);
+    $('#save-config-btn').click(saveAndApplyConfig);
     $('#tweet').keyup(tweetLength);
     $('#tweet-tpl').keyup(tweetLength);
 
@@ -197,12 +230,19 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
   <span class="float-right badge badge-secondary" id="tweet-length"></span>
 </form>
 
-<h3>Template</h3>
+<h3>Templates</h3>
 <form>
+  <label for="tweet-tpl">Tweet Template</label>
   <textarea class="form-control" id="tweet-tpl" rows="6"></textarea>
   <span class="float-right badge badge-secondary" id="tweet-tpl-length"></span>
 
-  <button type="button" id="load-btn" class="btn btn-primary mb-2">Save</button>
+  <label for="picture-tpl">Tweet Picture Template</label>
+  <textarea class="form-control" id="picture-tpl" rows="8"></textarea>
+
+  <label for="picture-style">Tweet Picture CSS Style</label>
+  <textarea class="form-control" id="picture-style" rows="8"></textarea>
+
+  <button type="button" id="save-config-btn" class="btn btn-primary mb-2">Save &amp; Apply</button>
 </form>
 <h2>TODO</h2>
 <pre>
@@ -226,6 +266,11 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 [ ] 5. Database of Author Twitter Handles
 [ ]   - keep author name/email twitter handle mapping
 [ ]   - automatically search twitter for possible matches
+
+[ ] 6. Tweet Schedule/Tweet Queue
+[ ]   - list of prepared/saved tweets
+[ ]	  - schedule them every 2nd, 3rd day, or every week
+[ ]	  - have server send them at the given time
 
 [ ] x. Postponed
 [ ]   - parse ACM DL paper pages

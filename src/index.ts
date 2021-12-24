@@ -3,7 +3,7 @@ import koaBody from 'koa-body';
 // import koaBody from 'koa-body';
 import Router from 'koa-router';
 import { processTemplate } from './templates.js';
-import { getConfiguration } from './util.js';
+import { getConfiguration, setConfiguration, Config } from './util.js';
 import { loadAll, loadFullDetails } from './data.js';
 
 const port = process.env.PORT || 33333;
@@ -36,6 +36,14 @@ router.post('/load-urls', koaBody(), async (ctx) => {
 router.get('/configuration', async (ctx) => {
   ctx.body = getConfiguration();
   ctx.type = 'json';
+});
+
+router.post('/configuration', koaBody(), async (ctx) => {
+  const data = await ctx.request.body;
+  setConfiguration(<Config> data);
+
+  ctx.type = 'json';
+  ctx.body = { ok: 'done' };
 });
 
 router.get('/paper/:id',async (ctx) => {
