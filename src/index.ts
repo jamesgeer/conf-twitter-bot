@@ -2,9 +2,9 @@ import Koa from 'koa';
 import koaBody from 'koa-body';
 // import koaBody from 'koa-body';
 import Router from 'koa-router';
-import { getListOfPapers, loadAll } from './acm-dl-scrapper.js';
 import { processTemplate } from './templates.js';
 import { getConfiguration } from './util.js';
+import { loadAll, loadFullDetails } from './data.js';
 
 const port = process.env.PORT || 33333;
 
@@ -36,6 +36,13 @@ router.post('/load-urls', koaBody(), async (ctx) => {
 router.get('/configuration', async (ctx) => {
   ctx.body = getConfiguration();
   ctx.type = 'json';
+});
+
+router.get('/paper/:id',async (ctx) => {
+  const paper = await loadFullDetails(Number(ctx.params.id));
+
+  ctx.type = 'json';
+  ctx.body = paper;
 });
 
 app.use(router.routes());

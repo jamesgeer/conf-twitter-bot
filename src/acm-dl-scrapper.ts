@@ -6,54 +6,9 @@
 
 // https://dl.acm.org/doi/proceedings/10.1145/3357390
 
-import { createHash } from 'crypto';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { JSDOM } from 'jsdom';
-import { fetch, CookieJar } from 'node-fetch-cookies';
-import { robustPath } from './util.js';
-
-export function hashToString(str: string): string {
-  return createHash('sha256').update(str).digest('hex');
-}
-
-export async function loadAll(urls: string[]): Promise<Paper[]> {
-  const allPapers: Paper[] = [];
-  for (const url of urls) {
-    const papers = await getListOfPapers(url);
-    allPapers.push(...papers);
-  }
-  return allPapers;
-}
-
-export async function fetchHtmlOrUsedCached(
-  url: string
-): Promise<string | Buffer> {
-  const hashedName = robustPath('../cache/') + hashToString(url) + '.html';
-
-  if (existsSync(hashedName)) {
-    return readFileSync(hashedName);
-  }
-
-  console.log('Fetch ' + url);
-  const cookieJar = new CookieJar();
-  const response = await fetch(cookieJar, url);
-  const html = await response.text();
-  writeFileSync(hashedName, html);
-
-  return html;
-}
-
-export interface Paper {
-  type: string;
-  title: string;
-  url: string;
-  authors: string[];
-  monthYear: string;
-  pages: string;
-  shortAbstract: string;
-  citations: number;
-  downloads: number;
-}
+import { Paper } from './data.js';
+import { fetchHtmlOrUsedCached } from './web-scrapper.js';
 
 export function toDataTable(papers: Paper[]): string[][] {
   const result: string[][] = [];
@@ -74,7 +29,17 @@ export function toDataTable(papers: Paper[]): string[][] {
   return result;
 }
 
-export async function getListOfPapers(url: string): Promise<Paper[]> {
+export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
+  const html = await fetchHtmlOrUsedCached(paper.url);
+
+  const dom = new JSDOM(html);
+  const document = dom.window.document;
+  const abstract = document.querySelector('.abstractInFull')?.innerHTML;
+  paper.fullAbstract = abstract;
+  return paper;
+}
+
+export async function fetchListOfPapers(url: string): Promise<Paper[]> {
   const html = await fetchHtmlOrUsedCached(url);
 
   const dom = new JSDOM(html);
@@ -125,7 +90,7 @@ function extractPaper(
   shortAbstracts: NodeListOf<Element>,
   citations: NodeListOf<Element>,
   downloads: NodeListOf<Element>
-) {
+): Paper {
   const authors: string[] = [];
   for (const author of authorContainers[i].querySelectorAll('li a')) {
     const authorName = <string>author.textContent;
@@ -137,16 +102,16 @@ function extractPaper(
   const spans = dateAndPages[i].querySelectorAll('span');
   const monthYear = spans[0].textContent?.replace(', ', '');
   const pages = spans[1].textContent;
+  const href = paperTitleHTags[i].children[0].getAttribute('href');
 
   return {
-    type: paperTypes[i].textContent,
-    title: paperTitleHTags[i].textContent,
-    url:
-      'https://dl.acm.org' +
-      paperTitleHTags[i].children[0].getAttribute('href'),
+    type: <string>paperTypes[i].textContent,
+    title: <string>paperTitleHTags[i].textContent,
+    url: 'https://dl.acm.org' + href,
+    doi: <string>href?.replace('/doi/', ''),
     authors: authors,
-    monthYear,
-    pages,
+    monthYear: <string>monthYear,
+    pages: <string>pages,
     shortAbstract: shortAbstracts[i].innerHTML.trim(),
     citations: Number(citations[i].textContent),
     downloads: Number(downloads[i].textContent)

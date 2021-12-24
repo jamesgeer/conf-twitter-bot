@@ -7,6 +7,10 @@
 <script>
   //@ts-check
   function paperDetails(d) {
+    if (d.fullAbstract) {
+      getFullAbstract(d);
+    }
+
     const paper = `
     <div>
       <div class="p-details" contenteditable="true">
@@ -17,6 +21,13 @@
       <button type="button" class="btn btn-outline-info btn-sm render-btn">render</button>
     </div>`;
     return $(paper);
+  }
+
+  async function getFullAbstract(d) {
+    const response = await fetch(`/paper/${d.id}`);
+    const paper = await response.json();
+
+    $(`#paper-${d.id} .p-abstract`).html(paper.fullAbstract);
   }
 
   let paperTable = null;
