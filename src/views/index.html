@@ -7,6 +7,7 @@
 <script>
   //@ts-check
   function paperDetails(d) {
+    selectedPaper = d;
     if (!d.fullAbstract) {
       getFullAbstract(d);
     }
@@ -16,7 +17,6 @@
     const paper = `
     <div id="paper-${d.id}">
       <div class="p-details" contenteditable="true">${content}</div>
-      <button type="button" class="btn btn-outline-info btn-sm render-btn">render</button>
     </div>`;
     return $(paper);
   }
@@ -29,21 +29,43 @@
   }
 
   let paperTable = null;
+  let selectedPaper = null;
 
-  function renderToImage() {
-    const detailsDiv = $(this).siblings()[0];
-    const parent = $(this).parent()[0];
-    html2canvas(detailsDiv)
-      .then(function (canvas) {
-        const dataUrl = canvas.toDataURL();
-        const img = new Image();
-        img.src = dataUrl;
-        img.style.border = "1px solid red";
-        parent.appendChild(img);
+  async function queueTweet() {
+    const dataUrl = await renderToImage();
+    const tweetText = $('#tweet').val();
+    const id = selectedPaper.id;
+
+    $("#tweet-queue").append(`
+      <div class="tw-queue-item" id="tweet-for-paper-${id}">
+        <div class="tw-queue-text">${tweetText}</div>
+        <div class="tw-queue-img"><img src="${dataUrl}"></div>
+      </div>
+    `);
+
+    const response = await fetch('/queue-tweet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: tweetText,
+        image: dataUrl,
+        paperId: id
       })
-      .catch(function (error) {
-        console.error('oops, something went wrong!', error);
-      });
+    });
+    const result = await response.json();
+  }
+
+  async function renderToImage() {
+    const detailsDiv = $(`#paper-${selectedPaper.id} .p-details`)[0]
+    try {
+      const canvas = await html2canvas(detailsDiv);
+      const dataUrl = canvas.toDataURL();
+      return dataUrl;
+    } catch (error) {
+      console.error('Error when rending abstract to image for twitter', error);
+    };
   }
 
   function togglePaperDetails() {
@@ -58,7 +80,6 @@
       tr.removeClass('shown');
     } else {
       const detailsElem = paperDetails(row.data());
-      detailsElem.find('.render-btn').click(renderToImage);
       row.child(detailsElem).show();
       tr.addClass('shown');
     }
@@ -82,6 +103,7 @@
   }
 
   function renderPaperInTemplate(paper) {
+    selectedPaper = paper;
     const tweet = renderPaper(paper, $('#tweet-tpl').val());
     $('#tweet').val(tweet);
     tweetLength();
@@ -189,6 +211,7 @@
     $('#save-config-btn').click(saveAndApplyConfig);
     $('#tweet').keyup(tweetLength);
     $('#tweet-tpl').keyup(tweetLength);
+    $('#queue-btn').click(queueTweet);
 
     await loadConfig();
     tweetLength();
@@ -229,6 +252,7 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 <form>
   <textarea class="form-control" id="tweet" rows="6"></textarea>
   <span class="float-right badge badge-secondary" id="tweet-length"></span>
+  <button type="button" class="btn btn-outline-info" id="queue-btn">Queue Tweet</button>
 </form>
 
 <h3>Templates</h3>
@@ -245,6 +269,12 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 
   <button type="button" id="save-config-btn" class="btn btn-primary mb-2">Save &amp; Apply</button>
 </form>
+
+<h3>Tweet Queue</h3>
+
+<div id="tweet-queue"></div>
+
+
 <h2>TODO</h2>
 <pre>
 [x] 1. Table of papers
