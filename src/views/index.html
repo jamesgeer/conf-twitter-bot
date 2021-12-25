@@ -7,7 +7,7 @@
 <script>
   //@ts-check
   function paperDetails(d) {
-    if (d.fullAbstract) {
+    if (!d.fullAbstract) {
       getFullAbstract(d);
     }
 
