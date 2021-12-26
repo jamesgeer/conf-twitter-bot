@@ -21,6 +21,22 @@
     return $(paper);
   }
 
+  async function renderPaperDetails(paper) {
+    if (!paper.fullAbstract) {
+      const response = await fetch(`/paper/${paper.id}`);
+      paper = await response.json();
+    }
+
+    const content = renderPaper(paper, $('#picture-tpl').val());
+
+    $('#render-image').html(
+      `<div class="p-details">${content}</div>`);
+    const detailsJQDiv = $('#render-image .p-details');
+    const dataUrl = await renderDivToImage(detailsJQDiv[0]);
+    detailsJQDiv.remove();
+    return dataUrl;
+  }
+
   async function getFullAbstract(d) {
     const response = await fetch(`/paper/${d.id}`);
     const paper = await response.json();
@@ -32,7 +48,11 @@
   let selectedPaper = null;
 
   async function queueTweet() {
-    const dataUrl = await renderToImage();
+    if (!selectedPaper) {
+      return;
+    }
+
+    const dataUrl = await renderPaperDetails(selectedPaper);
     const tweetText = $('#tweet').val();
     const id = selectedPaper.id;
 
@@ -59,8 +79,12 @@
 
   async function renderToImage() {
     const detailsDiv = $(`#paper-${selectedPaper.id} .p-details`)[0]
+    return await renderDivToImage(detailsDiv);
+  }
+
+  async function renderDivToImage(div) {
     try {
-      const canvas = await html2canvas(detailsDiv);
+      const canvas = await html2canvas(div);
       const dataUrl = canvas.toDataURL();
       return dataUrl;
     } catch (error) {
@@ -314,5 +338,6 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 [ ]   - the abstract bit is editable, so, would be good to store the changed bits
 
 </pre>
+<div id="render-image"></div>
 </body>
 </html>
