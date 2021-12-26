@@ -177,3 +177,18 @@ function loadData(): Data {
 function persistData() {
   writeFileSync(robustPath('../data.json'), JSON.stringify(data));
 }
+
+function dataUrlToFile(dataUrl: string) {
+  if (dataUrl.indexOf('data:') !== 0) {
+    throw new Error("Data url does not start with `data:` " + dataUrl.substring(0, 20) + "...");
+  }
+
+  const data = dataUrl.split(',');
+  console.assert(data.length === 2);
+  const imageData = data[1];
+  const meta = data[0].replace('data:', '').split(';');
+  console.assert(meta[1] === 'base64');
+
+  const buf = Buffer.from(imageData, 'base64');
+  writeFileSync(robustPath('../cache/image.png'), buf);
+}
