@@ -14,7 +14,8 @@
     "koa-router": "10.1.1",
     "mustache": "4.2.0",
     "jsdom": "19.0.0",
-    "node-fetch-cookies":"2.0.3"
+    "node-fetch-cookies":"2.0.3",
+    "twitter-api-v2": "1.8.0"
   },
   "devDependencies": {
     "@types/jsdom": "16.2.13",
@@ -30,7 +31,6 @@
     "eslint-plugin-prettier": "4.0.0",
     "nodemon": "2.0.15",
     "prettier": "2.5.1",
-    "source-map-support": "0.5.21",
     "ts-jest": "27.1.1",
     "jest": "27.4.5",
     "typescript": "4.5.4"
@@ -48,7 +48,7 @@
   },
   "scripts": {
     "start": "node ./dist/src/index.js",
-    "nodemon": "DEV=true nodemon ./dist/index.js --watch ./dist --watch package.json",
+    "nodemon": "DEV=true nodemon --enable-source-maps ./dist/index.js --watch ./dist --watch package.json --watch ./src/views --ext js,html",
     "compile": "tsc",
     "format": "prettier --config .prettierrc '{src,tests,resources}/**/*.{ts,js}' --write",
     "verify": "npm run lint",

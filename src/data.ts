@@ -90,6 +90,14 @@ export function getQueuedTweets(): Tweet[] {
   return data.tweets;
 }
 
+export function getQueuedTweet(id: number): Tweet | null {
+  const data = loadData();
+  if (!data.tweets) { return null; }
+  if (id < 0 || id >= data.tweets.length) { return null; }
+
+  return data.tweets[id];
+}
+
 export function saveTweet(tweet: Tweet) {
   const data = loadData();
   if (tweet.id) {
@@ -107,6 +115,7 @@ export function saveTweet(tweet: Tweet) {
     data.tweets.push(tweet);
   }
   persistData();
+  dataUrlToFile(tweet.image);
 }
 
 function addPapersToProceedings(papers: Paper[], proc: Proceeding) {
@@ -178,7 +187,14 @@ function persistData() {
   writeFileSync(robustPath('../data.json'), JSON.stringify(data));
 }
 
-function dataUrlToFile(dataUrl: string) {
+export function dataUrlToFile(dataUrl: string) {
+  const buf = dataUrlToBuffer(dataUrl);
+  const fileName = robustPath('../cache/image.png');
+  writeFileSync(fileName, buf);
+  return fileName;
+}
+
+export function dataUrlToBuffer(dataUrl: string) {
   if (dataUrl.indexOf('data:') !== 0) {
     throw new Error("Data url does not start with `data:` " + dataUrl.substring(0, 20) + "...");
   }
@@ -189,6 +205,5 @@ function dataUrlToFile(dataUrl: string) {
   const meta = data[0].replace('data:', '').split(';');
   console.assert(meta[1] === 'base64');
 
-  const buf = Buffer.from(imageData, 'base64');
-  writeFileSync(robustPath('../cache/image.png'), buf);
+  return Buffer.from(imageData, 'base64');
 }

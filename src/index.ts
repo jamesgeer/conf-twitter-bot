@@ -1,16 +1,19 @@
 import Koa from 'koa';
 import koaBody from 'koa-body';
-// import koaBody from 'koa-body';
 import Router from 'koa-router';
 import { processTemplate } from './templates.js';
 import { getConfiguration, setConfiguration, Config } from './util.js';
-import { getQueuedTweets, loadAll, loadFullDetails, saveTweet, Tweet } from './data.js';
+import { getQueuedTweet, getQueuedTweets, loadAll, loadFullDetails, saveTweet, Tweet } from './data.js';
+import { createTweetWithImage, initializeAuthorization, login } from './twitter.js';
 
 const port = process.env.PORT || 33333;
+const appKey = process.env.TWITTER_API_KEY || '';
+const appSecret = process.env.TWITTER_API_SECRET || '';
 
 // const DEBUG = 'DEBUG' in process.env ? process.env.DEBUG === 'true' : false;
 // const DEV = 'DEV' in process.env ? process.env.DEV === 'true' : false;
 
+const serverUrl = `http://127.0.0.1:${port}`;
 const app = new Koa();
 const router = new Router();
 
@@ -59,17 +62,40 @@ router.post('/configuration', koaBody(), async (ctx) => {
   ctx.body = { ok: 'done' };
 });
 
-router.get('/paper/:id',async (ctx) => {
+router.get('/paper/:id', async (ctx) => {
   const paper = await loadFullDetails(Number(ctx.params.id));
 
   ctx.type = 'json';
   ctx.body = paper;
 });
 
+router.get('/twitter-login', async (ctx) => {
+  const twitterAuthUrl = await initializeAuthorization(
+    appKey, appSecret, `${serverUrl}/twitter-authorization-callback`);
+
+  console.log(`[IDX] Redirect to ${twitterAuthUrl}`);
+  ctx.status = 302;
+  ctx.redirect(twitterAuthUrl);
+});
+
+router.get('/twitter-authorization-callback', async (ctx) => {
+  const { oauth_token, oauth_verifier } = ctx.query;
+  login(<string>oauth_verifier, <string>oauth_token);
+  ctx.status = 302;
+  ctx.redirect('/');
+});
+
+router.get('/send-tweet/:id', async (ctx) => {
+  const tweet = getQueuedTweet(Number(ctx.params.id));
+  if (tweet) {
+    createTweetWithImage(tweet);
+  }
+});
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 
 (async () => {
-  console.log(`Starting server on http://localhost:${port}`);
+  console.log(`Starting server on ${serverUrl}`);
   app.listen(port);
 })();
