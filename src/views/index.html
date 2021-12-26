@@ -47,6 +47,15 @@
   let paperTable = null;
   let selectedPaper = null;
 
+  function showInQueue(tweetText, dataUrl, paperId) {
+    $("#tweet-queue").append(`
+      <div class="tw-queue-item" id="tweet-for-paper-${paperId}">
+        <div class="tw-queue-text">${tweetText}</div>
+        <div class="tw-queue-img"><img src="${dataUrl}"></div>
+      </div>
+    `);
+  }
+
   async function queueTweet() {
     if (!selectedPaper) {
       return;
@@ -56,12 +65,7 @@
     const tweetText = $('#tweet').val();
     const id = selectedPaper.id;
 
-    $("#tweet-queue").append(`
-      <div class="tw-queue-item" id="tweet-for-paper-${id}">
-        <div class="tw-queue-text">${tweetText}</div>
-        <div class="tw-queue-img"><img src="${dataUrl}"></div>
-      </div>
-    `);
+    showInQueue(tweetText, dataUrl, id);
 
     const response = await fetch('/queue-tweet', {
       method: 'POST',
@@ -192,6 +196,16 @@
     $('#papers tbody').on('click', 'tr', togglePaperSelected);
   }
 
+  async function loadTweets() {
+    const response = await fetch('/load-queue');
+    const data = await response.json();
+    if (data.tweets) {
+      for (const tweet of data.tweets) {
+        showInQueue(tweet.text, tweet.image, tweet.paperId);
+      }
+    }
+  }
+
   async function loadConfig() {
     const response = await fetch('/configuration');
     const data = await response.json();
@@ -237,6 +251,7 @@
     $('#tweet-tpl').keyup(tweetLength);
     $('#queue-btn').click(queueTweet);
 
+    loadTweets();
     await loadConfig();
     tweetLength();
   });
@@ -319,8 +334,9 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 [x]  - allow to include some conference ad/notes/deadlines
 
 [ ] 4. Store Tweets for later sending
-[ ]  - save tweet text and rendered abstract image
-[ ]  - show all saved tweets
+[x]  - save tweet text and rendered abstract image
+[x]  - show all saved tweets
+[ ]  - convert dataUrl to PNG
 
 [ ] 5. Tweet
 [ ]  - connect to twitter and send tweet

@@ -20,6 +20,15 @@ export interface Paper {
   proceedingsId?: number;
 }
 
+export interface Tweet {
+  id?: number;
+  text: string;
+
+  /* this is a data url encoding */
+  image: string;
+
+  paperId: number;
+}
 export interface Proceeding {
   id: number;
   url: string;
@@ -28,9 +37,11 @@ export interface Proceeding {
 export interface Data {
   papers: Paper[];
   proceedings: Proceeding[];
+  tweets: Tweet[];
 
   numPapers: number;
   numProceedings: number;
+  numTweets;
 }
 
 export async function loadFullDetails(paperId: number): Promise<Paper> {
@@ -72,6 +83,30 @@ function getPapersForProceeding(proc: Proceeding) {
 function getPaper(paperId: number) {
   const data = loadData();
   return data.papers[paperId];
+}
+
+export function getQueuedTweets(): Tweet[] {
+  const data = loadData();
+  return data.tweets;
+}
+
+export function saveTweet(tweet: Tweet) {
+  const data = loadData();
+  if (tweet.id) {
+    data.tweets[tweet.id] = tweet;
+  } else {
+    if (data.tweets === undefined) {
+      data.tweets = [];
+      data.numTweets = 0;
+    }
+    console.assert(data.numTweets === data.tweets.length);
+    const tweetId = data.numTweets;
+    data.numTweets += 1;
+
+    tweet.id = tweetId;
+    data.tweets.push(tweet);
+  }
+  persistData();
 }
 
 function addPapersToProceedings(papers: Paper[], proc: Proceeding) {
@@ -130,6 +165,8 @@ function loadData(): Data {
     data = {
       papers: [],
       proceedings: [],
+      tweets: [],
+      numTweets: 0,
       numPapers: 0,
       numProceedings: 0
     };

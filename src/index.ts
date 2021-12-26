@@ -4,7 +4,7 @@ import koaBody from 'koa-body';
 import Router from 'koa-router';
 import { processTemplate } from './templates.js';
 import { getConfiguration, setConfiguration, Config } from './util.js';
-import { loadAll, loadFullDetails } from './data.js';
+import { getQueuedTweets, loadAll, loadFullDetails, saveTweet, Tweet } from './data.js';
 
 const port = process.env.PORT || 33333;
 
@@ -31,6 +31,19 @@ router.post('/load-urls', koaBody(), async (ctx) => {
 
   ctx.type = 'json';
   ctx.body = { papers };
+});
+
+router.post('/queue-tweet', koaBody(), async (ctx) => {
+  const tweet = <Tweet>await ctx.request.body;
+  saveTweet(tweet);
+  ctx.type = 'json';
+  ctx.body = {ok: 'done'};
+});
+
+router.get('/load-queue', async (ctx) => {
+  const tweets = getQueuedTweets();
+  ctx.type = 'json';
+  ctx.body = {tweets};
 });
 
 router.get('/configuration', async (ctx) => {
