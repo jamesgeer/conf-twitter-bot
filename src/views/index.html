@@ -261,6 +261,7 @@
     $('#tweet').keyup(tweetLength);
     $('#tweet-tpl').keyup(tweetLength);
     $('#queue-btn').click(queueTweet);
+    $('#everyNDays').spinner();
 
     loadTweets();
     await loadConfig();
@@ -333,6 +334,30 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 
 
 <h3>Tweet Queue</h3>
+
+<div id="tweet-queue-options">
+  <div class="form-group row">
+    <label for="nextDate" class="col-sm-5 col-form-label">Next Date</label>
+    <div class="col-sm-7">
+      <input type="date" class="form-control" id="nextDate">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="everyNDays" class="col-sm-5 col-form-label">Every #days</label>
+    <div class="col-sm-7">
+      <input type="text" class="form-control" id="everyNDays">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="earliestHour" class="col-sm-5 col-form-label">earliest/latest</label>
+    <div class="col-sm-7">
+      <input type="time" class="form-control" id="earliestHour">
+      <input type="time" class="form-control" id="latestHour">
+    </div>
+  </div>
+</div>
 
 <div id="tweet-queue"></div>
 
