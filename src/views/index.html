@@ -6,6 +6,72 @@
 </head>
 <script>
   //@ts-check
+  function afterNDays(aDate, nDays) {
+    const nextDate = new Date(aDate);
+    nextDate.setDate(aDate.getDate() + nDays);
+    return nextDate;
+  }
+
+  function hourMinuteStrToMinutesSinceMidnight(str) {
+    const parts = str.split(':');
+    console.assert(parts.length === 2);
+
+    const hoursAsMinutes = Number(parts[0]) * 60;
+    const minutes = Number(parts[1]);
+    return hoursAsMinutes + minutes;
+  }
+
+  function getRandomMinute(min, max) {
+    const diff = max - min;
+    const minutes = (Math.random() * diff) + min;
+    return minutes;
+  }
+
+  function formatDateStrWithTime(dateStr) {
+    const date = new Date(dateStr);
+    return formatDateWithTime(date);
+  }
+
+  function formatDateWithTime(date) {
+    const month = new String(date.getMonth() + 1).padStart(2, '0');
+    const day = new String(date.getDate()).padStart(2, '0');
+    const hours = new String(date.getHours()).padStart(2, '0');
+    const minutes = new String(date.getMinutes()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day} ${hours}:${minutes}`;
+  }
+
+  function readScheduleConfig() {
+    const nextDate = new Date($('#nextDate').val());
+    const everyNDays = Number($('#everyNDays').val());
+    let earliestTime = hourMinuteStrToMinutesSinceMidnight($('#earliestHour').val());
+    let latestTime = hourMinuteStrToMinutesSinceMidnight($('#latestHour').val());
+
+    // just in case...
+    if (latestTime < earliestTime) {
+      const tmp = latestTime;
+      latestTime = earliestTime;
+      earliestTime = latestTime;
+    }
+
+    return {
+      nextDate, everyNDays,
+      earliestTime, latestTime
+    };
+  }
+
+  function updateSchedule() {
+    const config = readScheduleConfig();
+
+    let nextDate = config.nextDate;
+    $('.tw-queue-item').each((i, elem) => {
+      const nextDateWithTime = new Date(nextDate);
+      nextDateWithTime.setMinutes(getRandomMinute(config.earliestTime, config.latestTime));
+      $(elem).find('.tw-scheduled-time').text(formatDateWithTime(nextDateWithTime));
+
+      nextDate = afterNDays(nextDate, config.everyNDays);
+    });
+  }
+
   function paperDetails(d) {
     selectedPaper = d;
     if (!d.fullAbstract) {
@@ -50,6 +116,7 @@
   function showInQueue(tweetText, dataUrl, paperId) {
     const elem = $(`
       <div class="tw-queue-item" id="tweet-for-paper-${paperId}">
+        <div class="tw-scheduled-time"></div>
         <div class="tw-queue-text">${tweetText}</div>
         <div class="tw-queue-img"><img src="${dataUrl}"></div>
       </div>
@@ -83,6 +150,7 @@
     const result = await response.json();
     if (result.ok) {
       elem.data('tweetId', result.tweet.id);
+      updateSchedule();
     }
   }
 
@@ -214,7 +282,9 @@
       }
     }
 
-    $('#tweet-queue').sortable();
+    $('#tweet-queue').sortable({
+      update: updateSchedule
+    });
   }
 
   async function loadConfig() {
@@ -261,7 +331,16 @@
     $('#tweet').keyup(tweetLength);
     $('#tweet-tpl').keyup(tweetLength);
     $('#queue-btn').click(queueTweet);
-    $('#everyNDays').spinner();
+    $('#everyNDays').spinner({
+      change: updateSchedule,
+      stop: updateSchedule
+    });
+
+    $('#nextDate').change(updateSchedule)
+    $('#everyNDays').change(updateSchedule)
+    $('#earliestHour').change(updateSchedule);
+    $('#latestHour').change(updateSchedule);
+
 
     loadTweets();
     await loadConfig();
