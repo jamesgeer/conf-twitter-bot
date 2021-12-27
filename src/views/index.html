@@ -205,6 +205,8 @@
         showInQueue(tweet.text, tweet.image, tweet.paperId);
       }
     }
+
+    $('#tweet-queue').sortable();
   }
 
   async function loadConfig() {
