@@ -71,7 +71,7 @@ router.get('/paper/:id', async (ctx) => {
 
 router.get('/twitter-login', async (ctx) => {
   const twitterAuthUrl = await initializeAuthorization(
-    appKey, appSecret, `${serverUrl}/twitter-authorization-callback`);
+    appKey, appSecret, `${serverUrl}/twitter-authorization-callback`, '/');
 
   console.log(`[IDX] Redirect to ${twitterAuthUrl}`);
   ctx.status = 302;
