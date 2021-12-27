@@ -48,12 +48,14 @@
   let selectedPaper = null;
 
   function showInQueue(tweetText, dataUrl, paperId) {
-    $("#tweet-queue").append(`
+    const elem = $(`
       <div class="tw-queue-item" id="tweet-for-paper-${paperId}">
         <div class="tw-queue-text">${tweetText}</div>
         <div class="tw-queue-img"><img src="${dataUrl}"></div>
       </div>
     `);
+    $("#tweet-queue").append(elem);
+    return elem;
   }
 
   async function queueTweet() {
@@ -65,7 +67,7 @@
     const tweetText = $('#tweet').val();
     const id = selectedPaper.id;
 
-    showInQueue(tweetText, dataUrl, id);
+    const elem = showInQueue(tweetText, dataUrl, id);
 
     const response = await fetch('/queue-tweet', {
       method: 'POST',
@@ -79,6 +81,9 @@
       })
     });
     const result = await response.json();
+    if (result.ok) {
+      elem.data('tweetId', result.tweet.id);
+    }
   }
 
   async function renderToImage() {
@@ -202,7 +207,10 @@
     const data = await response.json();
     if (data.tweets) {
       for (const tweet of data.tweets) {
-        showInQueue(tweet.text, tweet.image, tweet.paperId);
+        const elem = showInQueue(tweet.text, tweet.image, tweet.paperId);
+        if (tweet.id) {
+          elem.data('tweetId', tweet.id);
+        }
       }
     }
 

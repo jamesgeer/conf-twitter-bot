@@ -40,7 +40,9 @@ router.post('/queue-tweet', koaBody(), async (ctx) => {
   const tweet = <Tweet>await ctx.request.body;
   saveTweet(tweet);
   ctx.type = 'json';
-  ctx.body = {ok: 'done'};
+  ctx.body = {
+    ok: true,
+    tweet};
 });
 
 router.get('/load-queue', async (ctx) => {
