@@ -13,11 +13,14 @@
     "koa-body": "4.2.0",
     "koa-router": "10.1.1",
     "mustache": "4.2.0",
-    "jsdom": "19.0.0",
     "node-fetch-cookies":"2.0.3",
-    "twitter-api-v2": "1.8.0"
+    "twitter-api-v2": "1.8.0",
+    "jquery": "3.6.0"
   },
   "devDependencies": {
+    "@types/datatables.net": "1.10.21",
+    "@types/jquery": "3.5.11",
+    "@types/jqueryui": "1.12.16",
     "@types/jsdom": "16.2.13",
     "@types/jest": "27.0.3",
     "@types/koa": "2.13.4",

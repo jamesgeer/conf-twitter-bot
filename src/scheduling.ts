@@ -1,3 +1,10 @@
+export interface SchedulingConfig {
+  nextDate: Date;
+  everyNDays: number;
+  earliestTime: number;
+  latestTime: number;
+}
+
 export function afterNDays(aDate: Date, nDays: number): Date {
   const nextDate = new Date(aDate);
   nextDate.setDate(aDate.getDate() + nDays);
