@@ -1,8 +1,9 @@
+import { readFileSync, existsSync } from 'fs';
 import Koa from 'koa';
 import koaBody from 'koa-body';
 import Router from 'koa-router';
 import { processTemplate } from './templates.js';
-import { getConfiguration, setConfiguration, Config } from './util.js';
+import { getConfiguration, setConfiguration, Config, robustPath } from './util.js';
 import { getQueuedTweet, getQueuedTweets, loadAll, loadFullDetails, saveTweet, Tweet } from './data.js';
 import { createTweetWithImage, initializeAuthorization, login } from './twitter.js';
 
@@ -11,7 +12,7 @@ const appKey = process.env.TWITTER_API_KEY || '';
 const appSecret = process.env.TWITTER_API_SECRET || '';
 
 // const DEBUG = 'DEBUG' in process.env ? process.env.DEBUG === 'true' : false;
-// const DEV = 'DEV' in process.env ? process.env.DEV === 'true' : false;
+const DEV = 'DEV' in process.env ? process.env.DEV === 'true' : false;
 
 const serverUrl = `http://127.0.0.1:${port}`;
 const app = new Koa();
@@ -93,6 +94,34 @@ router.get('/send-tweet/:id', async (ctx) => {
     createTweetWithImage(tweet);
   }
 });
+
+router.get(/^\/\w+\.js/, async (ctx) => {
+  const fileName = robustPath('../dist' + ctx.url);
+  if (existsSync(fileName)) {
+    ctx.status = 200;
+    ctx.type = 'js';
+    ctx.body = readFileSync(fileName);
+  } else {
+    ctx.status = 404;
+    ctx.type = 'text';
+    ctx.body = 'Requested Resource not Found';
+  }
+});
+
+if (DEV) {
+  router.get(/^\/src\/\w+\.ts/, async (ctx) => {
+    const fileName = robustPath(ctx.url.replace('/src/', ''));
+    if (existsSync(fileName)) {
+      ctx.status = 200;
+      ctx.type = 'js';
+      ctx.body = readFileSync(fileName);
+    } else {
+      ctx.status = 404;
+      ctx.type = 'text';
+      ctx.body = 'Requested Resource not Found';
+    }
+  });
+}
 
 app.use(router.routes());
 app.use(router.allowedMethods());

@@ -4,41 +4,9 @@
   <title>CS Conference Twitter Bot</title>
   {{{headerHtml}}}
 </head>
-<script>
+<script type="module">
   //@ts-check
-  function afterNDays(aDate, nDays) {
-    const nextDate = new Date(aDate);
-    nextDate.setDate(aDate.getDate() + nDays);
-    return nextDate;
-  }
-
-  function hourMinuteStrToMinutesSinceMidnight(str) {
-    const parts = str.split(':');
-    console.assert(parts.length === 2);
-
-    const hoursAsMinutes = Number(parts[0]) * 60;
-    const minutes = Number(parts[1]);
-    return hoursAsMinutes + minutes;
-  }
-
-  function getRandomMinute(min, max) {
-    const diff = max - min;
-    const minutes = (Math.random() * diff) + min;
-    return minutes;
-  }
-
-  function formatDateStrWithTime(dateStr) {
-    const date = new Date(dateStr);
-    return formatDateWithTime(date);
-  }
-
-  function formatDateWithTime(date) {
-    const month = new String(date.getMonth() + 1).padStart(2, '0');
-    const day = new String(date.getDate()).padStart(2, '0');
-    const hours = new String(date.getHours()).padStart(2, '0');
-    const minutes = new String(date.getMinutes()).padStart(2, '0');
-    return `${date.getFullYear()}-${month}-${day} ${hours}:${minutes}`;
-  }
+  import { hourMinuteStrToMinutesSinceMidnight, getRandomMinute, formatDateWithTime, afterNDays } from './scheduling.js';
 
   function readScheduleConfig() {
     const nextDate = new Date($('#nextDate').val());
