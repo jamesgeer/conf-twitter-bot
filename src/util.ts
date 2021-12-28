@@ -1,5 +1,6 @@
 import { URL } from 'url';
 import { readFileSync, writeFileSync } from 'fs';
+import { SchedulingConfigJson } from 'scheduling';
 const __dirname = new URL('.', import.meta.url).pathname;
 
 export const robustPath = __dirname.includes('/dist')
@@ -14,6 +15,7 @@ export interface Config {
   tweetTpl: string;
   pictureTpl: string;
   pictureStyle: string;
+  scheduleConfig?: SchedulingConfigJson;
 }
 
 let configuration: Config | null = null;

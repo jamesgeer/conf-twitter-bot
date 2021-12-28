@@ -20,6 +20,11 @@ export interface Paper {
   proceedingsId?: number;
 }
 
+export interface PaperForTemplate extends Paper {
+  abstract: string;
+  fullAuthors: string;
+}
+
 export interface Tweet {
   id?: number;
   text: string;

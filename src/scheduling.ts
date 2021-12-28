@@ -5,6 +5,13 @@ export interface SchedulingConfig {
   latestTime: number;
 }
 
+export interface SchedulingConfigJson {
+  nextDate: string;
+  everyNDays: number;
+  earliestTime: number;
+  latestTime: number;
+}
+
 export function afterNDays(aDate: Date, nDays: number): Date {
   const nextDate = new Date(aDate);
   nextDate.setDate(aDate.getDate() + nDays);
@@ -13,7 +20,9 @@ export function afterNDays(aDate: Date, nDays: number): Date {
 
 export function hourMinuteStrToMinutesSinceMidnight(str: string): number {
   const parts = str.split(':');
-  console.assert(parts.length === 2);
+  if (parts.length !== 2) {
+    return 0;
+  }
 
   const hoursAsMinutes = Number(parts[0]) * 60;
   const minutes = Number(parts[1]);
@@ -37,4 +46,18 @@ export function formatDateWithTime(date: Date): string {
   const hours = new String(date.getHours()).padStart(2, '0');
   const minutes = new String(date.getMinutes()).padStart(2, '0');
   return `${date.getFullYear()}-${month}-${day} ${hours}:${minutes}`;
+}
+
+export function formatDateOnly(date: Date): string {
+  const month = new String(date.getMonth() + 1).padStart(2, '0');
+  const day = new String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+export function formatMinutesAsHHmm(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mm = minutes % 60;
+  const hoursStr = new String(hours).padStart(2, '0');
+  const minutesStr = new String(mm).padStart(2, '0');
+  return `${hoursStr}:${minutesStr}`;
 }

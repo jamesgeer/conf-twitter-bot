@@ -1,15 +1,31 @@
 import { Paper, PaperForTemplate } from "data";
-import { afterNDays, formatDateWithTime, getRandomMinute,
-  hourMinuteStrToMinutesSinceMidnight, SchedulingConfig } from "./scheduling.js";
+import { Config } from "util.js";
+import { afterNDays, formatDateOnly, formatDateWithTime, formatMinutesAsHHmm, getRandomMinute,
+  hourMinuteStrToMinutesSinceMidnight, SchedulingConfig, SchedulingConfigJson } from "./scheduling.js";
 
 declare function html2canvas(div: any): Promise<any>;
 declare const Mustache: any;
 
-function readScheduleConfig(): SchedulingConfig {
-  const nextDate = new Date(<string>$('#nextDate').val());
-  const everyNDays = Number($('#everyNDays').val());
-  let earliestTime = hourMinuteStrToMinutesSinceMidnight(<string>$('#earliestHour').val());
-  let latestTime = hourMinuteStrToMinutesSinceMidnight(<string>$('#latestHour').val());
+function readScheduleConfig(): SchedulingConfig | null {
+  let value: any = $('#nextDate').val();
+  if (!value) { return null; }
+
+  const nextDate = new Date(value);
+
+  value = $('#everyNDays').val();
+  if (!value && Number(value) > 0) { return null; }
+
+  const everyNDays = Number(value);
+
+  value = $('#earliestHour').val();
+  if (!value) { return null; }
+
+  let earliestTime = hourMinuteStrToMinutesSinceMidnight(value);
+
+  value = $('#latestHour').val();
+  if (!value) { return null; }
+
+  let latestTime = hourMinuteStrToMinutesSinceMidnight(value);
 
   // just in case...
   if (latestTime < earliestTime) {
@@ -24,8 +40,35 @@ function readScheduleConfig(): SchedulingConfig {
   };
 }
 
+let persistedSchedulingConfig: SchedulingConfigJson | undefined = undefined;
+
+async function persistScheduleConfig(config: SchedulingConfig) {
+  const newConfig = {
+    nextDate: config.nextDate.toJSON(),
+    everyNDays: config.everyNDays,
+    earliestTime: config.earliestTime,
+    latestTime: config.latestTime
+  }
+  if (persistedSchedulingConfig !== undefined) {
+    if (newConfig.nextDate === persistedSchedulingConfig.nextDate
+      && newConfig.everyNDays === persistedSchedulingConfig.everyNDays
+      && newConfig.earliestTime === persistedSchedulingConfig.earliestTime
+      && newConfig.latestTime === persistedSchedulingConfig.latestTime) {
+        // already persisted
+        return;
+      }
+  }
+
+  persistedSchedulingConfig = newConfig;
+  await saveAndApplyConfig();
+}
+
 function updateSchedule(): void {
   const config = readScheduleConfig();
+  if (config === null) {
+    return;
+  }
+  persistScheduleConfig(config);
 
   let nextDate = config.nextDate;
   $('.tw-queue-item').each((i, elem) => {
@@ -43,7 +86,7 @@ function paperDetails(d: Paper): JQuery<HTMLElement> {
     getFullAbstract(d);
   }
 
-  const content = renderPaper(d, $('#picture-tpl').val());
+  const content = renderPaper(d, <string>$('#picture-tpl').val());
 
   const paper = `
   <div id="paper-${d.id}">
@@ -58,7 +101,7 @@ async function renderPaperDetails(paper: Paper): Promise<string> {
     paper = await response.json();
   }
 
-  const content = renderPaper(paper, $('#picture-tpl').val());
+  const content = renderPaper(paper, <string>$('#picture-tpl').val());
 
   $('#render-image').html(
     `<div class="p-details">${content}</div>`);
@@ -254,12 +297,21 @@ async function loadTweets() {
 
 async function loadConfig() {
   const response = await fetch('/configuration');
-  const data = await response.json();
+  const data = <Config>await response.json();
 
   $('#tweet-tpl').val(data?.tweetTpl);
   $('#picture-tpl').val(data?.pictureTpl);
   $('#picture-style').val(data?.pictureStyle);
   $('#tweet-pic-style').text(data?.pictureStyle);
+
+  if (data.scheduleConfig) {
+    persistedSchedulingConfig = data.scheduleConfig;
+    const date = new Date(persistedSchedulingConfig.nextDate);
+    $('#nextDate').val(formatDateOnly(date));
+    $('#everyNDays').val(persistedSchedulingConfig.everyNDays);
+    $('#earliestHour').val(formatMinutesAsHHmm(persistedSchedulingConfig.earliestTime));
+    $('#latestHour').val(formatMinutesAsHHmm(persistedSchedulingConfig.latestTime));
+  }
 }
 
 async function saveAndApplyConfig() {
@@ -269,14 +321,19 @@ async function saveAndApplyConfig() {
 
   $('#tweet-pic-style').text(pictureStyle);
 
+  await persistConfig({
+    tweetTpl, pictureTpl, pictureStyle,
+    scheduleConfig: persistedSchedulingConfig
+  });
+}
+
+async function persistConfig(config: Config) {
   const response = await fetch('/configuration', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      tweetTpl, pictureTpl, pictureStyle
-    })
+    body: JSON.stringify(config)
   });
   await response.json();
 }
