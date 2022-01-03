@@ -17,6 +17,11 @@ export async function postTweet(tweet: Tweet): Promise<Tweet | null> {
   }
 }
 
+export async function deleteTweetFromQueue(id: number): Promise<void> {
+  const response = await fetch(`/delete-tweet/${id}`);
+  await response.json();
+}
+
 export async function getPaperById(id: number | undefined): Promise<Paper | null> {
   if (typeof id !== 'number') {
     return null;
@@ -39,10 +44,10 @@ export async function loadUrls(urls: string): Promise<Paper[]> {
   return <Paper[]>data.papers;
 }
 
-export async function loadQueuedTweets(): Promise<Tweet[]> {
+export async function loadQueuedTweets(): Promise<(Tweet | null)[]> {
   const response = await fetch('/load-queue');
   const data = await response.json();
-  const tweets: Tweet[] = data.tweets;
+  const tweets: (Tweet | null)[] = data.tweets;
 
   if (tweets) {
     // need to enforce order by schedule

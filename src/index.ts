@@ -4,7 +4,7 @@ import koaBody from 'koa-body';
 import Router from 'koa-router';
 import { processTemplate } from './templates.js';
 import { getConfiguration, setConfiguration, Config, robustPath } from './util.js';
-import { getQueuedTweet, getQueuedTweets, loadAll, loadFullDetails, saveTweet, Tweet } from './data.js';
+import { deleteTweetById, getQueuedTweet, getQueuedTweets, loadAll, loadFullDetails, saveTweet, Tweet } from './data.js';
 import { createTweetWithImage, initializeAuthorization, login } from './twitter.js';
 
 const port = process.env.PORT || 33333;
@@ -44,6 +44,12 @@ router.post('/queue-tweet', koaBody(), async (ctx) => {
   ctx.body = {
     ok: true,
     tweet};
+});
+
+router.get('/delete-tweet/:id', async (ctx) => {
+  deleteTweetById(Number(ctx.params.id));
+  ctx.type = 'json';
+  ctx.body = {ok: true};
 });
 
 router.get('/load-queue', async (ctx) => {

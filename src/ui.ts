@@ -1,4 +1,4 @@
-import { getPaperById, loadQueuedTweets, loadUrls, postTweet, getConfiguration, persistConfig } from "./data-client.js";
+import { getPaperById, loadQueuedTweets, loadUrls, postTweet, getConfiguration, persistConfig, deleteTweetFromQueue } from "./data-client.js";
 import { Paper, PaperForTemplate, Tweet } from "./data.js";
 import { Config } from "./util.js";
 import { afterNDays, formatDateOnly, formatDateStrWithTime, formatDateWithTime, formatMinutesAsHHmm, getRandomMinute,
@@ -155,6 +155,7 @@ function showInQueue(tweet: Tweet): JQuery<HTMLElement> {
 
   const elem = $(`
     <div class="tw-queue-item" id="tweet-for-paper-${tweet.paperId}" data-tweet-id="${id}">
+      <button class="delete-btn btn-sm btn-light btn float-right" title="delete tweet">x</button>
       <div class="tw-scheduled-time" data-scheduled-time="${tweet.scheduledTime || ''}">${scheduledTime}</div>
       <div class="tw-queue-text">${tweet.text}</div>
       <div class="tw-queue-img"><img src="${tweet.image}"></div>
@@ -167,10 +168,18 @@ function showInQueue(tweet: Tweet): JQuery<HTMLElement> {
     $("#tweet-queue").append(elem);
   }
   elem.data('tweetObj', tweet);
+  elem.find('.delete-btn').click(deleteTweet);
   return elem;
 }
 
-
+async function deleteTweet(this: HTMLElement) {
+  const parent = $(this).parent();
+  const tweet: Tweet = parent.data('tweetObj');
+  if (typeof tweet.id === 'number') {
+    deleteTweetFromQueue(tweet.id);
+  }
+  parent.remove();
+}
 
 async function queueTweet() {
   if (!selectedPaper) {
@@ -307,7 +316,9 @@ async function loadPapers() {
 async function loadTweets() {
   const tweets = await loadQueuedTweets();
   for (const tweet of tweets) {
-    showInQueue(tweet);
+    if (tweet !== null) {
+      showInQueue(tweet);
+    }
   }
 
   $('#tweet-queue').sortable({

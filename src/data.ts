@@ -49,7 +49,7 @@ export interface Proceeding {
 export interface Data {
   papers: Paper[];
   proceedings: Proceeding[];
-  tweets: Tweet[];
+  tweets: (Tweet | null)[];
 
   numPapers: number;
   numProceedings: number;
@@ -97,7 +97,7 @@ function getPaper(paperId: number) {
   return data.papers[paperId];
 }
 
-export function getQueuedTweets(): Tweet[] {
+export function getQueuedTweets(): (Tweet | null)[] {
   const data = loadData();
   return data.tweets;
 }
@@ -128,6 +128,13 @@ export function saveTweet(tweet: Tweet) {
   }
   persistData();
   dataUrlToFile(tweet.image);
+}
+
+export function deleteTweetById(id: number) {
+  const data = loadData();
+  if (typeof id === 'number') {
+    data.tweets[id] = null;
+  }
 }
 
 function addPapersToProceedings(papers: Paper[], proc: Proceeding) {
