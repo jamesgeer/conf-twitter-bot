@@ -1,14 +1,22 @@
 export interface SchedulingConfig {
   nextDate: Date;
   everyNDays: number;
+
+  /** in minutes since midnight, UTC */
   earliestTime: number;
+
+  /** in minutes since midnight, UTC */
   latestTime: number;
 }
 
 export interface SchedulingConfigJson {
   nextDate: string;
   everyNDays: number;
+
+  /** in minutes since midnight, UTC */
   earliestTime: number;
+
+  /** in minutes since midnight, UTC */
   latestTime: number;
 }
 
@@ -18,7 +26,7 @@ export function afterNDays(aDate: Date, nDays: number): Date {
   return nextDate;
 }
 
-export function hourMinuteStrToMinutesSinceMidnight(str: string): number {
+export function hourMinuteStrToMinutesSinceMidnightUTC(str: string): number {
   const parts = str.split(':');
   if (parts.length !== 2) {
     return 0;
@@ -26,13 +34,29 @@ export function hourMinuteStrToMinutesSinceMidnight(str: string): number {
 
   const hoursAsMinutes = Number(parts[0]) * 60;
   const minutes = Number(parts[1]);
-  return hoursAsMinutes + minutes;
+
+  const d = new Date();
+  d.setMinutes(0);
+  d.setHours(0);
+  d.setMinutes(hoursAsMinutes + minutes);
+  return d.getUTCHours() * 60 + d.getUTCMinutes();
 }
 
 export function getRandomMinute(min: number, max: number): number {
   const diff = max - min;
   const minutes = (Math.random() * diff) + min;
   return minutes;
+}
+
+export function isBetweenMinutesUTC(minutesUTC: number, minUTC: number, maxUTC: number): boolean {
+  return minUTC <= minutesUTC && minutesUTC <= maxUTC;
+}
+
+export function isWithinScheduleParameters(expectedDate: Date, actualDate: Date, config: SchedulingConfig): boolean {
+  return expectedDate.getUTCFullYear() === actualDate.getUTCFullYear()
+        && expectedDate.getUTCMonth() === actualDate.getUTCMonth()
+        && expectedDate.getUTCDate() === actualDate.getUTCDate()
+        && isBetweenMinutesUTC(actualDate.getUTCMinutes(), config.earliestTime, config.latestTime);
 }
 
 export function formatDateStrWithTime(dateStr: string): string {

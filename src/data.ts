@@ -29,11 +29,18 @@ export interface Tweet {
   id?: number;
   text: string;
 
-  /* this is a data url encoding */
+  /** This is a data url encoding of the image/PNG. */
   image: string;
 
   paperId: number;
+
+  /** UTC time as per Date.toJSON(). */
+  scheduledTime?: string;
+
+  /** Whether the tweet was already sent. */
+  sent?: boolean;
 }
+
 export interface Proceeding {
   id: number;
   url: string;
@@ -46,7 +53,7 @@ export interface Data {
 
   numPapers: number;
   numProceedings: number;
-  numTweets;
+  numTweets: number;
 }
 
 export async function loadFullDetails(paperId: number): Promise<Paper> {
@@ -98,14 +105,14 @@ export function getQueuedTweets(): Tweet[] {
 export function getQueuedTweet(id: number): Tweet | null {
   const data = loadData();
   if (!data.tweets) { return null; }
-  if (id < 0 || id >= data.tweets.length) { return null; }
+  if (typeof id !== 'number' || id < 0 || id >= data.tweets.length) { return null; }
 
   return data.tweets[id];
 }
 
 export function saveTweet(tweet: Tweet) {
   const data = loadData();
-  if (tweet.id) {
+  if (typeof tweet.id === 'number') {
     data.tweets[tweet.id] = tweet;
   } else {
     if (data.tweets === undefined) {

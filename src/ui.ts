@@ -1,7 +1,7 @@
-import { Paper, PaperForTemplate } from "data";
+import { Paper, PaperForTemplate, Tweet } from "data";
 import { Config } from "util.js";
-import { afterNDays, formatDateOnly, formatDateWithTime, formatMinutesAsHHmm, getRandomMinute,
-  hourMinuteStrToMinutesSinceMidnight, SchedulingConfig, SchedulingConfigJson } from "./scheduling.js";
+import { afterNDays, formatDateOnly, formatDateStrWithTime, formatDateWithTime, formatMinutesAsHHmm, getRandomMinute,
+  hourMinuteStrToMinutesSinceMidnightUTC, isBetweenMinutesUTC, isWithinScheduleParameters, SchedulingConfig, SchedulingConfigJson } from "./scheduling.js";
 
 declare function html2canvas(div: any): Promise<any>;
 declare const Mustache: any;
@@ -20,12 +20,12 @@ function readScheduleConfig(): SchedulingConfig | null {
   value = $('#earliestHour').val();
   if (!value) { return null; }
 
-  let earliestTime = hourMinuteStrToMinutesSinceMidnight(value);
+  let earliestTime = hourMinuteStrToMinutesSinceMidnightUTC(value);
 
   value = $('#latestHour').val();
   if (!value) { return null; }
 
-  let latestTime = hourMinuteStrToMinutesSinceMidnight(value);
+  let latestTime = hourMinuteStrToMinutesSinceMidnightUTC(value);
 
   // just in case...
   if (latestTime < earliestTime) {
@@ -71,12 +71,25 @@ function updateSchedule(): void {
   persistScheduleConfig(config);
 
   let nextDate = config.nextDate;
-  $('.tw-queue-item').each((i, elem) => {
+  $('.tw-queue-item').each((_i, elem) => {
     const nextDateWithTime = new Date(nextDate);
-    nextDateWithTime.setMinutes(getRandomMinute(config.earliestTime, config.latestTime));
-    $(elem).find('.tw-scheduled-time').text(formatDateWithTime(nextDateWithTime));
-
     nextDate = afterNDays(nextDate, config.everyNDays);
+
+    nextDateWithTime.setMinutes(getRandomMinute(config.earliestTime, config.latestTime));
+
+    const currentTime = $(elem).attr('data-scheduled-time');
+    if (currentTime) {
+      const currentTimeDate = new Date(currentTime);
+      if (isWithinScheduleParameters(nextDateWithTime, currentTimeDate, config)) {
+        // no need to update it
+        return;
+      }
+    }
+    $(elem).find('.tw-scheduled-time').text(formatDateWithTime(nextDateWithTime));
+    const persistedTweet: Tweet = $(elem).data('tweetObj');
+    console.assert(typeof persistedTweet === 'object');
+    persistedTweet.scheduledTime = nextDateWithTime.toJSON();
+    postTweet(persistedTweet);
   });
 }
 
@@ -123,16 +136,52 @@ async function getFullAbstract(d: Paper) {
 let paperTable: any = null;
 let selectedPaper: Paper | null = null;
 
-function showInQueue(tweetText: string, dataUrl: string, paperId: number): JQuery<HTMLElement> {
+function showInQueue(tweet: Tweet): JQuery<HTMLElement> {
+  let scheduledTime: string;
+  if (tweet.scheduledTime) {
+    scheduledTime = formatDateStrWithTime(tweet.scheduledTime);
+  } else {
+    scheduledTime = '';
+  }
+
+  let id: string;
+  if (typeof tweet.id === 'number') {
+    id = tweet.id.toString();
+  } else {
+    id = '';
+  }
+
   const elem = $(`
-    <div class="tw-queue-item" id="tweet-for-paper-${paperId}">
-      <div class="tw-scheduled-time"></div>
-      <div class="tw-queue-text">${tweetText}</div>
-      <div class="tw-queue-img"><img src="${dataUrl}"></div>
+    <div class="tw-queue-item" id="tweet-for-paper-${tweet.paperId}" data-tweet-id="${id}">
+      <div class="tw-scheduled-time" data-scheduled-time="${tweet.scheduledTime || ''}">${scheduledTime}</div>
+      <div class="tw-queue-text">${tweet.text}</div>
+      <div class="tw-queue-img"><img src="${tweet.image}"></div>
     </div>
   `);
-  $("#tweet-queue").append(elem);
+
+  if (tweet.sent) {
+    $('#tweets-sent').append(elem);
+  } else {
+    $("#tweet-queue").append(elem);
+  }
+  elem.data('tweetObj', tweet);
   return elem;
+}
+
+async function postTweet(tweet: Tweet): Promise<Tweet | null> {
+  const response = await fetch('/queue-tweet', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(tweet)
+  });
+  const result = await response.json();
+  if (result.ok) {
+    return result.tweet;
+  } else {
+    return null;
+  }
 }
 
 async function queueTweet() {
@@ -144,22 +193,19 @@ async function queueTweet() {
   const tweetText = <string>$('#tweet').val();
   const id = <number>selectedPaper.id;
 
-  const elem = showInQueue(tweetText, dataUrl, id);
+  const elem = showInQueue({
+    text: tweetText,
+    image: dataUrl,
+    paperId: id});
 
-  const response = await fetch('/queue-tweet', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      text: tweetText,
-      image: dataUrl,
-      paperId: id
-    })
+  const persistedTweet = await postTweet({
+    text: tweetText,
+    image: dataUrl,
+    paperId: id
   });
-  const result = await response.json();
-  if (result.ok) {
-    elem.data('tweetId', result.tweet.id);
+  if (persistedTweet !== null) {
+    elem.attr('data-tweet-id', <number>persistedTweet.id);
+    elem.data('tweetObj', persistedTweet);
     updateSchedule();
   }
 }
@@ -283,10 +329,7 @@ async function loadTweets() {
   const data = await response.json();
   if (data.tweets) {
     for (const tweet of data.tweets) {
-      const elem = showInQueue(tweet.text, tweet.image, tweet.paperId);
-      if (tweet.id) {
-        elem.data('tweetId', tweet.id);
-      }
+      showInQueue(tweet);
     }
   }
 
