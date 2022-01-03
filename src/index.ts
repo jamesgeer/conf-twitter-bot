@@ -95,7 +95,7 @@ router.get('/send-tweet/:id', async (ctx) => {
   }
 });
 
-router.get(/^\/\w+\.js/, async (ctx) => {
+router.get(/^\/\w+(-\w+)*\.js(\.map)?$/, async (ctx) => {
   const fileName = robustPath('../dist' + ctx.url);
   if (existsSync(fileName)) {
     ctx.status = 200;
@@ -109,7 +109,7 @@ router.get(/^\/\w+\.js/, async (ctx) => {
 });
 
 if (DEV) {
-  router.get(/^\/src\/\w+\.ts/, async (ctx) => {
+  router.get(/^\/src\/\w+(-\w+)*\.ts/, async (ctx) => {
     const fileName = robustPath(ctx.url.replace('/src/', ''));
     if (existsSync(fileName)) {
       ctx.status = 200;
