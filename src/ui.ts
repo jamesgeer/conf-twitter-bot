@@ -1,7 +1,8 @@
-import { Paper, PaperForTemplate, Tweet } from "data";
-import { Config } from "util.js";
+import { getPaperById, loadQueuedTweets, loadUrls, postTweet, getConfiguration, persistConfig } from "./data-client.js";
+import { Paper, PaperForTemplate, Tweet } from "./data.js";
+import { Config } from "./util.js";
 import { afterNDays, formatDateOnly, formatDateStrWithTime, formatDateWithTime, formatMinutesAsHHmm, getRandomMinute,
-  hourMinuteStrToMinutesSinceMidnightUTC, isBetweenMinutesUTC, isWithinScheduleParameters, SchedulingConfig, SchedulingConfigJson } from "./scheduling.js";
+  hourMinuteStrToMinutesSinceMidnightUTC, isWithinScheduleParameters, SchedulingConfig, SchedulingConfigJson } from "./scheduling.js";
 
 declare function html2canvas(div: any): Promise<any>;
 declare const Mustache: any;
@@ -110,8 +111,10 @@ function paperDetails(d: Paper): JQuery<HTMLElement> {
 
 async function renderPaperDetails(paper: Paper): Promise<string> {
   if (!paper.fullAbstract) {
-    const response = await fetch(`/paper/${paper.id}`);
-    paper = await response.json();
+    const withFullAbstract = await getPaperById(paper.id);
+    if (withFullAbstract) {
+      paper = withFullAbstract;
+    }
   }
 
   const content = renderPaper(paper, <string>$('#picture-tpl').val());
@@ -125,10 +128,9 @@ async function renderPaperDetails(paper: Paper): Promise<string> {
 }
 
 async function getFullAbstract(d: Paper) {
-  const response = await fetch(`/paper/${d.id}`);
-  const paper = <Paper> await response.json();
+  const paper = await getPaperById(d.id);
 
-  if (paper.fullAbstract) {
+  if (paper && paper.fullAbstract) {
     $(`#paper-${d.id} .p-abstract`).html(paper.fullAbstract);
   }
 }
@@ -168,21 +170,7 @@ function showInQueue(tweet: Tweet): JQuery<HTMLElement> {
   return elem;
 }
 
-async function postTweet(tweet: Tweet): Promise<Tweet | null> {
-  const response = await fetch('/queue-tweet', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(tweet)
-  });
-  const result = await response.json();
-  if (result.ok) {
-    return result.tweet;
-  } else {
-    return null;
-  }
-}
+
 
 async function queueTweet() {
   if (!selectedPaper) {
@@ -306,18 +294,10 @@ function createTable(data: Paper[]): any {
 
 async function loadPapers() {
   const urls = $('#urls').text().trim();
-  const response = await fetch('/load-urls', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({urls})
-  });
-
-  const data = await response.json();
+  const papers = await loadUrls(urls);
 
   paperTable?.destroy();
-  paperTable = createTable(<Paper[]>data.papers);
+  paperTable = createTable(papers);
 
   // Add event listener for opening and closing details
   $('#papers tbody').on('click', 'td.dt-control', togglePaperDetails);
@@ -325,12 +305,9 @@ async function loadPapers() {
 }
 
 async function loadTweets() {
-  const response = await fetch('/load-queue');
-  const data = await response.json();
-  if (data.tweets) {
-    for (const tweet of data.tweets) {
-      showInQueue(tweet);
-    }
+  const tweets = await loadQueuedTweets();
+  for (const tweet of tweets) {
+    showInQueue(tweet);
   }
 
   $('#tweet-queue').sortable({
@@ -339,8 +316,7 @@ async function loadTweets() {
 }
 
 async function loadConfig() {
-  const response = await fetch('/configuration');
-  const data = <Config>await response.json();
+  const data: Config = await getConfiguration();
 
   $('#tweet-tpl').val(data?.tweetTpl);
   $('#picture-tpl').val(data?.pictureTpl);
@@ -368,17 +344,6 @@ async function saveAndApplyConfig() {
     tweetTpl, pictureTpl, pictureStyle,
     scheduleConfig: persistedSchedulingConfig
   });
-}
-
-async function persistConfig(config: Config) {
-  const response = await fetch('/configuration', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(config)
-  });
-  await response.json();
 }
 
 function tweetLength() {
