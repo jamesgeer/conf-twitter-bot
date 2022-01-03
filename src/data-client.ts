@@ -1,3 +1,4 @@
+import { sortSchedule } from "./scheduling.js";
 import { Paper, Tweet } from "./data.js";
 import { Config } from "./util.js";
 
@@ -50,17 +51,7 @@ export async function loadQueuedTweets(): Promise<(Tweet | null)[]> {
   const tweets: (Tweet | null)[] = data.tweets;
 
   if (tweets) {
-    // need to enforce order by schedule
-    tweets.sort((a, b) => {
-      if (a.scheduledTime === b.scheduledTime) { return 0; }
-      if (typeof a.scheduledTime !== 'string') {
-        return -1;
-      }
-      if (typeof b.scheduledTime !== 'string') {
-        return 1;
-      }
-      return a.scheduledTime.localeCompare(b.scheduledTime);
-    })
+    sortSchedule(tweets);
   }
 
   return tweets;

@@ -1,3 +1,5 @@
+import { Tweet } from "./data.js";
+
 export interface SchedulingConfig {
   nextDate: Date;
   everyNDays: number;
@@ -84,4 +86,26 @@ export function formatMinutesAsHHmm(minutes: number): string {
   const hoursStr = new String(hours).padStart(2, '0');
   const minutesStr = new String(mm).padStart(2, '0');
   return `${hoursStr}:${minutesStr}`;
+}
+
+export function sortSchedule(tweets: (Tweet | null)[]) {
+  // need to enforce order by schedule
+  tweets.sort((a, b) => {
+    if (a === null && b === null) {
+      return 0;
+    } else if (a === null) {
+      return -1;
+    } else if (b === null) {
+      return 1;
+    }
+
+    if (a.scheduledTime === b.scheduledTime) { return 0; }
+    if (typeof a.scheduledTime !== 'string') {
+      return -1;
+    }
+    if (typeof b.scheduledTime !== 'string') {
+      return 1;
+    }
+    return a.scheduledTime.localeCompare(b.scheduledTime);
+  });
 }
