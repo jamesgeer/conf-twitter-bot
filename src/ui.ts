@@ -152,9 +152,11 @@ function showInQueue(tweet: Tweet): JQuery<HTMLElement> {
     id = '';
   }
 
+  const deleteButton = tweet.sent ? '' : '<button class="delete-btn btn-sm btn-light btn float-right" title="delete tweet">x</button>';
+
   const elem = $(`
     <div class="tw-queue-item" id="tweet-for-paper-${tweet.paperId}" data-tweet-id="${id}">
-      <button class="delete-btn btn-sm btn-light btn float-right" title="delete tweet">x</button>
+      ${deleteButton}
       <div class="tw-scheduled-time" data-scheduled-time="${tweet.scheduledTime || ''}">${scheduledTime}</div>
       <div class="tw-queue-text">${tweet.text}</div>
       <div class="tw-queue-img"><img src="${tweet.image}"></div>
