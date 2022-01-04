@@ -3,8 +3,9 @@ import Koa from 'koa';
 import koaBody from 'koa-body';
 import Router from 'koa-router';
 import { processTemplate } from './templates.js';
-import { getConfiguration, setConfiguration, Config, robustPath } from './util.js';
-import { deleteTweetById, getQueuedTweet, getQueuedTweets, loadAll, loadFullDetails, saveTweet, Tweet } from './data.js';
+import { getConfiguration, setConfiguration, robustPath } from './util.js';
+import { Tweet, Config } from './data-types.js';
+import { deleteTweetById, getQueuedTweet, getQueuedTweets, loadAll, loadDataAndScheduleTasks, loadFullDetails, saveTweet } from './data.js';
 import { createTweetWithImage, initializeAuthorization, login } from './twitter.js';
 
 const port = process.env.PORT || 33333;

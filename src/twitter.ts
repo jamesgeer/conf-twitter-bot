@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { TwitterApi } from "twitter-api-v2";
-import { dataUrlToBuffer, Tweet } from "./data.js";
+import { Tweet } from "./data-types.js";
+import { dataUrlToBuffer } from "./data.js";
 import { robustPath } from "./util.js";
 
 interface TwitterAuthDetails {

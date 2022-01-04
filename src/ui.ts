@@ -1,8 +1,7 @@
 import { getPaperById, loadQueuedTweets, loadUrls, postTweet, getConfiguration, persistConfig, deleteTweetFromQueue } from "./data-client.js";
-import { Paper, PaperForTemplate, Tweet } from "./data.js";
-import { Config } from "./util.js";
+import { Config, Paper, PaperForTemplate, Tweet, SchedulingConfig, SchedulingConfigJson } from "./data-types.js";
 import { afterNDays, formatDateOnly, formatDateStrWithTime, formatDateWithTime, formatMinutesAsHHmm, getRandomMinute,
-  hourMinuteStrToMinutesSinceMidnightUTC, isWithinScheduleParameters, SchedulingConfig, SchedulingConfigJson } from "./scheduling.js";
+  hourMinuteStrToMinutesSinceMidnightUTC, isWithinScheduleParameters } from "./scheduling.js";
 
 declare function html2canvas(div: any): Promise<any>;
 declare const Mustache: any;

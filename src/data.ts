@@ -1,59 +1,11 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { fetchListOfPapers, fetchFullPaperDetails } from './acm-dl-scrapper.js';
 import { robustPath } from './util.js';
+import { Data, Paper, Proceeding, Tweet } from './data-types.js';
 
-export interface Paper {
-  type: string;
-  title: string;
-  url: string;
-  authors: string[];
-  monthYear: string;
-  pages: string;
-  shortAbstract: string;
-  citations: number;
-  downloads: number;
-  doi: string;
 
-  fullAbstract?: string;
 
-  id?: number;
-  proceedingsId?: number;
-}
 
-export interface PaperForTemplate extends Paper {
-  abstract: string;
-  fullAuthors: string;
-}
-
-export interface Tweet {
-  id?: number;
-  text: string;
-
-  /** This is a data url encoding of the image/PNG. */
-  image: string;
-
-  paperId: number;
-
-  /** UTC time as per Date.toJSON(). */
-  scheduledTime?: string;
-
-  /** Whether the tweet was already sent. */
-  sent?: boolean;
-}
-
-export interface Proceeding {
-  id: number;
-  url: string;
-}
-
-export interface Data {
-  papers: Paper[];
-  proceedings: Proceeding[];
-  tweets: (Tweet | null)[];
-
-  numPapers: number;
-  numProceedings: number;
-  numTweets: number;
 }
 
 export async function loadFullDetails(paperId: number): Promise<Paper> {

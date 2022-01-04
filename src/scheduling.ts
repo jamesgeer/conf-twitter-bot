@@ -1,26 +1,4 @@
-import { Tweet } from "./data.js";
-
-export interface SchedulingConfig {
-  nextDate: Date;
-  everyNDays: number;
-
-  /** in minutes since midnight, UTC */
-  earliestTime: number;
-
-  /** in minutes since midnight, UTC */
-  latestTime: number;
-}
-
-export interface SchedulingConfigJson {
-  nextDate: string;
-  everyNDays: number;
-
-  /** in minutes since midnight, UTC */
-  earliestTime: number;
-
-  /** in minutes since midnight, UTC */
-  latestTime: number;
-}
+import { Tweet, SchedulingConfig } from "./data-types.js";
 
 export function afterNDays(aDate: Date, nDays: number): Date {
   const nextDate = new Date(aDate);

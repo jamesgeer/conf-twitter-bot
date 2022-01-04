@@ -1,6 +1,6 @@
 import { URL } from 'url';
 import { readFileSync, writeFileSync } from 'fs';
-import { SchedulingConfigJson } from 'scheduling';
+import { Config } from './data-types.js';
 const __dirname = new URL('.', import.meta.url).pathname;
 
 export const robustPath = __dirname.includes('/dist')
@@ -10,13 +10,6 @@ export const robustPath = __dirname.includes('/dist')
   : function (path) {
       return `${__dirname}/${path}`;
     };
-
-export interface Config {
-  tweetTpl: string;
-  pictureTpl: string;
-  pictureStyle: string;
-  scheduleConfig?: SchedulingConfigJson;
-}
 
 let configuration: Config | null = null;
 

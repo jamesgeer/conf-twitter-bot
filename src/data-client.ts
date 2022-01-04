@@ -1,6 +1,5 @@
 import { sortSchedule } from "./scheduling.js";
-import { Paper, Tweet } from "./data.js";
-import { Config } from "./util.js";
+import { Paper, Tweet, Config } from "./data-types.js";
 
 export async function postTweet(tweet: Tweet): Promise<Tweet | null> {
   const response = await fetch('/queue-tweet', {
