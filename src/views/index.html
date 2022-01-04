@@ -7,6 +7,11 @@
 </head>
 <body>
 
+<div class="account clearfix">
+  <a href="/?twitterUserId=switch" class="float-right btn btn-sm btn-secondary">Switch</a>
+  <img class="float-right" title="{{screenName}}" src="{{{profileImageUrl}}}">
+</div>
+
 <form>
   <div class="form-group">
     <label for="urls">URLs to ACM DL Proceeding Pages</label>
@@ -150,9 +155,9 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 [ ] 9. Store changed title/authors, etc
 [ ]   - the abstract bit is editable, so, would be good to store the changed bits
 
-[ ] 10. Multi Twitter-Account Support
-[ ]   - select user by Twitter screen name
-[ ]   - allow to add a new login/Twitter account
+[x] 10. Multi Twitter-Account Support
+[x]   - select user by Twitter screen name
+[?]   - allow to add a new login/Twitter account
 
 [ ] .. ResearchR support
 [ ]   - support for scrapping researchr, to extra talk/paper details

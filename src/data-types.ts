@@ -30,6 +30,7 @@ export interface Tweet {
   image: string;
 
   paperId: number;
+  userId?: string;
 
   /** UTC time as per Date.toJSON(). */
   scheduledTime?: string;

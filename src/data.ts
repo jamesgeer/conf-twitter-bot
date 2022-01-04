@@ -6,7 +6,7 @@ import { Data, Paper, Proceeding, Tweet } from './data-types.js';
 import { createTweetWithImage } from './twitter.js';
 
 export function scheduleTweeting(tweet: Tweet): boolean {
-  if (!tweet.scheduledTime || !tweet.id || tweet.sent) {
+  if (!tweet.scheduledTime || !tweet.id || tweet.sent || !tweet.userId) {
     return false;
   }
 
@@ -65,9 +65,9 @@ function getPaper(paperId: number) {
   return data.papers[paperId];
 }
 
-export function getQueuedTweets(): (Tweet | null)[] {
+export function getQueuedTweets(userId: string): (Tweet | null)[] {
   const data = loadData();
-  return data.tweets;
+  return data.tweets.filter(t => t?.userId === userId);
 }
 
 export function getQueuedTweet(id: number): Tweet | null {
@@ -85,6 +85,7 @@ export function saveTweet(tweet: Tweet) {
     data.tweets[tweet.id] = tweet;
     console.assert(oldTweet !== null, "Tweet has id, and it's expected to be !=null");
     console.assert(tweet.id === oldTweet?.id, "Tweet id is expected to match");
+    console.assert(tweet.userId === oldTweet?.userId, "Tweet userId is expected to match");
     tweet.sent = oldTweet?.sent;
 
     if (oldTweet?.scheduledTime !== tweet.scheduledTime) {

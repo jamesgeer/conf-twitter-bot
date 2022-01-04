@@ -6,12 +6,10 @@ import koaSession from 'koa-session';
 import { processTemplate } from './templates.js';
 import { getConfiguration, setConfiguration, robustPath } from './util.js';
 import { Tweet, Config } from './data-types.js';
-import { deleteTweetById, getQueuedTweet, getQueuedTweets, loadAll, loadDataAndScheduleTasks, loadFullDetails, saveTweet } from './data.js';
-import { createTweetWithImage, initializeAuthorization, initTwitterClient, login } from './twitter.js';
+import { deleteTweetById, getQueuedTweets, loadAll, loadDataAndScheduleTasks, loadFullDetails, saveTweet } from './data.js';
+import { completeLogin, getKnownTwitterAccounts, getTwitterDetails, initializeAuthorization, initTwitterKeys } from './twitter.js';
 
 const port = process.env.PORT || 33333;
-const appKey = process.env.TWITTER_API_KEY || '';
-const appSecret = process.env.TWITTER_API_SECRET || '';
 const appPassword = process.env.APP_PASSWORD || '';
 
 // const DEBUG = 'DEBUG' in process.env ? process.env.DEBUG === 'true' : false;
@@ -45,7 +43,22 @@ router.get('/', async (ctx) => {
   if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
     ctx.body = processTemplate('login.html');
   } else {
-    ctx.body = processTemplate('index.html');
+    if (ctx.query.twitterUserId) {
+      if (ctx.query.twitterUserId === 'switch') {
+        ctx.session.userId = undefined;
+      } else {
+        ctx.session.userId = ctx.query.twitterUserId;
+      }
+      ctx.session.save();
+      ctx.session.manuallyCommit();
+    }
+
+    if (!ctx.session.userId) {
+      const data = {accounts: await getKnownTwitterAccounts()};
+      ctx.body = processTemplate('twitter-accounts.html', data);
+    } else {
+      ctx.body = processTemplate('index.html', await getTwitterDetails(ctx.session.userId));
+    }
   }
   ctx.type = 'html';
 });
@@ -57,7 +70,8 @@ router.post('/', koaBody(), async (ctx) => {
         ctx.session.isLoggedIn = true;
         ctx.session.save();
         ctx.session.manuallyCommit();
-        ctx.body = processTemplate('index.html');
+
+        ctx.body = processTemplate('index.html', await getTwitterDetails(ctx.session.userId));
         ctx.type = 'html';
         ctx.status = 200;
         return;
@@ -70,7 +84,7 @@ router.post('/', koaBody(), async (ctx) => {
 });
 
 function isAuthorizedJsonResponse(ctx) {
-  if (!ctx.session || !ctx.session.isLoggedIn) {
+  if (!ctx.session || !ctx.session.isLoggedIn|| !ctx.session.userId) {
     ctx.status = 403;
     ctx.body = {error: 'Not authorized to access this resource'};
     ctx.type = 'json';
@@ -78,6 +92,17 @@ function isAuthorizedJsonResponse(ctx) {
   }
   return true;
 }
+
+function isAuthorizedTextResponse(ctx) {
+  if (!ctx.session || !ctx.session.isLoggedIn) {
+    ctx.status = 403;
+    ctx.body = 'Not authorized to access this resource';
+    ctx.type = 'text';
+    return false;
+  }
+  return true;
+}
+
 
 router.post('/load-urls', koaBody(), async (ctx) => {
   if (!isAuthorizedJsonResponse(ctx)) { return; }
@@ -99,6 +124,7 @@ router.post('/queue-tweet', koaBody(), async (ctx) => {
   if (!isAuthorizedJsonResponse(ctx)) { return; }
 
   const tweet = <Tweet>await ctx.request.body;
+  tweet.userId = ctx.session?.userId;
   saveTweet(tweet);
   ctx.type = 'json';
   ctx.body = {
@@ -117,7 +143,7 @@ router.get('/delete-tweet/:id', async (ctx) => {
 router.get('/load-queue', async (ctx) => {
   if (!isAuthorizedJsonResponse(ctx)) { return; }
 
-  const tweets = getQueuedTweets();
+  const tweets = getQueuedTweets(ctx.session?.userId);
   ctx.type = 'json';
   ctx.body = {tweets};
 });
@@ -149,8 +175,10 @@ router.get('/paper/:id', async (ctx) => {
 });
 
 router.get('/twitter-login', async (ctx) => {
+  if (!isAuthorizedTextResponse(ctx)) { return; }
+
   const twitterAuthUrl = await initializeAuthorization(
-    appKey, appSecret, `${serverUrl}/twitter-authorization-callback`, '/');
+    `${serverUrl}/twitter-authorization-callback`, '/');
 
   console.log(`[IDX] Redirect to ${twitterAuthUrl}`);
   ctx.status = 302;
@@ -206,7 +234,9 @@ app.use(router.allowedMethods());
 app.use(koaSession(SESSION_CONFIG, app));
 
 loadDataAndScheduleTasks();
-initTwitterClient(appKey, appSecret);
+initTwitterKeys(
+  process.env.TWITTER_API_KEY || '',
+  process.env.TWITTER_API_SECRET || '');
 
 (async () => {
   console.log(`Starting server on ${serverUrl}`);
