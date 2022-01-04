@@ -1,11 +1,24 @@
+import { cancelExistingJob, doAt } from './do-on-date.js';
 import { readFileSync, writeFileSync } from 'fs';
 import { fetchListOfPapers, fetchFullPaperDetails } from './acm-dl-scrapper.js';
 import { robustPath } from './util.js';
 import { Data, Paper, Proceeding, Tweet } from './data-types.js';
 
+export function scheduleTweeting(tweet: Tweet): boolean {
+  if (!tweet.scheduledTime || !tweet.id || tweet.sent) {
+    return false;
+  }
 
+  cancelExistingJob(tweet.id);
 
+  const date = new Date(tweet.scheduledTime);
+  doAt(date, () => {
+    tweet.sent = true;
+    persistData();
+    console.log(`Send tweet: ${tweet.id}  ${(new Date()).toJSON()}`)
+  }, tweet.id);
 
+  return true;
 }
 
 export async function loadFullDetails(paperId: number): Promise<Paper> {
@@ -65,7 +78,15 @@ export function getQueuedTweet(id: number): Tweet | null {
 export function saveTweet(tweet: Tweet) {
   const data = loadData();
   if (typeof tweet.id === 'number') {
+    const oldTweet = data.tweets[tweet.id];
     data.tweets[tweet.id] = tweet;
+    console.assert(oldTweet !== null, "Tweet has id, and it's expected to be !=null");
+    console.assert(tweet.id === oldTweet?.id, "Tweet id is expected to match");
+    tweet.sent = oldTweet?.sent;
+
+    if (oldTweet?.scheduledTime !== tweet.scheduledTime) {
+      scheduleTweeting(tweet);
+    }
   } else {
     if (data.tweets === undefined) {
       data.tweets = [];
@@ -77,6 +98,7 @@ export function saveTweet(tweet: Tweet) {
 
     tweet.id = tweetId;
     data.tweets.push(tweet);
+    scheduleTweeting(tweet);
   }
   persistData();
 }
@@ -129,8 +151,19 @@ function hasProceeding(url: string) {
   return proc !== undefined;
 }
 
-
 let data: Data | null = null;
+
+export function loadDataAndScheduleTasks() {
+  const data = loadData();
+  const tweets = data.tweets;
+  if (tweets) {
+    for (const tweet of tweets) {
+      if (tweet) {
+        scheduleTweeting(tweet);
+      }
+    }
+  }
+}
 
 function loadData(): Data {
   if (data !== null) {

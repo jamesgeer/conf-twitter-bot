@@ -133,6 +133,8 @@ if (DEV) {
 app.use(router.routes());
 app.use(router.allowedMethods());
 
+loadDataAndScheduleTasks();
+
 (async () => {
   console.log(`Starting server on ${serverUrl}`);
   app.listen(port);
