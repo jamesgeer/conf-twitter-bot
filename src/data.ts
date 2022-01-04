@@ -79,7 +79,6 @@ export function saveTweet(tweet: Tweet) {
     data.tweets.push(tweet);
   }
   persistData();
-  dataUrlToFile(tweet.image);
 }
 
 export function deleteTweetById(id: number) {
