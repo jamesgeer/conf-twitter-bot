@@ -6,7 +6,7 @@ import { processTemplate } from './templates.js';
 import { getConfiguration, setConfiguration, robustPath } from './util.js';
 import { Tweet, Config } from './data-types.js';
 import { deleteTweetById, getQueuedTweet, getQueuedTweets, loadAll, loadDataAndScheduleTasks, loadFullDetails, saveTweet } from './data.js';
-import { createTweetWithImage, initializeAuthorization, login } from './twitter.js';
+import { createTweetWithImage, initializeAuthorization, initTwitterClient, login } from './twitter.js';
 
 const port = process.env.PORT || 33333;
 const appKey = process.env.TWITTER_API_KEY || '';
@@ -134,6 +134,7 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 loadDataAndScheduleTasks();
+initTwitterClient(appKey, appSecret);
 
 (async () => {
   console.log(`Starting server on ${serverUrl}`);

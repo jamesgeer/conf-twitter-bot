@@ -16,12 +16,12 @@ interface TwitterAuthDetails {
   userId?: string;
 }
 
-let appKey;
-let appSecret;
+let appKey: string | null = null;
+let appSecret: string | null = null;
 let authDetails: TwitterAuthDetails | null = null;
 
 let initPromiseResolver;
-let loggedInClient: TwitterApi;
+let loggedInClient: TwitterApi | null = null;
 
 
 const initPromise = new Promise(initPromiseResolution => {
@@ -54,10 +54,7 @@ function fullyAuthorized(authDetails: TwitterAuthDetails) {
   return authDetails.accessToken && authDetails.accessSecret;
 }
 
-export async function initializeAuthorization(key: string, secret: string, callbackUrl: string, redirectUrl: string): Promise<string> {
-  if (!key || !secret) {
-    throw new Error("Please make sure TWITTER_API_KEY and TWITTER_API_SECRET are set in the environment");
-  }
+export function initTwitterClient(key: string, secret: string): void {
   appKey = key;
   appSecret = secret;
 
@@ -65,6 +62,28 @@ export async function initializeAuthorization(key: string, secret: string, callb
   if (fullyAuthorized(authDetails)) {
     console.log('[TW] Fully Authorized already.');
     if (!loggedInClient) {
+      console.log('[TW] Still need to login in though.');
+      initPromiseResolver();
+      loginFullyAuthorized(authDetails);
+    }
+  }
+}
+
+function errorOnUnsetKeyAndSecret() {
+  if (!appKey || !appSecret) {
+    throw new Error("Please make sure TWITTER_API_KEY and TWITTER_API_SECRET are set in the environment");
+  }
+}
+
+export async function initializeAuthorization(key: string, secret: string, callbackUrl: string, redirectUrl: string): Promise<string> {
+  appKey = key;
+  appSecret = secret;
+  errorOnUnsetKeyAndSecret();
+
+  const authDetails = loadAuthDetails();
+  if (fullyAuthorized(authDetails)) {
+    console.log('[TW] Fully Authorized already.');
+    if (loggedInClient === null) {
       console.log('[TW] Still need to login in though.');
       initPromiseResolver();
       loginFullyAuthorized(authDetails);
@@ -88,12 +107,15 @@ export async function initializeAuthorization(key: string, secret: string, callb
 export async function login(oauthVerifier: string, oauthTokenFromCallback: string) {
   await initPromise;
   const authDetails = loadAuthDetails();
+  errorOnUnsetKeyAndSecret();
 
   console.log(`[TW] oauth_token_from_callback (${oauthTokenFromCallback}) === oauth_token ${authDetails.oauthToken}`);
   console.assert(oauthTokenFromCallback === authDetails.oauthToken);
 
   console.log(`[TW] oauth_verifier (${oauthVerifier})`);
-  const client = new TwitterApi({appKey, appSecret,
+  const client = new TwitterApi({
+    appKey: <string>appKey,
+    appSecret: <string>appSecret,
     accessToken: authDetails.oauthToken,
     accessSecret: authDetails.oauthTokenSecret});
 
@@ -113,8 +135,11 @@ export async function login(oauthVerifier: string, oauthTokenFromCallback: strin
 }
 
 function loginFullyAuthorized(authDetails: TwitterAuthDetails) {
+  errorOnUnsetKeyAndSecret();
+
   loggedInClient = new TwitterApi({
-    appKey, appSecret,
+    appKey: <string>appKey,
+    appSecret: <string>appSecret,
     accessToken: authDetails.accessToken,
     accessSecret: authDetails.accessSecret
   });
@@ -122,13 +147,17 @@ function loginFullyAuthorized(authDetails: TwitterAuthDetails) {
 }
 
 
-export async function createTweetWithImage(tweet: Tweet) {
-  console.log('[TW] Await Login');
-  await loginPromise;
+export async function createTweetWithImage(tweet: Tweet): Promise<boolean> {
+  if (loggedInClient === null) {
+    console.log('[TW] Not logged in, cannot send tweet');
+    return false;
+  }
+
   console.log('[TW] Creating Tweet');
   const imageBuffer = dataUrlToBuffer(tweet.image);
 
   const mediaId = await loggedInClient.v1.uploadMedia(imageBuffer, {type: 'png'});
   await loggedInClient.v1.tweet(tweet.text, {media_ids: [mediaId]});
   console.log('[TW] Tweet Created');
+  return true;
 }
