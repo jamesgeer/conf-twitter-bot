@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { fetchListOfPapers, fetchFullPaperDetails } from './acm-dl-scrapper.js';
 import { robustPath } from './util.js';
 import { Data, Paper, Proceeding, Tweet } from './data-types.js';
+import { createTweetWithImage } from './twitter.js';
 
 export function scheduleTweeting(tweet: Tweet): boolean {
   if (!tweet.scheduledTime || !tweet.id || tweet.sent) {
@@ -12,10 +13,12 @@ export function scheduleTweeting(tweet: Tweet): boolean {
   cancelExistingJob(tweet.id);
 
   const date = new Date(tweet.scheduledTime);
-  doAt(date, () => {
+  doAt(date, async () => {
     tweet.sent = true;
     persistData();
     console.log(`Send tweet: ${tweet.id}  ${(new Date()).toJSON()}`)
+    const created = await createTweetWithImage(tweet);
+    console.log(`Sending tweet ${tweet.id} ${created ? 'succeeded' : 'failed'}`);
   }, tweet.id);
 
   return true;

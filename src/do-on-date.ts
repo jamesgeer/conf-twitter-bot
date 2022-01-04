@@ -63,7 +63,7 @@ export function cancelExistingJob(id: number): boolean {
   return false;
 }
 
-export function doAt(date: Date, action: () => void, id: number): Job {
+export function doAt(date: Date, action: () => Promise<void>, id: number): Job {
   const now = Date.now();
   const inNMilliseconds = date.getTime() - now;
 
@@ -71,8 +71,8 @@ export function doAt(date: Date, action: () => void, id: number): Job {
   let timeout: NodeJS.Timeout | null;
 
   if (inNMilliseconds > 0) {
-    timeout = setTimeout(() => {
-      action();
+    timeout = setTimeout(async () => {
+      await action();
       job.completed = true;
       removeFromScheduleList(job);
     }, inNMilliseconds);
