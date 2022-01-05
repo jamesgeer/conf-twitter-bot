@@ -289,14 +289,14 @@ function createTable(data: Paper[]): any {
       },
       {title: "Title",    data: 'title'},
       {title: "Type",     data: 'type',    visible: false},
-      {title: "URL",      data: 'url',     visible: false},
+      {title: "URL",      data: d => d.url || '',     visible: false},
       {title: "Authors",  data: d => d.authors.join(', ')},
       {title: "Month",    data: d => d.monthYear.split(' ')[0]},
       {title: "Year",     data: d => d.monthYear.split(' ')[1]},
-      {title: "Pages",    data: 'pages',   visible: false},
-      {title: "Abstract", data: 'shortAbstract', visible: false},
-      {title: "Cites",    data: 'citations'},
-      {title: "#Down",    data: 'downloads'}
+      {title: "Pages",    data: d => d.pages || '',   visible: false},
+      {title: "Abstract", data: d => d.shortAbstract || '', visible: false},
+      {title: "Cites",    data: d => d.citations || ''},
+      {title: "#Down",    data: d => d.downloads || ''}
     ],
     data: data
   });
