@@ -14,8 +14,8 @@ const appPassword = process.env.APP_PASSWORD || '';
 
 // const DEBUG = 'DEBUG' in process.env ? process.env.DEBUG === 'true' : false;
 const DEV = 'DEV' in process.env ? process.env.DEV === 'true' : false;
-
-const serverUrl = `http://127.0.0.1:${port}`;
+const BASEURL = 'APP_BASE_URL' in process.env ? process.env.APP_BASE_URL : 'http://127.0.0.1';
+const serverUrl = `${BASEURL}:${port}`;
 
 
 const SESSION_CONFIG = {
