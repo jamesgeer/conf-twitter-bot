@@ -235,11 +235,11 @@ export async function createTweetWithImage(tweet: Tweet): Promise<boolean> {
     return false;
   }
 
-  console.log('[TW] Creating Tweet');
+  console.log(`[TW] Prepare Tweet ${tweet.id}`);
   const imageBuffer = dataUrlToBuffer(tweet.image);
 
   const mediaId = await loggedInClient.v1.uploadMedia(imageBuffer, {type: 'png'});
   await loggedInClient.v1.tweet(tweet.text, {media_ids: [mediaId]});
-  console.log('[TW] Tweet Created');
+  console.log(`[TW] Tweet sent ${tweet.id}`);
   return true;
 }

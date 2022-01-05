@@ -76,20 +76,14 @@ export function doAt(date: Date, action: () => Promise<void>, id: number): Job {
       job.completed = true;
       removeFromScheduleList(job);
     }, inNMilliseconds);
+    console.log(`[DOD] Scheduled tweet ${id} for ${date.toJSON()}.`);
   } else {
     timeout = null;
+    console.log(`[DOD] Schedule tweet ${id} failed, scheduled time is in the past.`);
   }
 
   job = new Job(date, action, timeout, id);
-  let text = '[';
-  for (const s of schedule) {
-    if (!s) { text += '!,' }
-    else {
-      text += '{id:' + s.id + ',completed=' + s.completed + ",never:" + s.isNeverGoingToExecute() + ",date:" + s.date.toJSON() + '},'
-    }
-  }
-  text += ']';
-  console.log(`Schedule tweet: ${id} numSchedules: ${schedule.length} JSON: ${text}`);
+
   schedule.push(job);
   return job;
 }
