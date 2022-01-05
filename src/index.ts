@@ -187,7 +187,7 @@ router.get('/twitter-login', async (ctx) => {
 
 router.get('/twitter-authorization-callback', async (ctx) => {
   const { oauth_token, oauth_verifier } = ctx.query;
-  login(<string>oauth_verifier, <string>oauth_token);
+  completeLogin(<string>oauth_verifier, <string>oauth_token);
   ctx.status = 302;
   ctx.redirect('/');
 });
