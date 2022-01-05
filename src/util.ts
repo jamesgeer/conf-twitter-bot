@@ -62,5 +62,5 @@ export function setConfiguration(userId: string, config: ConfigForUser) {
     configuration = {};
   }
   configuration[userId] = config;
-  writeFileSync(robustPath('config.json'), JSON.stringify(config));
+  writeFileSync(robustPath('config.json'), JSON.stringify(configuration));
 }
