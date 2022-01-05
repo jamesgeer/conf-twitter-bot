@@ -53,7 +53,7 @@
   "scripts": {
     "start": "node ./dist/src/index.js",
     "nodemon": "DEV=true nodemon --enable-source-maps ./dist/index.js --watch ./dist --watch package.json --watch ./src/views --ext js,html",
-    "compile": "tsc",
+    "compile": "tsc && mkdir -p cache",
     "format": "prettier --config .prettierrc '{src,tests,resources}/**/*.{ts,js}' --write",
     "verify": "npm run lint",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
