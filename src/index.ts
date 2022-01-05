@@ -5,7 +5,7 @@ import Router from 'koa-router';
 import koaSession from 'koa-session';
 import { processTemplate } from './templates.js';
 import { getConfiguration, setConfiguration, robustPath } from './util.js';
-import { Tweet, Config } from './data-types.js';
+import { Tweet, Config, ConfigForUser } from './data-types.js';
 import { deleteTweetById, getQueuedTweets, loadAll, loadDataAndScheduleTasks, loadFullDetails, saveTweet } from './data.js';
 import { completeLogin, getKnownTwitterAccounts, getTwitterDetails, initializeAuthorization, initTwitterKeys } from './twitter.js';
 
@@ -151,7 +151,7 @@ router.get('/load-queue', async (ctx) => {
 router.get('/configuration', async (ctx) => {
   if (!isAuthorizedJsonResponse(ctx)) { return; }
 
-  ctx.body = getConfiguration();
+  ctx.body = getConfiguration(ctx.session?.userId);
   ctx.type = 'json';
 });
 
@@ -159,7 +159,7 @@ router.post('/configuration', koaBody(), async (ctx) => {
   if (!isAuthorizedJsonResponse(ctx)) { return; }
 
   const data = await ctx.request.body;
-  setConfiguration(<Config> data);
+  setConfiguration(ctx.session?.userId, <ConfigForUser> data);
 
   ctx.type = 'json';
   ctx.body = { ok: 'done' };

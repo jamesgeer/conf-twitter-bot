@@ -1,5 +1,5 @@
 import { sortSchedule } from "./scheduling.js";
-import { Paper, Tweet, Config } from "./data-types.js";
+import { Paper, Tweet, Config, ConfigForUser } from "./data-types.js";
 
 export async function postTweet(tweet: Tweet): Promise<Tweet | null> {
   const response = await fetch('/queue-tweet', {
@@ -56,12 +56,12 @@ export async function loadQueuedTweets(): Promise<(Tweet | null)[]> {
   return tweets;
 }
 
-export async function getConfiguration(): Promise<Config> {
+export async function getConfiguration(): Promise<ConfigForUser> {
   const response = await fetch('/configuration');
   return await response.json();
 }
 
-export async function persistConfig(config: Config) {
+export async function persistConfig(config: ConfigForUser) {
   const response = await fetch('/configuration', {
     method: 'POST',
     headers: {

@@ -83,6 +83,10 @@ export interface SchedulingConfigJson {
 }
 
 export interface Config {
+  [key: string]: ConfigForUser;
+}
+
+export interface ConfigForUser {
   tweetTpl: string;
   pictureTpl: string;
   pictureStyle: string;

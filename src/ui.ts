@@ -1,5 +1,5 @@
 import { getPaperById, loadQueuedTweets, loadUrls, postTweet, getConfiguration, persistConfig, deleteTweetFromQueue } from "./data-client.js";
-import { Config, Paper, PaperForTemplate, Tweet, SchedulingConfig, SchedulingConfigJson } from "./data-types.js";
+import { Config, Paper, PaperForTemplate, Tweet, SchedulingConfig, SchedulingConfigJson, ConfigForUser } from "./data-types.js";
 import { afterNDays, formatDateOnly, formatDateStrWithTime, formatDateWithTime, formatMinutesAsHHmm, getRandomMinute,
   hourMinuteStrToMinutesSinceMidnightUTC, isWithinScheduleParameters } from "./scheduling.js";
 
@@ -328,7 +328,7 @@ async function loadTweets() {
 }
 
 async function loadConfig() {
-  const data: Config = await getConfiguration();
+  const data: ConfigForUser = await getConfiguration();
 
   $('#tweet-tpl').val(data?.tweetTpl);
   $('#picture-tpl').val(data?.pictureTpl);
