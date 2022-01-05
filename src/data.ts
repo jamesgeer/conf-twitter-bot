@@ -1,9 +1,10 @@
 import { cancelExistingJob, doAt } from './do-on-date.js';
 import { readFileSync, writeFileSync } from 'fs';
-import { fetchListOfPapers, fetchFullPaperDetails } from './acm-dl-scrapper.js';
+import { fetchListOfPapersACM, fetchFullPaperDetails, isAcmUrl } from './scrapper-acm-dl.js';
 import { robustPath } from './util.js';
 import { Data, Paper, Proceeding, Tweet } from './data-types.js';
 import { createTweetWithImage } from './twitter.js';
+import { fetchListOfPapersResearchr } from './scrapper-researchr.js';
 
 export function scheduleTweeting(tweet: Tweet): boolean {
   if (!tweet.scheduledTime || !tweet.id || tweet.sent || !tweet.userId) {
@@ -50,7 +51,11 @@ async function getListOfPapers(url: string): Promise<Paper[]> {
     return papers;
   }
 
-  papers = await fetchListOfPapers(url);
+  if (isAcmUrl(url)) {
+    papers = await fetchListOfPapersACM(url);
+  } else {
+    papers = await fetchListOfPapersResearchr(url);
+  }
   addPapersToProceedings(papers, proc);
   return papers;
 }

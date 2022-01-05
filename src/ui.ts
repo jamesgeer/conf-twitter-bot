@@ -268,7 +268,7 @@ function renderPaper(paper: Paper, template: string): string {
     if (p.fullAbstract) {
       p.abstract = p.fullAbstract;
     } else {
-      p.abstract = p.shortAbstract;
+      p.abstract = <string>p.shortAbstract;
     }
 
     p.fullAuthors = p.authors.join(', ');

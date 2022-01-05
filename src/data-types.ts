@@ -2,14 +2,15 @@
 export interface Paper {
   type: string;
   title: string;
-  url: string;
+  url?: string;
+  preprint?: string;
   authors: string[];
-  monthYear: string;
-  pages: string;
-  shortAbstract: string;
-  citations: number;
-  downloads: number;
-  doi: string;
+  monthYear?: string;
+  pages?: string;
+  shortAbstract?: string;
+  citations?: number;
+  downloads?: number;
+  doi?: string;
 
   fullAbstract?: string;
 

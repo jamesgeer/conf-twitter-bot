@@ -10,6 +10,10 @@ import { JSDOM } from 'jsdom';
 import { Paper } from './data-types.js';
 import { fetchHtmlOrUsedCached } from './web-scrapper.js';
 
+export function isAcmUrl(url: string) {
+  return url.includes('/dl.acm.org/');
+}
+
 export function toDataTable(papers: Paper[]): string[][] {
   const result: string[][] = [];
   for (const p of papers) {
@@ -17,11 +21,11 @@ export function toDataTable(papers: Paper[]): string[][] {
       '',
       p.title,
       p.type,
-      p.url,
+      <string>p.url,
       <string>(<any>p.authors),
-      p.monthYear,
-      p.pages,
-      p.shortAbstract,
+      <string>p.monthYear,
+      <string>p.pages,
+      <string>p.shortAbstract,
       <string>(<unknown>p.citations),
       <string>(<unknown>p.downloads)
     ]);
@@ -30,7 +34,7 @@ export function toDataTable(papers: Paper[]): string[][] {
 }
 
 export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
-  const html = await fetchHtmlOrUsedCached(paper.url);
+  const html = await fetchHtmlOrUsedCached(<string>paper.url);
 
   const dom = new JSDOM(html);
   const document = dom.window.document;
@@ -39,7 +43,7 @@ export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
   return paper;
 }
 
-export async function fetchListOfPapers(url: string): Promise<Paper[]> {
+export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
   const html = await fetchHtmlOrUsedCached(url);
 
   const dom = new JSDOM(html);
@@ -53,7 +57,7 @@ export async function fetchListOfPapers(url: string): Promise<Paper[]> {
   const downloads = document.querySelectorAll('span.metric');
 
   const numPapers = paperTypes.length;
-  const papers: any[] = [];
+  const papers: Paper[] = [];
 
   console.assert(
     numPapers == paperTitleHTags.length && numPapers == authorContainers.length
