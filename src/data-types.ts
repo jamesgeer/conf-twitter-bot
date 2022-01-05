@@ -1,18 +1,23 @@
 
 export interface Paper {
   type: string;
+
   title: string;
+  authors: string[];
+  fullAuthors?: string;
+
+  doi?: string;
   url?: string;
   preprint?: string;
-  authors: string[];
+
+  shortAbstract?: string;
+  fullAbstract?: string;
+
   monthYear?: string;
   pages?: string;
-  shortAbstract?: string;
+
   citations?: number;
   downloads?: number;
-  doi?: string;
-
-  fullAbstract?: string;
 
   id?: number;
   proceedingsId?: number;
