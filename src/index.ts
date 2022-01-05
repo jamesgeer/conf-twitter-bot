@@ -192,14 +192,21 @@ router.get('/twitter-authorization-callback', async (ctx) => {
   ctx.redirect('/');
 });
 
-router.get('/send-tweet/:id', async (ctx) => {
-  if (!isAuthorizedJsonResponse(ctx)) { return; }
+// router.get('/send-tweet/:id', async (ctx) => {
+//   if (!isAuthorizedJsonResponse(ctx)) { return; }
 
-  const tweet = getQueuedTweet(Number(ctx.params.id));
-  if (tweet) {
-    createTweetWithImage(tweet);
-  }
-});
+//   const tweet = getQueuedTweet(Number(ctx.params.id));
+//   if (tweet) {
+//     createTweetWithImage(tweet);
+//     ctx.status = 200;
+//     ctx.type = 'json';
+//     ctx.body = {ok: 'done'};
+//   } else {
+//     ctx.status = 404;
+//     ctx.type = 'json';
+//     ctx.body = {error: 'tweet not found'};
+//   }
+// });
 
 router.get(/^\/\w+(-\w+)*\.js(\.map)?$/, async (ctx) => {
   const fileName = robustPath('../dist' + ctx.url);
