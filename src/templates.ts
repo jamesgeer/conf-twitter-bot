@@ -7,6 +7,10 @@ const headerHtml = readFileSync(robustPath('views/header.html')).toString();
 export function processTemplate(filename: string, variables: any = {}): string {
   const fileContent = readFileSync(robustPath(`views/${filename}`)).toString();
 
+  if (!variables) {
+    variables = {};
+  }
+
   variables.headerHtml = headerHtml;
   return mustache.render(fileContent, variables);
 }
