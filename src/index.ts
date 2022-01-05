@@ -38,6 +38,7 @@ const app = new Koa();
 const router = new Router();
 
 app.keys = ['Session Key Secret 5346fdg434'];
+app.proxy = true;
 
 router.get('/', async (ctx) => {
   if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
