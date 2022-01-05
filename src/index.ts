@@ -40,26 +40,30 @@ const router = new Router();
 app.keys = ['Session Key Secret 5346fdg434'];
 app.proxy = true;
 
+async function getIndex(ctx) {
+  if (ctx.query.twitterUserId) {
+    if (ctx.query.twitterUserId === 'switch') {
+      ctx.session.userId = undefined;
+    } else {
+      ctx.session.userId = ctx.query.twitterUserId;
+    }
+    ctx.session.save();
+    ctx.session.manuallyCommit();
+  }
+
+  if (!ctx.session.userId) {
+    const data = {accounts: await getKnownTwitterAccounts()};
+    ctx.body = processTemplate('twitter-accounts.html', data);
+  } else {
+    ctx.body = processTemplate('index.html', await getTwitterDetails(ctx.session.userId));
+  }
+}
+
 router.get('/', async (ctx) => {
   if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
     ctx.body = processTemplate('login.html');
   } else {
-    if (ctx.query.twitterUserId) {
-      if (ctx.query.twitterUserId === 'switch') {
-        ctx.session.userId = undefined;
-      } else {
-        ctx.session.userId = ctx.query.twitterUserId;
-      }
-      ctx.session.save();
-      ctx.session.manuallyCommit();
-    }
-
-    if (!ctx.session.userId) {
-      const data = {accounts: await getKnownTwitterAccounts()};
-      ctx.body = processTemplate('twitter-accounts.html', data);
-    } else {
-      ctx.body = processTemplate('index.html', await getTwitterDetails(ctx.session.userId));
-    }
+    await getIndex(ctx);
   }
   ctx.type = 'html';
 });
@@ -72,7 +76,7 @@ router.post('/', koaBody(), async (ctx) => {
         ctx.session.save();
         ctx.session.manuallyCommit();
 
-        ctx.body = processTemplate('index.html', await getTwitterDetails(ctx.session.userId));
+        await getIndex(ctx);
         ctx.type = 'html';
         ctx.status = 200;
         return;
