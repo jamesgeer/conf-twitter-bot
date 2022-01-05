@@ -11,6 +11,10 @@ export function hashToString(str: string): string {
 export async function fetchHtmlOrUsedCached(
   url: string
 ): Promise<string | Buffer> {
+  if (!url) {
+    return '';
+  }
+
   const hashedName = robustPath('../cache/') + hashToString(url) + '.html';
 
   if (existsSync(hashedName)) {
