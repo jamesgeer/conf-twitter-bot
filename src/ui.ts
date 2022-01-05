@@ -303,8 +303,8 @@ function createTable(data: Paper[]): any {
 }
 
 async function loadPapers() {
-  const urls = $('#urls').text().trim();
-  const papers = await loadUrls(urls);
+  const urls = <string>$('#urls').val();
+  const papers = await loadUrls(urls.trim());
 
   paperTable?.destroy();
   paperTable = createTable(papers);
