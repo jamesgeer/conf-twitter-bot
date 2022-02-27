@@ -117,6 +117,7 @@ export function deleteTweetById(id: number) {
   if (typeof id === 'number') {
     data.tweets[id] = null;
   }
+  cancelExistingJob(id);
 }
 
 function addPapersToProceedings(papers: Paper[], proc: Proceeding) {
