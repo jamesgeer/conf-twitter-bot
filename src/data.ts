@@ -183,6 +183,9 @@ function loadData(): Data {
   try {
     data = <Data>JSON.parse(
       readFileSync(robustPath('../data.json')).toString());
+    data.papers = <Paper[]> fixupDataAfterLoadIfNeeded(data.papers);
+    data.proceedings = <Proceeding[]> fixupDataAfterLoadIfNeeded(data.proceedings);
+    data.tweets = <Tweet[]> fixupDataAfterLoadIfNeeded(data.tweets);
   } catch (e) {
     data = {
       papers: [],
@@ -195,6 +198,35 @@ function loadData(): Data {
   }
   return data;
 }
+
+function fixupDataAfterLoadIfNeeded(items: ({id?: number}| null)[]) : ({id?: number}| null)[] {
+  const result: ({id?: number}| null)[] = [];
+
+  let maxId = -1;
+
+  for (const item of items) {
+    if (item && item.id !== undefined && item.id !== null) {
+      maxId = Math.max(maxId, item.id);
+
+      while (result.length < item.id) {
+        result.push(<any>null);
+      }
+    }
+
+    result.push(item);
+  }
+
+  // check consistency
+  for (const i in result) {
+    const item = result[i];
+    if (item && item.id !== undefined && item.id !== null) {
+      console.assert(item.id === parseInt(i));
+    }
+  }
+
+  return result;
+}
+
 
 function persistData() {
   writeFileSync(robustPath('../data.json'), JSON.stringify(data));
