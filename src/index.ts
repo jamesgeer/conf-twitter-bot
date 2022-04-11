@@ -250,6 +250,6 @@ initTwitterKeys(
   process.env.TWITTER_API_SECRET || '');
 
 (async () => {
-  console.log(`Starting server on ${serverUrl}`);
+  console.log(`Starting server on ${serverUrl} at ${(new Date()).toISOString()}`);
   app.listen(port);
 })();

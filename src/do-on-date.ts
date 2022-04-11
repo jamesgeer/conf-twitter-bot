@@ -72,11 +72,12 @@ export function doAt(date: Date, action: () => Promise<void>, id: number): Job {
 
   if (inNMilliseconds > 0) {
     timeout = setTimeout(async () => {
+      console.log(`[DOD] Starting execution of scheduled action for tweet ${id}. Was scheduled for ${date.toJSON()}. It's now ${(new Date()).toISOString()}.`);
       await action();
       job.completed = true;
       removeFromScheduleList(job);
     }, inNMilliseconds);
-    console.log(`[DOD] Scheduled tweet ${id} for ${date.toJSON()}.`);
+    console.log(`[DOD] Scheduled tweet ${id} for ${date.toJSON()} (in ${inNMilliseconds}ms).`);
   } else {
     timeout = null;
     console.log(`[DOD] Schedule tweet ${id} failed, scheduled time is in the past.`);
