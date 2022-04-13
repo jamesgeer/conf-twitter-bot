@@ -26,6 +26,18 @@ To simplify development, this project tries to stick to a few basic technologies
  - Jest for testing
  - npm for building
 
+## Current Feature List
+
+ - ACM DL and ResearchR scrapper to extra paper details
+ - data and configuration is stored in JSON files
+ - Tweet composer, that uses customizable Mustache templates
+ - Image generator to make tweets more informative, currently it uses title, author names, abstract, and other information, for instance the next submission deadline. The images are created right in the browser WYSIWYG
+ - a queue of scheduled tweets, and a list of past tweets
+ - automatic tweeting using the Twitter API
+ - schedule generator based on a Tweet every n-days, in a certain time range
+ - password-based authentication, but basically a single-user system
+ - support for multiple Twitter accounts, each with its own, separate Tweet queue
+
 ## License
 
 Distributed under the MIT License. See `LICENSE.md` for more information.
