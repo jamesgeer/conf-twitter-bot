@@ -16,6 +16,7 @@ module.exports = {
     browser: true,
     node: true
   },
+  ignorePatterns: ["dist/**/*", "node_modules/**/*"],
   rules: {
     'max-len': ['error', { 'code': 80 }],
     'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
