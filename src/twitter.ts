@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { TwitterApi } from "twitter-api-v2";
-import { Tweet } from "./data-types.js";
-import { dataUrlToBuffer } from "./data.js";
-import { robustPath } from "./util.js";
+import { TwitterApi } from 'twitter-api-v2';
+import { Tweet } from './data-types.js';
+import { dataUrlToBuffer } from './data.js';
+import { robustPath } from './util.js';
 
 const dataFilePath = robustPath('../twitter-accounts.json');
 
@@ -17,7 +17,7 @@ interface TwitterAccount {
 }
 
 /** Authentication details, that are persisted. */
-interface TwitterAuthDetails  {
+interface TwitterAuthDetails {
   /* persistent */
   accessToken?: string;
   accessSecret?: string;
@@ -34,13 +34,15 @@ interface TwitterTempAuth {
 let appKey: string | null = null;
 let appSecret: string | null = null;
 let twitterAccounts: TwitterAccounts | null = null;
-let loggedInClients: Map<string, TwitterApi> = new Map();
+const loggedInClients: Map<string, TwitterApi> = new Map();
 
 let tempAuthDetails: TwitterTempAuth | null = null;
 
-export async function getTwitterDetails(userId: string): Promise<TwitterAccount | null> {
+export async function getTwitterDetails(
+  userId: string
+): Promise<TwitterAccount | null> {
   const data = loadTwitterAccounts();
-  const details = data.accounts.find(a => a.account.userId === userId);
+  const details = data.accounts.find((a) => a.account.userId === userId);
   if (!details) {
     return null;
   }
@@ -50,7 +52,8 @@ export async function getTwitterDetails(userId: string): Promise<TwitterAccount 
   if (!account.profileImageUrl) {
     const client = new TwitterApi({
       appKey: <string>appKey,
-      appSecret: <string>appSecret});
+      appSecret: <string>appSecret
+    });
     account.profileImageUrl = await getProfileImageUrl(client, account.userId);
   }
   return account;
@@ -58,7 +61,7 @@ export async function getTwitterDetails(userId: string): Promise<TwitterAccount 
 
 export async function getKnownTwitterAccounts(): Promise<TwitterAccount[]> {
   const data = loadTwitterAccounts();
-  const knownAccounts = data.accounts.map(auth => auth.account);
+  const knownAccounts = data.accounts.map((auth) => auth.account);
 
   let client;
   for (const a of knownAccounts) {
@@ -66,7 +69,8 @@ export async function getKnownTwitterAccounts(): Promise<TwitterAccount[]> {
       if (!client) {
         client = new TwitterApi({
           appKey: <string>appKey,
-          appSecret: <string>appSecret});
+          appSecret: <string>appSecret
+        });
       }
       a.profileImageUrl = await getProfileImageUrl(client, a.userId);
     }
@@ -79,7 +83,7 @@ export async function getKnownTwitterAccounts(): Promise<TwitterAccount[]> {
 }
 
 async function getProfileImageUrl(client: TwitterApi, userId: string) {
-  return (await client.v1.user({user_id: userId})).profile_image_url_https;
+  return (await client.v1.user({ user_id: userId })).profile_image_url_https;
 }
 
 export function initTwitterKeys(key: string, secret: string): void {
@@ -95,7 +99,7 @@ function loadTwitterAccounts(): TwitterAccounts {
     const fileContent = readFileSync(dataFilePath).toString();
     twitterAccounts = <TwitterAccounts>JSON.parse(fileContent);
   } catch (e) {
-    twitterAccounts = {accounts: []};
+    twitterAccounts = { accounts: [] };
   }
   return twitterAccounts;
 }
@@ -137,7 +141,6 @@ function fullyAuthorized(authDetails: TwitterAuthDetails) {
   return authDetails.accessToken && authDetails.accessSecret;
 }
 
-
 function getClientForUser(userId: string): TwitterApi | null {
   const authDetails = loadAuthDetails(userId);
   if (authDetails && fullyAuthorized(authDetails)) {
@@ -155,19 +158,28 @@ function getClientForUser(userId: string): TwitterApi | null {
 
 function errorOnUnsetKeyAndSecret() {
   if (!appKey || !appSecret) {
-    throw new Error("Please make sure TWITTER_API_KEY and TWITTER_API_SECRET are set in the environment");
+    throw new Error(
+      'Please make sure TWITTER_API_KEY and TWITTER_API_SECRET are set in the environment'
+    );
   }
 }
 
-export async function initializeAuthorization(callbackUrl: string, redirectUrl: string): Promise<string> {
+export async function initializeAuthorization(
+  callbackUrl: string,
+  redirectUrl: string
+): Promise<string> {
   errorOnUnsetKeyAndSecret();
 
   console.log('[TW] Instantiate API Object');
+
   const client = new TwitterApi({
     appKey: <string>appKey,
-    appSecret: <string>appSecret});
+    appSecret: <string>appSecret
+  });
+
   console.log('[TW] Generate Auth Link');
-  console.log('[TW] ' + JSON.stringify({appKey, appSecret, callbackUrl}));
+  console.log('[TW] ' + JSON.stringify({ appKey, appSecret, callbackUrl }));
+
   const authLink = await client.generateAuthLink(callbackUrl); // , { linkMode: 'authorize'}
 
   tempAuthDetails = {
@@ -178,11 +190,16 @@ export async function initializeAuthorization(callbackUrl: string, redirectUrl: 
   return authLink.url;
 }
 
-export async function completeLogin(oauthVerifier: string, oauthTokenFromCallback: string) {
+export async function completeLogin(
+  oauthVerifier: string,
+  oauthTokenFromCallback: string
+) {
   errorOnUnsetKeyAndSecret();
   console.assert(tempAuthDetails !== null);
 
-  console.log(`[TW] oauth_token_from_callback (${oauthTokenFromCallback}) === oauth_token ${tempAuthDetails?.oauthToken}`);
+  console.log(
+    `[TW] oauth_token_from_callback (${oauthTokenFromCallback}) === oauth_token ${tempAuthDetails?.oauthToken}`
+  );
   console.assert(oauthTokenFromCallback === tempAuthDetails?.oauthToken);
 
   console.log(`[TW] oauth_verifier (${oauthVerifier})`);
@@ -190,7 +207,8 @@ export async function completeLogin(oauthVerifier: string, oauthTokenFromCallbac
     appKey: <string>appKey,
     appSecret: <string>appSecret,
     accessToken: tempAuthDetails?.oauthToken,
-    accessSecret: tempAuthDetails?.oauthTokenSecret});
+    accessSecret: tempAuthDetails?.oauthTokenSecret
+  });
 
   const loginResult = await client.login(oauthVerifier);
   loggedInClients.set(loginResult.userId, loginResult.client);
@@ -202,7 +220,7 @@ export async function completeLogin(oauthVerifier: string, oauthTokenFromCallbac
       screenName: loginResult.screenName,
       userId: loginResult.userId
     }
-  }
+  };
 
   addOrUpdate(authDetails);
 
@@ -238,8 +256,10 @@ export async function createTweetWithImage(tweet: Tweet): Promise<boolean> {
   console.log(`[TW] Prepare Tweet ${tweet.id}`);
   const imageBuffer = dataUrlToBuffer(tweet.image);
 
-  const mediaId = await loggedInClient.v1.uploadMedia(imageBuffer, {type: 'png'});
-  await loggedInClient.v1.tweet(tweet.text, {media_ids: [mediaId]});
+  const mediaId = await loggedInClient.v1.uploadMedia(imageBuffer, {
+    type: 'png'
+  });
+  await loggedInClient.v1.tweet(tweet.text, { media_ids: [mediaId] });
   console.log(`[TW] Tweet sent ${tweet.id}`);
   return true;
 }
