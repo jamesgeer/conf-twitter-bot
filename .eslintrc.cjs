@@ -4,7 +4,8 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'jest',
-    'prettier'
+    'prettier',
+  	'plugin:node/recommended'
   ],
   extends: [
     'eslint:recommended',
@@ -18,8 +19,9 @@ module.exports = {
   },
   ignorePatterns: ["dist/**/*", "node_modules/**/*"],
   rules: {
-    'max-len': ['error', { 'code': 80 }],
+    'max-len': ['error', { 'code': 120 }],
     'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
+    'indent': ['error', "tab"],
     '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-module-boundary-types': [
