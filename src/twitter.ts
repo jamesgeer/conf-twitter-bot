@@ -45,7 +45,7 @@ export async function getTwitterDetails(userId: string): Promise<TwitterAccount 
 		return null;
 	}
 
-	const account = details.account;
+	const { account } = details;
 
 	if (!account.profileImageUrl) {
 		const client = new TwitterApi({
@@ -171,7 +171,7 @@ export async function initializeAuthorization(callbackUrl: string, redirectUrl: 
 	});
 
 	console.log('[TW] Generate Auth Link');
-	console.log('[TW] ' + JSON.stringify({ appKey, appSecret, callbackUrl }));
+	console.log(`[TW] ${JSON.stringify({ appKey, appSecret, callbackUrl })}`);
 
 	const authLink = await client.generateAuthLink(callbackUrl); // , { linkMode: 'authorize'}
 
@@ -214,7 +214,7 @@ export async function completeLogin(oauthVerifier: string, oauthTokenFromCallbac
 
 	addOrUpdate(authDetails);
 
-	console.log(`[TW] Login completed`);
+	console.log('[TW] Login completed');
 	return loginResult.client;
 }
 

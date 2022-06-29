@@ -1,5 +1,5 @@
-import { cancelExistingJob, doAt } from './do-on-date.js';
 import { readFileSync, writeFileSync } from 'fs';
+import { cancelExistingJob, doAt } from './do-on-date.js';
 import { fetchListOfPapersACM, fetchFullPaperDetails, isAcmUrl } from './scrapper-acm-dl.js';
 import { robustPath } from './util.js';
 import { Data, Paper, Proceeding, Tweet } from './data-types.js';
@@ -165,7 +165,7 @@ function getOrAddProceedings(url: string) {
 
 function hasProceeding(url: string) {
 	const data = loadData();
-	let proc = data.proceedings.find((val) => val.url === url);
+	const proc = data.proceedings.find((val) => val.url === url);
 	return proc !== undefined;
 }
 
@@ -173,7 +173,7 @@ let data: Data | null = null;
 
 export function loadDataAndScheduleTasks() {
 	const data = loadData();
-	const tweets = data.tweets;
+	const { tweets } = data;
 	if (tweets) {
 		for (const tweet of tweets) {
 			if (tweet) {
@@ -247,7 +247,7 @@ export function dataUrlToFile(dataUrl: string) {
 
 export function dataUrlToBuffer(dataUrl: string) {
 	if (dataUrl.indexOf('data:') !== 0) {
-		throw new Error('Data url does not start with `data:` ' + dataUrl.substring(0, 20) + '...');
+		throw new Error(`Data url does not start with \`data:\` ${dataUrl.substring(0, 20)}...`);
 	}
 
 	const data = dataUrl.split(',');

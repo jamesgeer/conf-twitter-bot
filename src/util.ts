@@ -1,6 +1,7 @@
 import { URL } from 'url';
 import { readFileSync, writeFileSync } from 'fs';
 import { Config, ConfigForUser } from './data-types.js';
+
 const __dirname = new URL('.', import.meta.url).pathname;
 
 export const robustPath = __dirname.includes('/dist')

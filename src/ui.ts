@@ -74,7 +74,7 @@ function readScheduleConfig(): SchedulingConfig | null {
 	};
 }
 
-let persistedSchedulingConfig: SchedulingConfigJson | undefined = undefined;
+let persistedSchedulingConfig: SchedulingConfigJson | undefined;
 
 async function persistScheduleConfig(config: SchedulingConfig) {
 	const newConfig = {
@@ -106,7 +106,7 @@ function updateSchedule(): void {
 	}
 	persistScheduleConfig(config);
 
-	let nextDate = config.nextDate;
+	let { nextDate } = config;
 	$('.tw-queue-item').each((_i, elem) => {
 		const nextDateWithTime = new Date(nextDate);
 		nextDate = afterNDays(nextDate, config.everyNDays);
@@ -338,7 +338,7 @@ function createTable(data: Paper[]): any {
 			{ title: 'Cites', data: (d) => d.citations || '' },
 			{ title: '#Down', data: (d) => d.downloads || '' },
 		],
-		data: data,
+		data,
 	});
 }
 
@@ -402,14 +402,14 @@ async function saveAndApplyConfig() {
 
 function tweetLength() {
 	const maxTweetLength = 280;
-	let length = (<string>$('#tweet').val()).length;
+	let { length } = <string>$('#tweet').val();
 	$('#tweet-length').text(`${length} / ${maxTweetLength}`);
 
 	length = (<string>$('#tweet-tpl').val()).length;
 	$('#tweet-tpl-length').text(`${length} / ${maxTweetLength}`);
 }
 
-$(async function () {
+$(async () => {
 	$('#load-btn').click(loadPapers);
 	$('#save-config-btn').click(saveAndApplyConfig);
 	$('#tweet').keyup(tweetLength);

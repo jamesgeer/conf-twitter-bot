@@ -14,6 +14,7 @@ module.exports = {
 		'@typescript-eslint',
 		'jest',
 		'prettier',
+		'import'
 	],
 	extends: [
 		'eslint:recommended',
@@ -23,15 +24,16 @@ module.exports = {
 		'plugin:jest/recommended',
 		'prettier',
 		'airbnb-base',
-		'airbnb-typescript/base'
+		'airbnb-typescript/base',
 	],
 	ignorePatterns: ['dist/**/*', 'node_modules/**/*'],
 	rules: {
 		'max-len': ['error', { 'code': 120 }],
 		'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
 		'@typescript-eslint/indent': ['error', 'tab'],
-		'no-tabs': ["error", { allowIndentationTabs: true }],
-		'no-console': "off",
+		'no-tabs': ['error', { allowIndentationTabs: true }],
+		'no-console': 'off',
+		'node/no-missing-import': 'off',
 		'@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
 		'@typescript-eslint/no-explicit-any': 'off',
 		'@typescript-eslint/explicit-module-boundary-types': [

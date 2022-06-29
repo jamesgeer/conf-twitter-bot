@@ -37,7 +37,7 @@ export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
 	const html = await fetchHtmlOrUsedCached(<string>paper.url);
 
 	const dom = new JSDOM(html);
-	const document = dom.window.document;
+	const { document } = dom.window;
 	const abstract = document.querySelector('.abstractInFull')?.innerHTML;
 	paper.fullAbstract = abstract;
 	return paper;
@@ -47,7 +47,7 @@ export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 	const html = await fetchHtmlOrUsedCached(url);
 
 	const dom = new JSDOM(html);
-	const document = dom.window.document;
+	const { document } = dom.window;
 	const paperTypes = document.querySelectorAll('.issue-heading');
 	const paperTitleHTags = document.querySelectorAll('.issue-item__title');
 	const authorContainers = document.querySelectorAll('[aria-label=authors]');
@@ -73,7 +73,7 @@ export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 					shortAbstracts,
 					citations,
 					downloads
-				)
+				),
 			);
 		} catch (e) {
 			// ignore entry
@@ -109,9 +109,9 @@ function extractPaper(
 	return {
 		type: <string>paperTypes[i].textContent,
 		title: <string>paperTitleHTags[i].textContent,
-		url: 'https://dl.acm.org' + href,
+		url: `https://dl.acm.org${href}`,
 		doi: <string>href?.replace('/doi/', ''),
-		authors: authors,
+		authors,
 		monthYear: <string>monthYear,
 		pages: <string>pages,
 		shortAbstract: shortAbstracts[i].innerHTML.trim(),

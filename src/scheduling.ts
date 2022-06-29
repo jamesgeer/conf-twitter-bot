@@ -73,9 +73,11 @@ export function sortSchedule(tweets: (Tweet | null)[]) {
 	tweets.sort((a, b) => {
 		if (a === null && b === null) {
 			return 0;
-		} else if (a === null) {
+		}
+		if (a === null) {
 			return -1;
-		} else if (b === null) {
+		}
+		if (b === null) {
 			return 1;
 		}
 

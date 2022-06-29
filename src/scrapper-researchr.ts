@@ -8,7 +8,7 @@ export async function fetchListOfPapersResearchr(url: string): Promise<Paper[]> 
 	const html = await fetchHtmlOrUsedCached(url);
 
 	const dom = new JSDOM(html);
-	const document = dom.window.document;
+	const { document } = dom.window;
 
 	const paperTypes = document.querySelectorAll('.session-table tbody .event-type');
 	const paperTitles = document.querySelectorAll(".session-table tbody td:nth-child(4) a[href='#']");
@@ -33,9 +33,9 @@ export async function fetchListOfPapersResearchr(url: string): Promise<Paper[]> 
 			}
 		}
 
-		let doi: string | undefined = undefined;
-		let preprint: string | undefined = undefined;
-		let detailLink: string | undefined = undefined;
+		let doi: string | undefined;
+		let preprint: string | undefined;
+		let detailLink: string | undefined;
 
 		for (const link of commonContainer.querySelectorAll('a.publication-link')) {
 			const url = link.getAttribute('href');

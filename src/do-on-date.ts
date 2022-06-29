@@ -1,16 +1,18 @@
 import { scheduleTweeting } from 'data';
 
 let schedule: (Job | undefined)[] = [];
-let removed: number = 0;
+let removed = 0;
 const maxRemovals = 10;
 
 class Job {
 	public completed: boolean;
 
 	public readonly date: Date;
+
 	public readonly id: number;
 
 	private readonly action: () => void;
+
 	private readonly timeout: NodeJS.Timeout | null;
 
 	constructor(date: Date, action: () => void, timeout: NodeJS.Timeout | null, id: number) {

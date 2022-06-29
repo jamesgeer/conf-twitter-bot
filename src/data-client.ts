@@ -12,9 +12,8 @@ export async function postTweet(tweet: Tweet): Promise<Tweet | null> {
 	const result = await response.json();
 	if (result.ok) {
 		return result.tweet;
-	} else {
-		return null;
 	}
+	return null;
 }
 
 export async function deleteTweetFromQueue(id: number): Promise<void> {
@@ -28,7 +27,7 @@ export async function getPaperById(id: number | undefined): Promise<Paper | null
 	}
 
 	const response = await fetch(`/paper/${id}`);
-	return await response.json();
+	return response.json();
 }
 
 export async function loadUrls(urls: string): Promise<Paper[]> {
@@ -47,7 +46,7 @@ export async function loadUrls(urls: string): Promise<Paper[]> {
 export async function loadQueuedTweets(): Promise<(Tweet | null)[]> {
 	const response = await fetch('/load-queue');
 	const data = await response.json();
-	const tweets: (Tweet | null)[] = data.tweets;
+	const { tweets } = data;
 
 	if (tweets) {
 		sortSchedule(tweets);
@@ -58,7 +57,7 @@ export async function loadQueuedTweets(): Promise<(Tweet | null)[]> {
 
 export async function getConfiguration(): Promise<ConfigForUser> {
 	const response = await fetch('/configuration');
-	return await response.json();
+	return response.json();
 }
 
 export async function persistConfig(config: ConfigForUser) {

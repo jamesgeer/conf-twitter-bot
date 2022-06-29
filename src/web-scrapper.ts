@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { fetch, CookieJar } from 'node-fetch-cookies';
-import { robustPath } from './util.js';
+import { robustPath } from './util';
 
 export function hashToString(str: string): string {
 	return createHash('sha256').update(str).digest('hex');
@@ -12,13 +12,13 @@ export async function fetchHtmlOrUsedCached(url: string): Promise<string | Buffe
 		return '';
 	}
 
-	const hashedName = robustPath('../cache/') + hashToString(url) + '.html';
+	const hashedName = `${robustPath('../cache/') + hashToString(url)}.html`;
 
 	if (existsSync(hashedName)) {
 		return readFileSync(hashedName);
 	}
 
-	console.log('Fetch ' + url);
+	console.log(`Fetch ${url}`);
 	const cookieJar = new CookieJar();
 	const response = await fetch(cookieJar, url);
 	const html = await response.text();
