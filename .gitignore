@@ -284,3 +284,5 @@ $RECYCLE.BIN/
 *.lnk
 
 twitter-accounts.json
+
+src/config.json
