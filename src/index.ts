@@ -3,9 +3,9 @@ import Koa from 'koa';
 import koaBody from 'koa-body';
 import Router from 'koa-router';
 import koaSession from 'koa-session';
-import { processTemplate } from './templates.js';
-import { getConfiguration, setConfiguration, robustPath } from './util.js';
-import { Tweet, Config, ConfigForUser } from './data-types.js';
+import { processTemplate } from './templates';
+import { getConfiguration, setConfiguration, robustPath } from './util';
+import { Tweet, Config, ConfigForUser } from './data-types';
 import {
 	deleteTweetById,
 	getQueuedTweets,
@@ -13,14 +13,14 @@ import {
 	loadDataAndScheduleTasks,
 	loadFullDetails,
 	saveTweet,
-} from './data.js';
+} from './data';
 import {
 	completeLogin,
 	getKnownTwitterAccounts,
 	getTwitterDetails,
 	initializeAuthorization,
 	initTwitterKeys,
-} from './twitter.js';
+} from './twitter';
 import 'dotenv/config';
 
 const port = process.env.PORT || 33333;
@@ -75,7 +75,7 @@ async function getIndex(ctx) {
 
 router.get('/', async (ctx) => {
 	console.log('get /');
-	console.log('password: ' + appPassword);
+	console.log(`password: ${appPassword}`);
 	if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
 		ctx.body = processTemplate('login.html');
 	} else {
@@ -246,7 +246,7 @@ router.get('/twitter-authorization-callback', async (ctx) => {
 // });
 
 router.get(/^\/\w+(-\w+)*\.js(\.map)?$/, async (ctx) => {
-	const fileName = robustPath('../dist' + ctx.url);
+	const fileName = robustPath(`../dist${ctx.url}`);
 	if (existsSync(fileName)) {
 		ctx.status = 200;
 		ctx.type = 'js';
