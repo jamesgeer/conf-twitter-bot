@@ -14,7 +14,6 @@ module.exports = {
 		'@typescript-eslint',
 		'jest',
 		'prettier',
-		'import'
 	],
 	extends: [
 		'eslint:recommended',
@@ -28,17 +27,16 @@ module.exports = {
 	],
 	ignorePatterns: ['dist/**/*', 'node_modules/**/*'],
 	rules: {
-		'max-len': ['error', { 'code': 120 }],
-		'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
-		'@typescript-eslint/indent': ['error', 'tab'],
-		'no-tabs': ['error', { allowIndentationTabs: true }],
 		'no-console': 'off',
 		'node/no-missing-import': 'off',
+		'max-len': ['error', { 'code': 120 }],
+		'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
+		'no-tabs': ['error', { allowIndentationTabs: true }],
+		'@typescript-eslint/indent': ['error', 'tab'],
 		'@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
 		'@typescript-eslint/no-explicit-any': 'off',
 		'@typescript-eslint/explicit-module-boundary-types': [
-			'error',
-			{ allowArgumentsExplicitlyTypedAsAny: true },
+			'error', { allowArgumentsExplicitlyTypedAsAny: true },
 		],
 		'jest/no-conditional-expect': 'off',
 		'prettier/prettier': 2,
