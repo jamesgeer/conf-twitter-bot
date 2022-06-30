@@ -38,8 +38,7 @@ export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
 
 	const dom = new JSDOM(html);
 	const { document } = dom.window;
-	const abstract = document.querySelector('.abstractInFull')?.innerHTML;
-	paper.fullAbstract = abstract;
+	paper.fullAbstract = document.querySelector('.abstractInFull')?.innerHTML;
 	return paper;
 }
 

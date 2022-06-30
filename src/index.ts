@@ -5,7 +5,7 @@ import Router from 'koa-router';
 import koaSession from 'koa-session';
 import processTemplate from './templates';
 import { getConfiguration, setConfiguration, robustPath } from './util';
-import { Tweet, ConfigForUser } from './data-types';
+import { ConfigForUser } from './data-types';
 import {
 	deleteTweetById,
 	getQueuedTweets,
@@ -153,7 +153,7 @@ router.post('/queue-tweet', koaBody(), async (ctx) => {
 		return;
 	}
 
-	const tweet = <Tweet>await ctx.request.body;
+	const tweet = await ctx.request.body;
 	tweet.userId = ctx.session?.userId;
 	saveTweet(tweet);
 	ctx.type = 'json';
@@ -228,6 +228,7 @@ router.get('/twitter-login', async (ctx) => {
 });
 
 router.get('/twitter-authorization-callback', async (ctx) => {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const { oauth_token, oauth_verifier } = ctx.query;
 	completeLogin(<string>oauth_verifier, <string>oauth_token);
 	ctx.status = 302;

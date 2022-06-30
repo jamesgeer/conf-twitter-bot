@@ -117,6 +117,7 @@ function addOrUpdate(authDetails: TwitterAuthDetails) {
 	const data = loadTwitterAccounts();
 	let update = false;
 
+	// eslint-disable-next-line guard-for-in
 	for (const i in data.accounts) {
 		const a = data.accounts[i];
 		if (a.account.userId === authDetails.account.userId) {
