@@ -10,7 +10,7 @@ import { JSDOM } from 'jsdom';
 import { Paper } from './data-types.js';
 import { fetchHtmlOrUsedCached } from './web-scrapper.js';
 
-export function isAcmUrl(url: string) {
+export function isAcmUrl(url: string): boolean {
 	return url.includes('/dl.acm.org/');
 }
 
@@ -59,7 +59,7 @@ export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 	const numPapers = paperTypes.length;
 	const papers: Paper[] = [];
 
-	console.assert(numPapers == paperTitleHTags.length && numPapers == authorContainers.length);
+	console.assert(numPapers === paperTitleHTags.length && numPapers === authorContainers.length);
 
 	for (let i = 0; i < numPapers; i += 1) {
 		try {

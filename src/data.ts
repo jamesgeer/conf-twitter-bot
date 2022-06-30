@@ -38,9 +38,11 @@ export async function loadFullDetails(paperId: number): Promise<Paper> {
 	return paper;
 }
 
+// slow, requires investigation
 export async function loadAll(urls: string[]): Promise<Paper[]> {
 	const allPapers: Paper[] = [];
 	for (const url of urls) {
+		// eslint-disable-next-line no-await-in-loop
 		const papers = await getListOfPapers(url);
 		allPapers.push(...papers);
 	}
@@ -84,19 +86,19 @@ export function getQueuedTweet(id: number): Tweet | null {
 	if (!data.tweets) {
 		return null;
 	}
-	if (typeof id !== 'number' || id < 0 || id >= data.tweets.length) {
+	if (id < 0 || id >= data.tweets.length) {
 		return null;
 	}
 
 	return data.tweets[id];
 }
 
-export function saveTweet(tweet: Tweet) {
+export function saveTweet(tweet: Tweet): void {
 	const data = loadData();
 	if (typeof tweet.id === 'number') {
 		const oldTweet = data.tweets[tweet.id];
 		data.tweets[tweet.id] = tweet;
-		console.assert(oldTweet !== null, "Tweet has id, and it's expected to be !=null");
+		console.assert(oldTweet !== null, 'Tweet has id, and is expected to be !=null');
 		console.assert(tweet.id === oldTweet?.id, 'Tweet id is expected to match');
 		console.assert(tweet.userId === oldTweet?.userId, 'Tweet userId is expected to match');
 		tweet.sent = oldTweet?.sent;
@@ -120,11 +122,9 @@ export function saveTweet(tweet: Tweet) {
 	persistData();
 }
 
-export function deleteTweetById(id: number) {
+export function deleteTweetById(id: number): void {
 	const data = loadData();
-	if (typeof id === 'number') {
-		data.tweets[id] = null;
-	}
+	data.tweets[id] = null;
 	cancelExistingJob(id);
 }
 
@@ -163,6 +163,7 @@ function getOrAddProceedings(url: string) {
 	return proc;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function hasProceeding(url: string) {
 	const data = loadData();
 	const proc = data.proceedings.find((val) => val.url === url);
@@ -171,7 +172,8 @@ function hasProceeding(url: string) {
 
 let data: Data | null = null;
 
-export function loadDataAndScheduleTasks() {
+// void is a guess
+export function loadDataAndScheduleTasks(): void {
 	const data = loadData();
 	const { tweets } = data;
 	if (tweets) {
@@ -224,10 +226,11 @@ function fixupDataAfterLoadIfNeeded(items: ({ id?: number } | null)[]): ({ id?: 
 	}
 
 	// check consistency
+	// eslint-disable-next-line guard-for-in
 	for (const i in result) {
 		const item = result[i];
 		if (item && item.id !== undefined && item.id !== null) {
-			console.assert(item.id === parseInt(i));
+			console.assert(item.id === parseInt(i, 10));
 		}
 	}
 
@@ -238,14 +241,14 @@ function persistData() {
 	writeFileSync(robustPath('../data.json'), JSON.stringify(data));
 }
 
-export function dataUrlToFile(dataUrl: string) {
+export function dataUrlToFile(dataUrl: string): string {
 	const buf = dataUrlToBuffer(dataUrl);
 	const fileName = robustPath('../cache/image.png');
 	writeFileSync(fileName, buf);
 	return fileName;
 }
 
-export function dataUrlToBuffer(dataUrl: string) {
+export function dataUrlToBuffer(dataUrl: string): Buffer {
 	if (dataUrl.indexOf('data:') !== 0) {
 		throw new Error(`Data url does not start with \`data:\` ${dataUrl.substring(0, 20)}...`);
 	}

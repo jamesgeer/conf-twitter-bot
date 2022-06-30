@@ -2,11 +2,11 @@ import { URL } from 'url';
 import { readFileSync, writeFileSync } from 'fs';
 import { Config, ConfigForUser } from './data-types.js';
 
-const __dirname = new URL('.', import.meta.url).pathname;
+const dirName = new URL('.', import.meta.url).pathname;
 
-export const robustPath = __dirname.includes('/dist')
-	? (path) => `${__dirname}/../src/${path}`
-	: (path) => `${__dirname}/${path}`;
+export const robustPath = dirName.includes('/dist')
+	? (path) => `${dirName}/../src/${path}`
+	: (path) => `${dirName}/${path}`;
 
 let configuration: Config | null = null;
 
@@ -14,7 +14,9 @@ export function getConfiguration(userId: string): ConfigForUser {
 	if (configuration === null) {
 		try {
 			configuration = JSON.parse(readFileSync(robustPath('config.json')).toString());
-		} catch (e) {}
+		} catch (e) {
+			console.log(e);
+		}
 	}
 	if (configuration === null) {
 		configuration = {};
@@ -54,7 +56,7 @@ width: 650px;
 	return userConfig;
 }
 
-export function setConfiguration(userId: string, config: ConfigForUser) {
+export function setConfiguration(userId: string, config: ConfigForUser): void {
 	if (configuration === null) {
 		configuration = {};
 	}

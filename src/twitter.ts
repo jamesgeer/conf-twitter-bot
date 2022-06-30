@@ -6,10 +6,6 @@ import { robustPath } from './util.js';
 
 const dataFilePath = robustPath('../twitter-accounts.json');
 
-interface TwitterAccounts {
-	accounts: TwitterAuthDetails[];
-}
-
 interface TwitterAccount {
 	screenName: string;
 	userId: string;
@@ -22,6 +18,10 @@ interface TwitterAuthDetails {
 	accessToken?: string;
 	accessSecret?: string;
 	account: TwitterAccount;
+}
+
+interface TwitterAccounts {
+	accounts: TwitterAuthDetails[];
 }
 
 /** Authentication details, used during the login/authentication process. */
@@ -70,6 +70,7 @@ export async function getKnownTwitterAccounts(): Promise<TwitterAccount[]> {
 					appSecret: <string>appSecret,
 				});
 			}
+			// eslint-disable-next-line no-await-in-loop
 			a.profileImageUrl = await getProfileImageUrl(client, a.userId);
 		}
 	}
@@ -160,6 +161,7 @@ function errorOnUnsetKeyAndSecret() {
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function initializeAuthorization(callbackUrl: string, redirectUrl: string): Promise<string> {
 	errorOnUnsetKeyAndSecret();
 
@@ -183,7 +185,7 @@ export async function initializeAuthorization(callbackUrl: string, redirectUrl: 
 	return authLink.url;
 }
 
-export async function completeLogin(oauthVerifier: string, oauthTokenFromCallback: string) {
+export async function completeLogin(oauthVerifier: string, oauthTokenFromCallback: string): Promise<TwitterApi> {
 	errorOnUnsetKeyAndSecret();
 	console.assert(tempAuthDetails !== null);
 

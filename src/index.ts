@@ -3,9 +3,9 @@ import Koa from 'koa';
 import koaBody from 'koa-body';
 import Router from 'koa-router';
 import koaSession from 'koa-session';
-import { processTemplate } from './templates';
+import processTemplate from './templates';
 import { getConfiguration, setConfiguration, robustPath } from './util';
-import { Tweet, Config, ConfigForUser } from './data-types';
+import { Tweet, ConfigForUser } from './data-types';
 import {
 	deleteTweetById,
 	getQueuedTweets,
@@ -32,16 +32,20 @@ const serverUrl = 'APP_BASE_URL' in process.env ? process.env.APP_BASE_URL : `ht
 
 const SESSION_CONFIG = {
 	key: 'ConfTwBot',
-	/** (number || 'session') maxAge in ms (default is 1 days) */
-	/** 'session' will result in a cookie that expires when session/browser is closed */
-	/** Warning: If a session cookie is stolen, this cookie will never expire */
+	/**
+	 * (number || 'session') maxAge in ms (default is 1 days)
+	 * 'session' will result in a cookie that expires when session/browser is closed
+	 * Warning: If a session cookie is stolen, this cookie will never expire
+	 * rolling: (boolean) Force a session identifier cookie to be set on every response.
+	 * The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false)
+	 */
 	maxAge: 86400000,
 	autoCommit: true /** (boolean) automatically commit headers (default true) */,
 	overwrite: true /** (boolean) can overwrite or not (default true) */,
 	httpOnly: true /** (boolean) httpOnly or not (default true) */,
 	signed: true /** (boolean) signed or not (default true) */,
-	rolling:
-		false /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */,
+	// eslint-disable-next-line max-len
+	rolling: false,
 	renew: true,
 	secure: !DEV,
 	sameSite: true,
@@ -133,6 +137,7 @@ router.post('/load-urls', koaBody(), async (ctx) => {
 	const data = await ctx.request.body;
 	const urls = data.urls.trim().split('\n');
 
+	// eslint-disable-next-line guard-for-in
 	for (const i in urls) {
 		urls[i] = urls[i].trim();
 	}

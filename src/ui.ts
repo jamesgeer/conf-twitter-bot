@@ -7,15 +7,7 @@ import {
 	persistConfig,
 	deleteTweetFromQueue,
 } from './data-client.js';
-import {
-	Config,
-	Paper,
-	PaperForTemplate,
-	Tweet,
-	SchedulingConfig,
-	SchedulingConfigJson,
-	ConfigForUser,
-} from './data-types.js';
+import { Paper, PaperForTemplate, Tweet, SchedulingConfig, SchedulingConfigJson, ConfigForUser } from './data-types.js';
 import {
 	afterNDays,
 	formatDateOnly,
@@ -129,6 +121,9 @@ function updateSchedule(): void {
 	});
 }
 
+let paperTable: any = null;
+let selectedPaper: Paper | null = null;
+
 function paperDetails(d: Paper): JQuery<HTMLElement> {
 	selectedPaper = d;
 	if (!d.fullAbstract) {
@@ -168,9 +163,6 @@ async function getFullAbstract(d: Paper) {
 		$(`#paper-${d.id} .p-abstract`).html(paper.fullAbstract);
 	}
 }
-
-let paperTable: any = null;
-let selectedPaper: Paper | null = null;
 
 function showInQueue(tweet: Tweet): JQuery<HTMLElement> {
 	let scheduledTime: string;

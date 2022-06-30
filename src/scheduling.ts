@@ -68,7 +68,7 @@ export function formatMinutesAsHHmm(minutes: number): string {
 	return `${hoursStr}:${minutesStr}`;
 }
 
-export function sortSchedule(tweets: (Tweet | null)[]) {
+export function sortSchedule(tweets: (Tweet | null)[]): void {
 	// need to enforce order by schedule
 	tweets.sort((a, b) => {
 		if (a === null && b === null) {

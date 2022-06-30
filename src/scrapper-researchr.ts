@@ -4,7 +4,7 @@ import { fetchHtmlOrUsedCached } from './web-scrapper.js';
 
 const orgTypes = ['Day opening', 'Meeting', 'Day closing', 'Coffee break', 'Lunch', 'Dinner'];
 
-export async function fetchListOfPapersResearchr(url: string): Promise<Paper[]> {
+export default async function fetchListOfPapersResearchr(url: string): Promise<Paper[]> {
 	const html = await fetchHtmlOrUsedCached(url);
 
 	const dom = new JSDOM(html);
@@ -50,7 +50,10 @@ export async function fetchListOfPapersResearchr(url: string): Promise<Paper[]> 
 
 		let monthYear;
 		const matches = document.querySelector('.place')?.textContent?.match(/(\w+\s\d{4})/);
+		console.log(matches);
 		if (matches && matches[0]) {
+			console.log(matches[0]);
+			// eslint-disable-next-line prefer-destructuring
 			monthYear = matches[0];
 		} else {
 			monthYear = undefined;
