@@ -1,5 +1,5 @@
 import { sortSchedule } from './scheduling.js';
-import { Paper, Tweet, Config, ConfigForUser } from './data-types.js';
+import { Paper, Tweet, ConfigForUser } from './data-types.js';
 
 export async function postTweet(tweet: Tweet): Promise<Tweet | null> {
 	const response = await fetch('/queue-tweet', {
@@ -60,7 +60,8 @@ export async function getConfiguration(): Promise<ConfigForUser> {
 	return response.json();
 }
 
-export async function persistConfig(config: ConfigForUser) {
+// need an interface for this
+export async function persistConfig(config: ConfigForUser): Promise<any> {
 	const response = await fetch('/configuration', {
 		method: 'POST',
 		headers: {
@@ -68,5 +69,6 @@ export async function persistConfig(config: ConfigForUser) {
 		},
 		body: JSON.stringify(config),
 	});
+	console.log(response.json());
 	await response.json();
 }

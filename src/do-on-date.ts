@@ -75,7 +75,7 @@ export function doAt(date: Date, action: () => Promise<void>, id: number): Job {
 	if (inNMilliseconds > 0) {
 		timeout = setTimeout(async () => {
 			console.log(
-				`[DOD] Starting execution of scheduled action for tweet ${id}. Was scheduled for ${date.toJSON()}. It's now ${new Date().toISOString()}.`
+				`[DOD] Starting execution of scheduled action for tweet ${id}. Was scheduled for ${date.toJSON()}. It's now ${new Date().toISOString()}.`,
 			);
 			await action();
 			job.completed = true;

@@ -72,7 +72,7 @@ export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 					paperTitleHTags,
 					shortAbstracts,
 					citations,
-					downloads
+					downloads,
 				),
 			);
 		} catch (e) {
@@ -91,7 +91,7 @@ function extractPaper(
 	paperTitleHTags: NodeListOf<Element>,
 	shortAbstracts: NodeListOf<Element>,
 	citations: NodeListOf<Element>,
-	downloads: NodeListOf<Element>
+	downloads: NodeListOf<Element>,
 ): Paper {
 	const authors: string[] = [];
 	for (const author of authorContainers[i].querySelectorAll('li a')) {

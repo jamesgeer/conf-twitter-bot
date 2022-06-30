@@ -188,7 +188,7 @@ export async function completeLogin(oauthVerifier: string, oauthTokenFromCallbac
 	console.assert(tempAuthDetails !== null);
 
 	console.log(
-		`[TW] oauth_token_from_callback (${oauthTokenFromCallback}) === oauth_token ${tempAuthDetails?.oauthToken}`
+		`[TW] oauth_token_from_callback (${oauthTokenFromCallback}) === oauth_token ${tempAuthDetails?.oauthToken}`,
 	);
 	console.assert(oauthTokenFromCallback === tempAuthDetails?.oauthToken);
 

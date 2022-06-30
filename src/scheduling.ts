@@ -47,24 +47,24 @@ export function formatDateStrWithTime(dateStr: string): string {
 }
 
 export function formatDateWithTime(date: Date): string {
-	const month = new String(date.getMonth() + 1).padStart(2, '0');
-	const day = new String(date.getDate()).padStart(2, '0');
-	const hours = new String(date.getHours()).padStart(2, '0');
-	const minutes = new String(date.getMinutes()).padStart(2, '0');
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const day = String(date.getDate()).padStart(2, '0');
+	const hours = String(date.getHours()).padStart(2, '0');
+	const minutes = String(date.getMinutes()).padStart(2, '0');
 	return `${date.getFullYear()}-${month}-${day} ${hours}:${minutes}`;
 }
 
 export function formatDateOnly(date: Date): string {
-	const month = new String(date.getMonth() + 1).padStart(2, '0');
-	const day = new String(date.getDate()).padStart(2, '0');
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const day = String(date.getDate()).padStart(2, '0');
 	return `${date.getFullYear()}-${month}-${day}`;
 }
 
 export function formatMinutesAsHHmm(minutes: number): string {
 	const hours = Math.floor(minutes / 60);
 	const mm = minutes % 60;
-	const hoursStr = new String(hours).padStart(2, '0');
-	const minutesStr = new String(mm).padStart(2, '0');
+	const hoursStr = String(hours).padStart(2, '0');
+	const minutesStr = String(mm).padStart(2, '0');
 	return `${hoursStr}:${minutesStr}`;
 }
 

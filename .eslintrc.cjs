@@ -32,6 +32,14 @@ module.exports = {
 		'max-len': ['error', { 'code': 120 }],
 		'quotes': ['error', 'single', { 'allowTemplateLiterals': true }],
 		'no-tabs': ['error', { allowIndentationTabs: true }],
+		'func-names': 'off',
+		'no-param-reassign': 'off',
+		'object-curly-newline': 'off',
+		'no-use-before-define': ['error', {"functions": false, "classes": false}],
+		'@typescript-eslint/no-use-before-define': ['error', {"functions": false, "classes": false}],
+		'operator-linebreak': 'off',
+		'no-shadow': 'off',
+		'@typescript-eslint/no-shadow': ['error'],
 		'@typescript-eslint/indent': ['error', 'tab'],
 		'@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
 		'@typescript-eslint/no-explicit-any': 'off',
@@ -39,6 +47,6 @@ module.exports = {
 			'error', { allowArgumentsExplicitlyTypedAsAny: true },
 		],
 		'jest/no-conditional-expect': 'off',
-		'prettier/prettier': 2,
+		'prettier/prettier': ['error', { singleQuote: true }]
 	},
 };
