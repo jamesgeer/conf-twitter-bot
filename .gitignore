@@ -282,3 +282,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+twitter-accounts.json
+
+src/config.json
