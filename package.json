@@ -62,7 +62,7 @@
     "compile": "tsc && mkdir -p cache",
     "format": "prettier --config .prettierrc '{src,tests,resources}/**/*.{ts,js}' --write",
     "verify": "npm run lint",
-    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "npx eslint . --fix --ext .js,.jsx,.ts,.tsx",
     "update": "git pull && npm install . && pm2 restart 0",
     "watch": "tsc -w",
     "test": "jest"

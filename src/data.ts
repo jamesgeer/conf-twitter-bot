@@ -23,7 +23,7 @@ export function scheduleTweeting(tweet: Tweet): boolean {
 			const created = await createTweetWithImage(tweet);
 			console.log(`Sending tweet ${tweet.id} ${created ? 'succeeded' : 'failed'}`);
 		},
-		tweet.id
+		tweet.id,
 	);
 
 	return true;

@@ -81,13 +81,13 @@ export interface SchedulingConfigJson {
 	latestTime: number;
 }
 
-export interface Config {
-	[key: string]: ConfigForUser;
-}
-
 export interface ConfigForUser {
 	tweetTpl: string;
 	pictureTpl: string;
 	pictureStyle: string;
 	scheduleConfig?: SchedulingConfigJson;
+}
+
+export interface Config {
+	[key: string]: ConfigForUser;
 }
