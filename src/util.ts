@@ -5,12 +5,8 @@ import { Config, ConfigForUser } from './data-types.js';
 const __dirname = new URL('.', import.meta.url).pathname;
 
 export const robustPath = __dirname.includes('/dist')
-	? function (path) {
-			return `${__dirname}/../src/${path}`;
-	  }
-	: function (path) {
-			return `${__dirname}/${path}`;
-	  };
+	? (path) => `${__dirname}/../src/${path}`
+	: (path) => `${__dirname}/${path}`;
 
 let configuration: Config | null = null;
 
