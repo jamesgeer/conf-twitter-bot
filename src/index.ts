@@ -44,7 +44,6 @@ const SESSION_CONFIG = {
 	overwrite: true /** (boolean) can overwrite or not (default true) */,
 	httpOnly: true /** (boolean) httpOnly or not (default true) */,
 	signed: true /** (boolean) signed or not (default true) */,
-	// eslint-disable-next-line max-len
 	rolling: false,
 	renew: true,
 	secure: !DEV,

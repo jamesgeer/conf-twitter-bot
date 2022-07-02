@@ -1,0 +1,16 @@
+name: CI - Node.js
+
+on: pull_request
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Packages
+        run: npm install
+
+      - name: Lint Source Files
+        run: npx eslint . --ext .js,.jsx,.ts,.tsx
