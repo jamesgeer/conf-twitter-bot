@@ -1,7 +1,7 @@
 {
-  "name": "conf-twitter-bot",
+  "name": "conf-twitter-bot-server",
   "version": "0.0.1",
-  "description": "CS Conference Twitter Bot",
+  "description": "CS Conference Twitter Bot Server",
   "author": {
     "name": "Stefan Marr",
     "email": "git@stefan-marr.de"
