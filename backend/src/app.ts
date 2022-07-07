@@ -1,12 +1,9 @@
 import Koa from 'koa';
-import Router from '@koa/router';
 import BodyParser from 'koa-bodyparser';
 import Logger from 'koa-logger';
 import cors from 'koa-cors';
-import koaBody from 'koa-body';
-import HttpStatus from 'http-status';
 import koaSession from 'koa-session';
-import indexRoute from './routes';
+import router from './routes';
 
 const PORT = process.env.PORT || 33333;
 
@@ -31,7 +28,7 @@ const SESSION_CONFIG = {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-const app = new Koa();
+export const app = new Koa();
 
 app.keys = ['Session Key Secret 5346fdg434'];
 app.proxy = true;
@@ -50,40 +47,6 @@ app.use(cors({ origin: '*' }));
 app.use(BodyParser({ enableTypes: ['json'] }));
 app.use(Logger());
 app.use(cors());
-
-const router = new Router();
-router.get('/', async (ctx) => {
-	console.log('get /');
-	if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
-		ctx.body = { loggedIn: false };
-	} else {
-		ctx.body = { loggedIn: true };
-	}
-});
-
-router.post('/', koaBody(), async (ctx) => {
-	console.log('post /');
-	console.log(ctx.request.body);
-
-	const { password } = JSON.parse(ctx.request.body);
-
-	if (ctx.request.body && password) {
-		if (password === 'appPassword') {
-			console.log('valid password');
-			if (ctx.session) {
-				ctx.session.isLoggedIn = true;
-				ctx.session.save();
-				ctx.session.manuallyCommit();
-
-				ctx.body = { message: 'Login successful' };
-				ctx.status = HttpStatus.OK;
-				return;
-			}
-		}
-	}
-
-	ctx.body = { error: 'Invalid login' };
-});
 
 app.use(router.routes());
 app.use(router.allowedMethods());
