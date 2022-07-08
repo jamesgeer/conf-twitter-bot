@@ -15,9 +15,10 @@ router.get('/', async (ctx) => {
 
 router.post('/', koaBody(), async (ctx) => {
 	console.log('post /');
+	console.log(ctx.request);
 	console.log(ctx.request.body);
 
-	const { password } = JSON.parse(ctx.request.body);
+	const { password } = ctx.request.body;
 
 	if (ctx.request.body && password) {
 		if (password === 'appPassword') {
@@ -29,6 +30,7 @@ router.post('/', koaBody(), async (ctx) => {
 
 				ctx.body = { message: 'Login successful' };
 				ctx.status = HttpStatus.OK;
+				console.log('end end end');
 				return;
 			}
 		}

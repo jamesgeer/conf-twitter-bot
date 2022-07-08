@@ -1,7 +1,6 @@
 import Koa from 'koa';
-import BodyParser from 'koa-bodyparser';
 import Logger from 'koa-logger';
-import cors from 'koa-cors';
+import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import router from './routes';
 
@@ -44,9 +43,7 @@ app.use(async (ctx, next) => {
 });
 
 app.use(cors({ origin: '*' }));
-app.use(BodyParser({ enableTypes: ['json'] }));
 app.use(Logger());
-app.use(cors());
 
 app.use(router.routes());
 app.use(router.allowedMethods());
