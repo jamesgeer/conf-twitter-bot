@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import axios, { AxiosError } from 'axios';
 
+/**
 export default class Book extends Component {
 	// @ts-ignore
 	constructor(props) {
@@ -39,7 +40,6 @@ export default class Book extends Component {
 		return (
 			<div>
 				<h1>Books</h1>
-				{/* @ts-ignore */}
 				{this.state.books.map((value, index) => {
 					return <h4 key={index}>{value}</h4>;
 				})}
@@ -47,3 +47,14 @@ export default class Book extends Component {
 		);
 	}
 }
+*/
+
+const Index = () => {
+	return (
+		<div>
+			<h1>Index</h1>
+		</div>
+	);
+};
+
+export default Index;
