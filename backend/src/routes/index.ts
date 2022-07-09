@@ -15,9 +15,21 @@ router.get('/', async (ctx) => {
 
 router.post('/', koaBody(), async (ctx) => {
 	console.log('post /');
+	console.log('Request:');
 	console.log(ctx.request);
+	console.log();
+	console.log('Body:');
 	console.log(ctx.request.body);
+	console.log();
+	console.log('Request Cookie:');
+	const requestCookies = ctx.request.header.cookie;
+	const cookie = requestCookies.split('; ConfTwBot=').pop().split(';')[0];
+	console.log(cookie);
+	console.log();
+	console.log('Session Cookie:');
+	console.log(ctx.cookies.get('ConfTwBot'));
 
+	/**
 	const { password } = ctx.request.body;
 
 	if (ctx.request.body && password) {
@@ -30,12 +42,12 @@ router.post('/', koaBody(), async (ctx) => {
 
 				ctx.body = { message: 'Login successful' };
 				ctx.status = HttpStatus.OK;
-				console.log('end end end');
+				console.log(ctx);
 				return;
 			}
 		}
 	}
-
+	*/
 	ctx.body = { error: 'Invalid login' };
 });
 

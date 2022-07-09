@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 
 import Index from './pages/Index';
 import Login from './pages/Login';
@@ -10,25 +9,19 @@ import axios from 'axios';
 export default function App() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
 	const [twitterLoggedIn, setTwitterLoggedIn] = useState(false);
-	const [cookies, setCookie] = useCookies(['ConfTwBot']);
 
 	useEffect(() => {
 		handleAppLogin().then();
-	}, []);
+	}, [appLoggedIn]);
 
 	const handleAppLogin = async () => {
 		try {
 			const config = {
-				xsrfCookieName: 'ConfTwBot',
+				withCredentials: true,
 			};
 			const payload = { password: 'appPassword' };
 			const response = await axios.post('http://localhost:33333/', payload, config);
 			console.log(response);
-			console.log(response.headers);
-
-			// setCookie('ConfTwBot', response.headers['x-access-token']);
-			// const cookie = cookies.ConfTwBot;
-			// console.log(cookie);
 		} catch (err) {
 			console.error(err);
 		}

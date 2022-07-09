@@ -42,7 +42,7 @@ app.use(async (ctx, next) => {
 	}
 });
 
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(Logger());
 
 app.use(router.routes());
