@@ -12,7 +12,7 @@ export default function App() {
 	const [twitterLoggedIn, setTwitterLoggedIn] = useState(false);
 
 	useEffect(() => {
-		handleAppLogin().then();
+		//handleAppLogin().then();
 	}, []);
 
 	const handleAppLogin = async () => {
@@ -32,12 +32,14 @@ export default function App() {
 	};
 
 	return (
-		<Router>
-			<Routes>
-				{appLoggedIn && <Route path="/" element={<TwitterLogin />} />}
-				{twitterLoggedIn && <Route path="/" element={<Index />} />}
-				{!appLoggedIn && !twitterLoggedIn && <Route path="/" element={<Login />} />}
-			</Routes>
-		</Router>
+		<div className="container mx-auto flex justify-center">
+			<Router>
+				<Routes>
+					{appLoggedIn && <Route path="/" element={<TwitterLogin />} />}
+					{twitterLoggedIn && <Route path="/" element={<Index />} />}
+					{!appLoggedIn && !twitterLoggedIn && <Route path="/" element={<Login />} />}
+				</Routes>
+			</Router>
+		</div>
 	);
 }
