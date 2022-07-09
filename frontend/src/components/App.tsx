@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import TwitterLogin from './pages/TwitterLogin';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import HttpStatus from 'http-status';
 
 export default function App() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
@@ -12,7 +13,7 @@ export default function App() {
 
 	useEffect(() => {
 		handleAppLogin().then();
-	}, [appLoggedIn]);
+	}, []);
 
 	const handleAppLogin = async () => {
 		try {
@@ -21,6 +22,9 @@ export default function App() {
 			};
 			const payload = { password: 'appPassword' };
 			const response = await axios.post('http://localhost:33333/', payload, config);
+			if (response.status === HttpStatus.OK) {
+				setAppLoggedIn(true);
+			}
 			console.log(response);
 		} catch (err) {
 			console.error(err);

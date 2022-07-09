@@ -14,41 +14,54 @@ router.get('/', async (ctx) => {
 });
 
 router.post('/', koaBody(), async (ctx) => {
-	console.log('post /');
-	console.log('Request:');
-	console.log(ctx.request);
-	console.log();
-	console.log('Body:');
-	console.log(ctx.request.body);
-	console.log();
-	console.log('Request Cookie:');
-	const requestCookies = ctx.request.header.cookie;
-	const cookie = requestCookies.split('; ConfTwBot=').pop().split(';')[0];
-	console.log(cookie);
-	console.log();
-	console.log('Session Cookie:');
-	console.log(ctx.cookies.get('ConfTwBot'));
+	// make sure request contains a body
+	if (!ctx.request.body) {
+		ctx.body = { message: 'Missing request body' };
+		ctx.status = HttpStatus.BAD_REQUEST;
+		return;
+	}
 
-	/**
-	const { password } = ctx.request.body;
-
-	if (ctx.request.body && password) {
-		if (password === 'appPassword') {
-			console.log('valid password');
-			if (ctx.session) {
-				ctx.session.isLoggedIn = true;
-				ctx.session.save();
-				ctx.session.manuallyCommit();
-
-				ctx.body = { message: 'Login successful' };
+	// check if response contains a login cookie
+	const cookies = ctx.request.header.cookie;
+	if (cookies) {
+		// extract the ConfTwBot cookie (request may contain many cookies)
+		const confTwBotCookie = cookies.split('; ConfTwBot=').pop().split(';')[0];
+		// if the confTwBot cookie is missing, then the variable will contain an empty string
+		if (confTwBotCookie.length > 0) {
+			// verify browser cookie matches existing session cookie
+			if (confTwBotCookie === ctx.cookies.get('ConfTwBot')) {
+				ctx.body = { message: 'Existing login session' };
 				ctx.status = HttpStatus.OK;
-				console.log(ctx);
 				return;
 			}
 		}
 	}
-	*/
+
+	// response did not contain a valid cookie, perform password verification
+	const { password } = ctx.request.body;
+	if (password && password === 'appPassword') {
+		// koa-session needs to be running to create/store session cookie
+		if (!ctx.session) {
+			ctx.body = { error: 'Session could not be established' };
+			ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return;
+		}
+
+		// save login session
+		ctx.session.isLoggedIn = true;
+		ctx.session.save();
+		ctx.session.manuallyCommit();
+
+		// return success (contains http cookie for ConfTwBot)
+		ctx.body = { message: 'Login successful' };
+		ctx.status = HttpStatus.OK;
+		console.log(ctx);
+		return;
+	}
+
+	// invalid login credentials
 	ctx.body = { error: 'Invalid login' };
+	ctx.status = HttpStatus.UNAUTHORIZED;
 });
 
 export default router;
