@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import HttpStatus from 'http-status';
 
 interface Props {
@@ -37,7 +37,7 @@ const Login = ({ appLogin }: Props) => {
 			return;
 		}
 
-		// send credentials server
+		// send credentials to the server
 		authenticateLogin().then();
 	};
 
