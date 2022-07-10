@@ -4,7 +4,7 @@ import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import router from './routes';
 
-const PORT = process.env.PORT || 33333;
+const PORT = process.env.PORT || 4000;
 
 const SESSION_CONFIG = {
 	key: 'ConfTwBot',

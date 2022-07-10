@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
+import axios, { AxiosError } from 'axios';
+import HttpStatus from 'http-status';
 
-const Login = () => {
+interface Props {
+	appLogin: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Login = ({ appLogin }: Props) => {
 	const [password, setPassword] = useState('');
 	const [validationError, setValidationError] = useState(false);
 	const [errorText, setErrorText] = useState('');
@@ -27,9 +33,38 @@ const Login = () => {
 
 		// check submission length
 		if (password.length === 0) {
-			setValidationError(true);
-			setErrorText('Please enter a password.');
+			formError('Please enter a password.');
+			return;
 		}
+
+		// send credentials server
+		authenticateLogin().then();
+	};
+
+	const authenticateLogin = async (): Promise<void> => {
+		try {
+			const config = {
+				withCredentials: true,
+			};
+			const payload = { password };
+			const response = await axios.post('/api/session', payload, config);
+			if (response.status === HttpStatus.OK) {
+				appLogin(true);
+			}
+		} catch (err) {
+			if (axios.isAxiosError(err)) {
+				if (err.response?.status === HttpStatus.UNAUTHORIZED) {
+					formError('Invalid password.');
+					return;
+				}
+			}
+		}
+		formError('Connection error... please wait and try again.');
+	};
+
+	const formError = (errorMessage: string): void => {
+		setValidationError(true);
+		setErrorText(errorMessage);
 	};
 
 	return (
