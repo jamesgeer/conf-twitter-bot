@@ -11,6 +11,7 @@ router.get('/', async (ctx) => {
 	} else {
 		ctx.body = { loggedIn: true };
 	}
+	ctx.status = HttpStatus.OK;
 });
 
 router.post('/', koaBody(), async (ctx) => {
