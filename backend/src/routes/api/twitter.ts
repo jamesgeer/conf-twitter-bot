@@ -1,25 +1,23 @@
 import Router from '@koa/router';
-import HttpStatus from 'http-status';
-import koaBody from 'koa-body';
+import { completeLogin } from '../../twitter';
 
 const twitterRouter = new Router({ prefix: '/twitter/oauth' });
 
 // OAuth Step 1
 twitterRouter.post('/request_token', async (ctx) => {
-	const { oauth_token, oauth_token_secret } = await oauth.getOAuthRequestToken();
+	console.log(ctx.request.data);
 
-	ctx.cookies.set('oauth_token', oauth_token, {
-		maxAge: 15 * 60 * 1000, // 15 minutes
-		secure: true,
-		httpOnly: true,
-		sameSite: true,
-	});
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const { oauth_token, oauth_token_secret } = ctx.request.body;
 
-	tokens[oauth_token] = { oauth_token_secret };
-	res.json({ oauth_token });
+	console.log(oauth_token);
+	console.log(oauth_token_secret);
+
+	completeLogin(<string>oauth_token_secret, <string>oauth_token);
 });
 
 // OAuth Step 3
+/**
 twitterRouter.post('/access_token', async (req, res) => {
 	try {
 		const { oauth_token: req_oauth_token, oauth_verifier } = req.body;
@@ -59,5 +57,6 @@ twitterRouter.get('/twitter/users/profile_banner', async (req, res) => {
 		res.status(403).json({ message: 'Missing, invalid, or expired tokens' });
 	}
 });
+*/
 
 export default twitterRouter;
