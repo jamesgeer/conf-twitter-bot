@@ -1,11 +1,8 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { TwitterApi } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
-import { robustPath } from './util';
 
 dotenv.config({ path: '../.env' });
-
-const dataFilePath = robustPath('../twitter-accounts.json');
 
 interface TwitterAccount {
 	screenName: string;
@@ -91,7 +88,7 @@ function loadTwitterAccounts(): TwitterAccounts {
 		return twitterAccounts;
 	}
 	try {
-		const fileContent = readFileSync(dataFilePath).toString();
+		const fileContent = readFileSync('./data/twitter-accounts.json').toString();
 		twitterAccounts = <TwitterAccounts>JSON.parse(fileContent);
 	} catch (e) {
 		twitterAccounts = { accounts: [] };
@@ -130,7 +127,7 @@ function addOrUpdate(authDetails: TwitterAuthDetails) {
 }
 
 function persistTwitterDetails() {
-	writeFileSync(dataFilePath, JSON.stringify(twitterAccounts));
+	writeFileSync('./data/twitter-accounts.json', JSON.stringify(twitterAccounts));
 }
 
 function fullyAuthorized(authDetails: TwitterAuthDetails) {

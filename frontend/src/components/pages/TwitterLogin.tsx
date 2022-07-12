@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import queryString from 'query-string';
 
 const TwitterLogin = () => {
@@ -17,12 +17,12 @@ const TwitterLogin = () => {
 
 			if (oauth_token && oauth_verifier) {
 				try {
-					//Oauth Step 3
-					await axios({
-						url: '/api/twitter/oauth/access_token',
-						method: 'POST',
-						data: { oauth_token, oauth_verifier },
-					});
+					const config = {
+						withCredentials: true,
+					};
+					const payload = { oauth_token, oauth_verifier };
+					console.log(payload);
+					await axios.post('/api/twitter/oauth/access_token', payload, config);
 				} catch (error) {
 					console.error(error);
 				}
@@ -52,14 +52,10 @@ const TwitterLogin = () => {
 		(async () => {
 			try {
 				//OAuth Step 1
-				const response = await axios({
-					url: '/api/twitter/oauth/request_token',
-					method: 'POST',
-				});
-
-				const { oauth_token } = response.data;
+				const response = await axios.get('/api/twitter/oauth/request_token');
+				const { oauthToken } = response.data;
 				//Oauth Step 2
-				window.location.href = `https://api.twitter.com/oauth/authenticate?oauth_token=${oauth_token}`;
+				window.location.href = `https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`;
 			} catch (error) {
 				console.error(error);
 			}
