@@ -3,7 +3,7 @@ import { TwitterApi } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
 import { robustPath } from './util';
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 const dataFilePath = robustPath('../twitter-accounts.json');
 
@@ -158,8 +158,7 @@ function errorOnUnsetKeyAndSecret() {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function initializeAuthorization(callbackUrl: string, redirectUrl: string): Promise<string> {
+export async function initializeAuthorization(callbackUrl: string): Promise<string> {
 	errorOnUnsetKeyAndSecret();
 
 	console.log('[TW] Instantiate API Object');
@@ -179,7 +178,7 @@ export async function initializeAuthorization(callbackUrl: string, redirectUrl: 
 		oauthTokenSecret: authLink.oauth_token_secret,
 	};
 
-	return authLink.url;
+	return authLink.oauth_token;
 }
 
 export async function completeLogin(oauthVerifier: string, oauthTokenFromCallback: string): Promise<TwitterApi> {

@@ -1,19 +1,24 @@
 import Router from '@koa/router';
-import { completeLogin } from '../../twitter';
+import HttpStatus from 'http-status';
+import { initializeAuthorization, completeLogin } from '../../twitter';
 
 const twitterRouter = new Router({ prefix: '/twitter/oauth' });
 
 // OAuth Step 1
-twitterRouter.post('/request_token', async (ctx) => {
-	console.log(ctx.request.data);
+twitterRouter.get('/request_token', async (ctx) => {
+	// callback url is set in the "Twitter Developer" portal, under "App settings"
+	// it must be an exact match otherwise you will get a 415 error "Callback URL not approved..."
+	const callbackUrl = 'http://localhost:4000/api/twitter/oauth/callback';
+	const oauthToken = await initializeAuthorization(callbackUrl);
 
+	ctx.status = HttpStatus.OK;
+	ctx.body = oauthToken;
+});
+
+twitterRouter.get('/callback', async (ctx) => {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const { oauth_token, oauth_token_secret } = ctx.request.body;
-
-	console.log(oauth_token);
-	console.log(oauth_token_secret);
-
-	completeLogin(<string>oauth_token_secret, <string>oauth_token);
+	const { oauth_token, oauth_verifier } = ctx.query;
+	completeLogin(<string>oauth_verifier, <string>oauth_token);
 });
 
 // OAuth Step 3

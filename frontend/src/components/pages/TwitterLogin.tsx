@@ -9,38 +9,6 @@ const TwitterLogin = () => {
 	const [status, setStatus] = useState();
 	const [url, setUrl] = useState();
 
-	const login = () => {
-		(async () => {
-			try {
-				//OAuth Step 1
-				const response = await axios({
-					url: '/api/twitter/oauth/request_token',
-					method: 'POST',
-				});
-
-				const { oauth_token } = response.data;
-				//Oauth Step 2
-				window.location.href = `https://api.twitter.com/oauth/authenticate?oauth_token=${oauth_token}`;
-			} catch (error) {
-				console.error(error);
-			}
-		})();
-	};
-
-	const logout = () => {
-		(async () => {
-			try {
-				await axios({
-					url: '/api/twitter/logout',
-					method: 'POST',
-				});
-				setIsLoggedIn(false);
-			} catch (error) {
-				console.error(error);
-			}
-		})();
-	};
-
 	useEffect(() => {
 		(async () => {
 			const { oauth_token, oauth_verifier } = queryString.parse(window.location.search);
@@ -79,6 +47,38 @@ const TwitterLogin = () => {
 			// }
 		})();
 	}, []);
+
+	const login = () => {
+		(async () => {
+			try {
+				//OAuth Step 1
+				const response = await axios({
+					url: '/api/twitter/oauth/request_token',
+					method: 'POST',
+				});
+
+				const { oauth_token } = response.data;
+				//Oauth Step 2
+				window.location.href = `https://api.twitter.com/oauth/authenticate?oauth_token=${oauth_token}`;
+			} catch (error) {
+				console.error(error);
+			}
+		})();
+	};
+
+	const logout = () => {
+		(async () => {
+			try {
+				await axios({
+					url: '/api/twitter/logout',
+					method: 'POST',
+				});
+				setIsLoggedIn(false);
+			} catch (error) {
+				console.error(error);
+			}
+		})();
+	};
 
 	return (
 		<div>
