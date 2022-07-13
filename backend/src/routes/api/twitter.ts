@@ -1,3 +1,13 @@
+/**
+ * Route for Twitter oAuth
+ * ---
+ * GET: /api/twitter/oauth/request_token
+ * Get oAuth Token
+ * ---
+ * POST: /api/twitter/oauth/access_token
+ * Create Twitter API Client with posted credentials
+ * ---
+ */
 import Router from '@koa/router';
 import HttpStatus from 'http-status';
 import koaBody from 'koa-body';

@@ -1,4 +1,5 @@
 /**
+ * Route for app login
  * ---
  * GET: /api/session
  * Get session (True if exists)
