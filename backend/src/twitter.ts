@@ -36,6 +36,10 @@ const loggedInClients: Map<string, TwitterApi> = new Map();
 
 let tempAuthDetails: TwitterTempAuth | null = null;
 
+/**
+ * load Twitter account information from 'twitter-accounts.json' for userId
+ * @param userId
+ */
 export async function getTwitterDetails(userId: string): Promise<TwitterAccount | null> {
 	const data = loadTwitterAccounts();
 	const details = data.accounts.find((a) => a.account.userId === userId);
@@ -83,6 +87,9 @@ async function getProfileImageUrl(client: TwitterApi, userId: string) {
 	return (await client.v1.user({ user_id: userId })).profile_image_url_https;
 }
 
+/**
+ * returns Twitter account data from 'twitter-accounts.json'
+ */
 function loadTwitterAccounts(): TwitterAccounts {
 	if (twitterAccounts !== null) {
 		return twitterAccounts;
@@ -96,6 +103,10 @@ function loadTwitterAccounts(): TwitterAccounts {
 	return twitterAccounts;
 }
 
+/**
+ * returns account information for passed in Twitter userId, null if account not found
+ * @param userId
+ */
 function loadAuthDetails(userId: string): TwitterAuthDetails | null {
 	const data = loadTwitterAccounts();
 	for (const a of data.accounts) {
@@ -106,6 +117,11 @@ function loadAuthDetails(userId: string): TwitterAuthDetails | null {
 	return null;
 }
 
+/**
+ * add or delete account(s) to 'twitter-accounts.json' file
+ * 'data' contains this information before being written
+ * @param authDetails
+ */
 function addOrUpdate(authDetails: TwitterAuthDetails) {
 	const data = loadTwitterAccounts();
 	let update = false;
@@ -126,12 +142,19 @@ function addOrUpdate(authDetails: TwitterAuthDetails) {
 	persistTwitterDetails();
 }
 
-function persistTwitterDetails() {
+/**
+ * data contained within 'twitterAccounts' variable is converted to JSON and written to 'twitter-accounts.json'
+ */
+function persistTwitterDetails(): void {
 	writeFileSync('./data/twitter-accounts.json', JSON.stringify(twitterAccounts));
 }
 
-function fullyAuthorized(authDetails: TwitterAuthDetails) {
-	return authDetails.accessToken && authDetails.accessSecret;
+/**
+ * returns true if the oauth access token and secret are set
+ * @param authDetails
+ */
+function fullyAuthorized(authDetails: TwitterAuthDetails): boolean {
+	return authDetails.accessToken !== '' && authDetails.accessSecret !== '';
 }
 
 function getClientForUser(userId: string): TwitterApi | null {
@@ -155,6 +178,11 @@ function errorOnUnsetKeyAndSecret() {
 	}
 }
 
+/**
+ * oauth step one: requests an oauth token from Twitter, the user can then use this token to log into their
+ * Twitter account
+ * @param callbackUrl
+ */
 export async function initializeAuthorization(callbackUrl: string): Promise<string> {
 	errorOnUnsetKeyAndSecret();
 
@@ -178,17 +206,24 @@ export async function initializeAuthorization(callbackUrl: string): Promise<stri
 	return authLink.oauth_token;
 }
 
+/**
+ * oauth step two: once user logs in using the oauth token from step 1, Twitter will return an access token
+ * and access secret, this information can then be used by the applicant to act as the logged-in user
+ * this information is then saved to 'twitter-accounts.json' (db in future)
+ * @param oauthVerifier
+ * @param oauthTokenFromCallback
+ */
 export async function completeLogin(oauthVerifier: string, oauthTokenFromCallback: string): Promise<TwitterApi> {
-	// errorOnUnsetKeyAndSecret();
-	console.assert(tempAuthDetails !== null);
+	errorOnUnsetKeyAndSecret();
 
+	console.assert(tempAuthDetails !== null);
 	console.log(
 		`[TW] oauth_token_from_callback (${oauthTokenFromCallback}) === oauth_token ${tempAuthDetails?.oauthToken}`,
 	);
 	console.assert(oauthTokenFromCallback === tempAuthDetails?.oauthToken);
-
 	console.log(`[TW] oauth_verifier (${oauthVerifier})`);
 
+	// set all credentials required to make oauth request
 	const client = new TwitterApi({
 		appKey: <string>appKey,
 		appSecret: <string>appSecret,
@@ -196,9 +231,11 @@ export async function completeLogin(oauthVerifier: string, oauthTokenFromCallbac
 		accessSecret: tempAuthDetails?.oauthTokenSecret,
 	});
 
+	// using credentials, log into user's Twitter account and store response
 	const loginResult = await client.login(oauthVerifier);
 	loggedInClients.set(loginResult.userId, loginResult.client);
 
+	// gather account credentials and information for store
 	const authDetails: TwitterAuthDetails = {
 		accessToken: loginResult.accessToken,
 		accessSecret: loginResult.accessSecret,
@@ -208,6 +245,7 @@ export async function completeLogin(oauthVerifier: string, oauthTokenFromCallbac
 		},
 	};
 
+	// save/update account to file
 	addOrUpdate(authDetails);
 
 	console.log('[TW] Login completed');
