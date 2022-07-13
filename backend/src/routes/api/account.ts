@@ -11,16 +11,16 @@
 import Router from '@koa/router';
 import HttpStatus from 'http-status';
 
-const accountRouter = new Router({ prefix: '/twitter' });
+const twitterAccountRouter = new Router({ prefix: '/twitter' });
 
-accountRouter.get('/account', async (ctx) => {
+twitterAccountRouter.get('/account', async (ctx) => {
 	ctx.status = HttpStatus.OK;
 	ctx.body = { toDo: 'toDo' };
 });
 
-accountRouter.get('/accounts', async (ctx) => {
+twitterAccountRouter.get('/accounts', async (ctx) => {
 	ctx.status = HttpStatus.OK;
 	ctx.body = { toDo: 'toDo' };
 });
 
-export default accountRouter;
+export default twitterAccountRouter;
