@@ -2,11 +2,17 @@
  * Model for creating/reading/updating/deleting stored Twitter accounts
  * TODO: Convert from JSON store to DB Object
  */
-import { TwitterAccounts } from '../types/twitter-types';
+import loadTwitterAccounts from '../utils/load-accounts';
 
-const twitterAccounts: TwitterAccounts | null = null;
+const twitterAccounts = loadTwitterAccounts();
 
-const accountExists = (): boolean => true;
+const accountExists = (): boolean => {
+	twitterAccounts.map((account) => {
+		console.log(account);
+		return true;
+	});
+	return true;
+};
 
 const updateAccount = (): void => {
 	console.log('Updated');

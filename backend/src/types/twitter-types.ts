@@ -1,26 +1,23 @@
-// Authentication details, that are persisted.
-interface TwitterAccount {
-	screenName: string;
+// OAuth 1.0a
+interface TwitterOAuth {
+	accessToken?: string;
+	accessSecret?: string;
+}
+
+// User information
+interface TwitterUserDetails {
 	userId: string;
+	screenName: string;
 	profileImageUrl?: string;
 }
 
-// Authentication details, used during the login/authentication process.
-interface TwitterTempAuth {
-	oauthToken?: string;
-	oauthTokenSecret?: string;
+// Object containing credentials and user details
+interface TwitterAccount {
+	oauth: TwitterOAuth;
+	details: TwitterUserDetails;
 }
 
-// Stored authentication details
-interface TwitterAuthDetails {
-	accessToken?: string;
-	accessSecret?: string;
-	account: TwitterAccount;
-}
+// Array of account objects
+type TwitterAccounts = Array<TwitterAccount>;
 
-// Accounts loaded into memory from 'twitter-accounts.json'
-interface TwitterAccounts {
-	accounts: TwitterAuthDetails[];
-}
-
-export { TwitterAccount, TwitterAccounts, TwitterTempAuth, TwitterAuthDetails };
+export { TwitterOAuth, TwitterUserDetails, TwitterAccount, TwitterAccounts };

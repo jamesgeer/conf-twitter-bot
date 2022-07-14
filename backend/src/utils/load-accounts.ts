@@ -2,13 +2,13 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { TwitterAccounts } from '../types/twitter-types';
 
-let twitterAccounts: TwitterAccounts | null = null;
+let twitterAccounts: TwitterAccounts;
 
 /**
  * Temp load from json until database is implemented
  */
 const loadTwitterAccounts = (): TwitterAccounts => {
-	if (twitterAccounts !== null) {
+	if (twitterAccounts) {
 		return twitterAccounts;
 	}
 	try {
@@ -16,6 +16,7 @@ const loadTwitterAccounts = (): TwitterAccounts => {
 		const fileContent = readFileSync(pathToFile).toString();
 		twitterAccounts = <TwitterAccounts>JSON.parse(fileContent);
 	} catch (e) {
+		console.error(e);
 		twitterAccounts = { accounts: [] };
 	}
 	return twitterAccounts;
