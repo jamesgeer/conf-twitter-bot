@@ -1,23 +1,24 @@
-// OAuth 1.0a
-interface TwitterOAuth {
+// Temporary credentials
+interface TwitterOAuthRequestToken {
+	oauthToken?: string;
+	oauthTokenSecret: string;
+}
+
+// Token credentials
+interface TwitterOAuthAccessToken {
 	accessToken?: string;
 	accessSecret?: string;
 }
 
-// User information
-interface TwitterUserDetails {
+// Object containing credentials and user details
+interface TwitterAccount {
 	userId: string;
 	screenName: string;
 	profileImageUrl?: string;
-}
-
-// Object containing credentials and user details
-interface TwitterAccount {
-	oauth: TwitterOAuth;
-	details: TwitterUserDetails;
+	oauth: TwitterOAuthAccessToken;
 }
 
 // Array of account objects
 type TwitterAccounts = Array<TwitterAccount>;
 
-export { TwitterOAuth, TwitterUserDetails, TwitterAccount, TwitterAccounts };
+export { TwitterOAuthRequestToken, TwitterAccount, TwitterAccounts };

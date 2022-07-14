@@ -2,7 +2,8 @@ import HttpStatus from 'http-status';
 import { TwitterApi } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
 import { ParameterizedContext } from 'koa';
-import { TwitterTempAuth } from '../types/twitter-types';
+import { TwitterAccount, TwitterOAuthRequestToken } from '../types/twitter-types';
+import { insertOrUpdateAccount } from '../models/twitter-auth-model';
 
 dotenv.config({ path: '../../.env' });
 
@@ -10,7 +11,7 @@ const appKey = process.env.TWITTER_API_KEY;
 const appSecret = process.env.TWITTER_API_SECRET;
 
 const loggedInClients: Map<string, TwitterApi> = new Map();
-let tempAuthDetails: TwitterTempAuth | null = null;
+let tempAuthDetails: TwitterOAuthRequestToken;
 
 const requestToken = async (ctx: ParameterizedContext): Promise<void> => {
 	console.log('[TW] Instantiate API Object');
@@ -57,17 +58,19 @@ const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	loggedInClients.set(loginResult.userId, loginResult.client);
 
 	// gather account credentials and information for store
-	// const authDetails: TwitterAuthDetails = {
-	// 	accessToken: loginResult.accessToken,
-	// 	accessSecret: loginResult.accessSecret,
-	// 	account: {
-	// 		screenName: loginResult.screenName,
-	// 		userId: loginResult.userId,
-	// 	},
-	// };
+	const { userId, screenName, accessToken, accessSecret } = loginResult;
+
+	const twitterAccount: TwitterAccount = {
+		userId,
+		screenName,
+		oauth: {
+			accessToken,
+			accessSecret,
+		},
+	};
 
 	// save/update account to file
-	// addOrUpdate(authDetails);
+	insertOrUpdateAccount(twitterAccount);
 
 	console.log('[TW] Login completed');
 	ctx.status = HttpStatus.OK;

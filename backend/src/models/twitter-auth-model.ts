@@ -2,32 +2,45 @@
  * Model for creating/reading/updating/deleting stored Twitter accounts
  * TODO: Convert from JSON store to DB Object
  */
-import loadTwitterAccounts from '../utils/load-accounts';
+import path from 'path';
+import { readFileSync, writeFileSync } from 'fs';
+import { TwitterAccount, TwitterAccounts } from '../types/twitter-types';
 
-const twitterAccounts = loadTwitterAccounts();
+let twitterAccounts: TwitterAccounts;
+const pathToFile = path.relative(process.cwd(), 'data/twitter-accounts.json');
 
-const accountExists = (): boolean => {
-	twitterAccounts.map((account) => {
-		console.log(account);
-		return true;
-	});
-	return true;
+const getAccounts = (): TwitterAccounts => {
+	if (twitterAccounts) {
+		return twitterAccounts;
+	}
+	try {
+		const fileContent = readFileSync(pathToFile).toString();
+		twitterAccounts = <TwitterAccounts>JSON.parse(fileContent);
+	} catch (e) {
+		console.error(e);
+		twitterAccounts = [];
+	}
+	return twitterAccounts;
+};
+
+const accountExists = (userId: string): boolean => {
+	twitterAccounts = getAccounts();
+	return twitterAccounts.some((account) => account.userId === userId);
 };
 
 const updateAccount = (): void => {
-	console.log('Updated');
+	console.error('UPDATE NOT IMPLEMENTED');
 };
 
-const insertAccount = (): void => {
-	console.log('Added');
+const insertAccount = (twitterAccount: TwitterAccount): void => {
+	twitterAccounts.push(twitterAccount);
+	writeFileSync(pathToFile, JSON.stringify(twitterAccounts));
 };
 
-const insertOrUpdateAccount = (): void => {
-	accountExists() ? updateAccount() : insertAccount();
-};
+// eslint-disable-next-line
+const insertOrUpdateAccount = (twitterAccount: TwitterAccount): void =>
+	accountExists(twitterAccount.userId) ? updateAccount() : insertAccount(twitterAccount);
 
-const getAccount = (userId: string): any => {};
-
-const getAccounts = (): any => {};
+const getAccount = (userId: string): TwitterAccount => twitterAccounts.find((account) => account.userId === userId);
 
 export { accountExists, updateAccount, insertAccount, insertOrUpdateAccount, getAccount, getAccounts };
