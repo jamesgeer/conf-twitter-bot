@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import path from 'path';
 import { TwitterAccounts } from '../types/twitter-types';
 
 let twitterAccounts: TwitterAccounts | null = null;
@@ -11,7 +12,8 @@ const loadTwitterAccounts = (): TwitterAccounts => {
 		return twitterAccounts;
 	}
 	try {
-		const fileContent = readFileSync('./data/twitter-accounts.json').toString();
+		const pathToFile = path.relative(process.cwd(), 'data/twitter-accounts.json');
+		const fileContent = readFileSync(pathToFile).toString();
 		twitterAccounts = <TwitterAccounts>JSON.parse(fileContent);
 	} catch (e) {
 		twitterAccounts = { accounts: [] };
