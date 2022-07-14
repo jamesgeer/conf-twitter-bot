@@ -2,30 +2,12 @@ import HttpStatus from 'http-status';
 import { TwitterApi } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
 import { ParameterizedContext } from 'koa';
+import { TwitterTempAuth } from '../types/twitter-types';
 
 dotenv.config({ path: '../../.env' });
 
 const appKey = process.env.TWITTER_API_KEY;
 const appSecret = process.env.TWITTER_API_SECRET;
-
-// temp auth details, used during the login/authentication process.
-interface TwitterTempAuth {
-	oauthToken?: string;
-	oauthTokenSecret?: string;
-}
-
-// interface TwitterAccount {
-// 	screenName: string;
-// 	userId: string;
-// 	profileImageUrl?: string;
-// }
-
-// account auth credentials to be stored
-// interface TwitterAuthDetails {
-// 	accessToken?: string;
-// 	accessSecret?: string;
-// 	account: TwitterAccount;
-// }
 
 const loggedInClients: Map<string, TwitterApi> = new Map();
 let tempAuthDetails: TwitterTempAuth | null = null;
