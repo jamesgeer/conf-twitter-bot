@@ -118,7 +118,7 @@ function loadAuthDetails(userId: string): TwitterAuthDetails | null {
 }
 
 /**
- * add or delete account(s) to 'twitter-accounts.json' file
+ * add or update account(s) to 'twitter-accounts.json' file
  * 'data' contains this information before being written
  * @param authDetails
  */

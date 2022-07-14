@@ -27,6 +27,7 @@ module.exports = {
 	],
 	ignorePatterns: ['dist/**/*', 'node_modules/**/*'],
 	rules: {
+		'no-tabs': 'off',
 		'no-shadow': 'off',
 		'no-console': 'off',
 		'func-names': 'off',
@@ -38,7 +39,6 @@ module.exports = {
 		'node/no-missing-import': 'off',
 		'node/no-unsupported-features/es-syntax': 'off',
 		'max-len': ['error', { 'code': 120 }],
-		'no-tabs': ['error', { allowIndentationTabs: true }],
 		'quotes': [2, 'single', { 'avoidEscape': true, 'allowTemplateLiterals': true }],
 		'no-use-before-define': ['error', {"functions": false, "classes": false}],
 		'@typescript-eslint/no-shadow': 'off',
