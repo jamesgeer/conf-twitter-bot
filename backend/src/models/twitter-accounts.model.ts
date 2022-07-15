@@ -40,4 +40,4 @@ const insertOrUpdateAccount = (twitterAccount: TwitterAccount): void =>
 
 const getAccount = (userId: string): TwitterAccount => twitterAccounts.find((account) => account.userId === userId);
 
-export { accountExists, updateAccount, insertAccount, insertOrUpdateAccount, getAccount, getAccounts };
+export { updateAccount, insertAccount, insertOrUpdateAccount, getAccount, getAccounts };
