@@ -18,7 +18,12 @@ interface TwitterAccount {
 	oauth: TwitterOAuthAccessToken;
 }
 
+interface TwitterError {
+	error: boolean;
+	message: string;
+}
+
 // Array of account objects
 type TwitterAccounts = Array<TwitterAccount>;
 
-export { TwitterOAuthRequestToken, TwitterAccount, TwitterAccounts };
+export { TwitterOAuthRequestToken, TwitterAccount, TwitterAccounts, TwitterError };
