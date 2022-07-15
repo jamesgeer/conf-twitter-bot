@@ -1,46 +1,65 @@
-/**
- * Model for creating/reading/updating/deleting stored Twitter accounts
- * TODO: Convert from JSON store to DB Object
- */
-import path from 'path';
-import { readFileSync, writeFileSync } from 'fs';
-import { TwitterAccount, TwitterAccounts } from '../types/twitter-types';
+import { TwitterApi } from 'twitter-api-v2';
+import * as dotenv from 'dotenv';
+import { TwitterOAuthRequestToken, TwitterAccount } from '../types/twitter-types';
 
-let twitterAccounts: TwitterAccounts;
-const pathToFile = path.relative(process.cwd(), 'data/twitter-accounts.json');
+dotenv.config({ path: '../../.env' });
 
-const getAccounts = (): TwitterAccounts => {
-	if (twitterAccounts) {
-		return twitterAccounts;
-	}
-	try {
-		const fileContent = readFileSync(pathToFile).toString();
-		twitterAccounts = <TwitterAccounts>JSON.parse(fileContent);
-	} catch (e) {
-		console.error(e);
-		twitterAccounts = [];
-	}
-	return twitterAccounts;
+const appKey = process.env.TWITTER_API_KEY;
+const appSecret = process.env.TWITTER_API_SECRET;
+
+const getRequestToken = async (): Promise<TwitterOAuthRequestToken> => {
+	console.log('[TW] Instantiate API Object');
+
+	const client = new TwitterApi({
+		appKey: <string>appKey,
+		appSecret: <string>appSecret,
+	});
+
+	const callbackUrl = 'http://localhost:3000';
+
+	console.log('[TW] Generate Auth Link');
+	console.log(`[TW] ${JSON.stringify({ appKey, appSecret, callbackUrl })}`);
+
+	const authLink = await client.generateAuthLink(callbackUrl);
+
+	return {
+		oauthToken: authLink.oauth_token,
+		oauthTokenSecret: authLink.oauth_token_secret,
+	};
 };
 
-const accountExists = (userId: string): boolean => {
-	twitterAccounts = getAccounts();
-	return twitterAccounts.some((account) => account.userId === userId);
+const getTwitterAccount = async (
+	tempAuthDetails: TwitterOAuthRequestToken,
+	oauthVerifier: string,
+	oauthToken: string,
+): Promise<TwitterAccount> => {
+	console.log(`[TW] oauth_token_from_callback (${oauthToken}) === oauth_token ${tempAuthDetails?.oauthToken}`);
+	console.assert(oauthToken === tempAuthDetails?.oauthToken);
+	console.log(`[TW] oauth_verifier (${oauthVerifier})`);
+
+	// set all credentials required to make oauth request
+	const client = new TwitterApi({
+		appKey: <string>appKey,
+		appSecret: <string>appSecret,
+		accessToken: tempAuthDetails?.oauthToken,
+		accessSecret: tempAuthDetails?.oauthTokenSecret,
+	});
+
+	// using credentials, log into user's Twitter account to get access token and user details
+	const loginResult = await client.login(oauthVerifier);
+
+	// gather account credentials and information for store
+	const { userId, screenName, accessToken, accessSecret } = loginResult;
+
+	// return TwitterAccount
+	return {
+		userId,
+		screenName,
+		oauth: {
+			accessToken,
+			accessSecret,
+		},
+	};
 };
 
-const updateAccount = (): void => {
-	console.error('UPDATE NOT IMPLEMENTED');
-};
-
-const insertAccount = (twitterAccount: TwitterAccount): void => {
-	twitterAccounts.push(twitterAccount);
-	writeFileSync(pathToFile, JSON.stringify(twitterAccounts));
-};
-
-// eslint-disable-next-line
-const insertOrUpdateAccount = (twitterAccount: TwitterAccount): void =>
-	accountExists(twitterAccount.userId) ? updateAccount() : insertAccount(twitterAccount);
-
-const getAccount = (userId: string): TwitterAccount => twitterAccounts.find((account) => account.userId === userId);
-
-export { accountExists, updateAccount, insertAccount, insertOrUpdateAccount, getAccount, getAccounts };
+export { getRequestToken, getTwitterAccount };

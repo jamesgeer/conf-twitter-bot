@@ -1,79 +1,39 @@
 import HttpStatus from 'http-status';
-import { TwitterApi } from 'twitter-api-v2';
-import * as dotenv from 'dotenv';
 import { ParameterizedContext } from 'koa';
-import { TwitterAccount, TwitterOAuthRequestToken } from '../types/twitter-types';
-import { insertOrUpdateAccount } from '../models/twitter-auth-model';
+import { TwitterOAuthRequestToken } from '../types/twitter-types';
+import { insertOrUpdateAccount } from '../models/twitter-accounts.model';
+import { getRequestToken, getTwitterAccount } from '../models/twitter-auth-model';
 
-dotenv.config({ path: '../../.env' });
-
-const appKey = process.env.TWITTER_API_KEY;
-const appSecret = process.env.TWITTER_API_SECRET;
-
-const loggedInClients: Map<string, TwitterApi> = new Map();
+// need a better solution than to store temp auth in a variable
 let tempAuthDetails: TwitterOAuthRequestToken;
 
 const requestToken = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('[TW] Instantiate API Object');
+	const tempAuthDetails = await getRequestToken();
+	if (tempAuthDetails) {
+		ctx.status = HttpStatus.OK;
+		ctx.body = { oauthToken: tempAuthDetails.oauthToken };
+		return;
+	}
 
-	const client = new TwitterApi({
-		appKey: <string>appKey,
-		appSecret: <string>appSecret,
-	});
-
-	const callbackUrl = 'http://localhost:3000';
-
-	console.log('[TW] Generate Auth Link');
-	console.log(`[TW] ${JSON.stringify({ appKey, appSecret, callbackUrl })}`);
-
-	const authLink = await client.generateAuthLink(callbackUrl);
-
-	tempAuthDetails = {
-		oauthToken: authLink.oauth_token,
-		oauthTokenSecret: authLink.oauth_token_secret,
-	};
-
-	ctx.status = HttpStatus.OK;
-	ctx.body = { oauthToken: authLink.oauth_token };
+	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+	ctx.body = { error: 'Request token could not be generated.' };
 };
 
 const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	const { oauth_verifier: oauthVerifier, oauth_token: oauthToken } = ctx.request.body;
+	const twitterAccount = await getTwitterAccount(tempAuthDetails, oauthVerifier, oauthToken);
 
-	console.assert(tempAuthDetails !== null);
-	console.log(`[TW] oauth_token_from_callback (${oauthToken}) === oauth_token ${tempAuthDetails?.oauthToken}`);
-	console.assert(oauthToken === tempAuthDetails?.oauthToken);
-	console.log(`[TW] oauth_verifier (${oauthVerifier})`);
+	if (twitterAccount.userId.length > 0) {
+		// save/update account to file
+		insertOrUpdateAccount(twitterAccount);
 
-	// set all credentials required to make oauth request
-	const client = new TwitterApi({
-		appKey: <string>appKey,
-		appSecret: <string>appSecret,
-		accessToken: tempAuthDetails?.oauthToken,
-		accessSecret: tempAuthDetails?.oauthTokenSecret,
-	});
+		console.log('[TW] Login completed');
+		ctx.status = HttpStatus.OK;
+		return;
+	}
 
-	// using credentials, log into user's Twitter account and store response
-	const loginResult = await client.login(oauthVerifier);
-	loggedInClients.set(loginResult.userId, loginResult.client);
-
-	// gather account credentials and information for store
-	const { userId, screenName, accessToken, accessSecret } = loginResult;
-
-	const twitterAccount: TwitterAccount = {
-		userId,
-		screenName,
-		oauth: {
-			accessToken,
-			accessSecret,
-		},
-	};
-
-	// save/update account to file
-	insertOrUpdateAccount(twitterAccount);
-
-	console.log('[TW] Login completed');
-	ctx.status = HttpStatus.OK;
+	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+	ctx.body = { error: 'Twitter authorisation rejected' };
 };
 
 export { requestToken, accessToken };
