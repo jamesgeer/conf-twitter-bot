@@ -8,16 +8,19 @@ import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from '..
 let tempAuthDetails: TwitterOAuthRequestToken;
 
 const requestToken = async (ctx: ParameterizedContext): Promise<void> => {
-	const tempAuthDetails = await getTwitterOAuthRequestToken();
+	const oAuthRequestToken = await getTwitterOAuthRequestToken();
 
-	if ('error' in tempAuthDetails) {
+	if ('error' in oAuthRequestToken) {
 		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-		ctx.body = { error: tempAuthDetails.message };
+		ctx.body = { error: oAuthRequestToken.message };
 		return;
 	}
 
+	// store request token
+	tempAuthDetails = oAuthRequestToken;
+
 	ctx.status = HttpStatus.OK;
-	ctx.body = { oauthToken: tempAuthDetails.oauthToken };
+	ctx.body = { oauthToken: oAuthRequestToken.oauthToken };
 };
 
 const accessToken = async (ctx: ParameterizedContext): Promise<void> => {

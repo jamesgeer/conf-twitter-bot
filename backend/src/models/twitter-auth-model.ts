@@ -26,6 +26,17 @@ const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken |
 	return { error: true, message: 'Unable to generate request token.' };
 };
 
+// need a better place for this method
+const getProfileImageUrl = async (userId: string): Promise<string> => {
+	const client = new TwitterApi({
+		appKey: <string>appKey,
+		appSecret: <string>appSecret,
+	});
+	const user = await client.v1.user({ user_id: userId });
+	const { profile_image_url_https: profileImageUrl } = user;
+	return profileImageUrl;
+};
+
 const getTwitterAccountByRequestToken = async (
 	tempAuthDetails: TwitterOAuthRequestToken,
 	oauthVerifier: string,
@@ -50,10 +61,14 @@ const getTwitterAccountByRequestToken = async (
 		// gather account credentials and information for store
 		const { userId, screenName, accessToken, accessSecret } = loginResult;
 
+		// get the user's profile image, may be better to perform this task later
+		const profileImageUrl = await getProfileImageUrl(userId);
+
 		// return TwitterAccount
 		return {
 			userId,
 			screenName,
+			profileImageUrl,
 			oauth: {
 				accessToken,
 				accessSecret,
