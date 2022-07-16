@@ -13,7 +13,7 @@ import { account, accounts } from '../../controllers/twitter-accounts-controller
 
 const twitterAccountRouter = new Router({ prefix: '/twitter' });
 
-twitterAccountRouter.get('/account', account);
+twitterAccountRouter.get('/account/:userId', account);
 
 twitterAccountRouter.get('/accounts', accounts);
 

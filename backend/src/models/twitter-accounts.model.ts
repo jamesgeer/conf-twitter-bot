@@ -20,6 +20,11 @@ const getAccounts = (): TwitterAccounts => {
 	return twitterAccounts;
 };
 
+const getAccount = (userId: string): TwitterAccount => {
+	twitterAccounts = getAccounts();
+	return twitterAccounts.find((account) => account.userId === userId);
+};
+
 const accountExists = (userId: string): boolean => {
 	twitterAccounts = getAccounts();
 	return twitterAccounts.some((account) => account.userId === userId);
@@ -37,7 +42,5 @@ const insertAccount = (twitterAccount: TwitterAccount): void => {
 // eslint-disable-next-line
 const insertOrUpdateAccount = (twitterAccount: TwitterAccount): void =>
 	accountExists(twitterAccount.userId) ? updateAccount() : insertAccount(twitterAccount);
-
-const getAccount = (userId: string): TwitterAccount => twitterAccounts.find((account) => account.userId === userId);
 
 export { updateAccount, insertAccount, insertOrUpdateAccount, getAccount, getAccounts };
