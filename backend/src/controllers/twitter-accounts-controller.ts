@@ -8,7 +8,11 @@ const account = async (ctx: ParameterizedContext): Promise<void> => {
 
 	if (twitterAccount) {
 		ctx.status = HttpStatus.OK;
-		ctx.body = { userId: twitterAccount.userId, screenName: twitterAccount.screenName };
+		ctx.body = {
+			userId: twitterAccount.userId,
+			screenName: twitterAccount.screenName,
+			profileImageUrl: twitterAccount.profileImageUrl,
+		};
 		return;
 	}
 
@@ -23,6 +27,7 @@ const accounts = async (ctx: ParameterizedContext): Promise<void> => {
 		const accounts = twitterAccounts.map((account) => ({
 			userId: account.userId,
 			screenName: account.screenName,
+			profileImageUrl: account.profileImageUrl,
 		}));
 
 		ctx.status = HttpStatus.OK;
