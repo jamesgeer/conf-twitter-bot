@@ -17,63 +17,39 @@ const TwitterLogin = () => {
 
 			if (oauth_token && oauth_verifier) {
 				try {
-					const config = {
-						withCredentials: true,
-					};
+					const config = { withCredentials: true };
 					const payload = { oauth_token, oauth_verifier };
-					console.log(payload);
 					await axios.post('/api/twitter/oauth/access_token', payload, config);
 				} catch (error) {
 					console.error(error);
 				}
 			}
-
-			// try {
-			// 	//Authenticated Resource Access
-			// 	const {
-			// 		data: { name, profile_image_url_https, status, entities },
-			// 	} = await axios({
-			// 		url: '/api/twitter/users/profile_banner',
-			// 		method: 'GET',
-			// 	});
-			//
-			// 	setIsLoggedIn(true);
-			// 	setName(name);
-			// 	setImageUrl(profile_image_url_https);
-			// 	setStatus(status.text);
-			// 	setUrl(entities.url.urls[0].expanded_url);
-			// } catch (error) {
-			// 	console.error(error);
-			// }
 		})();
 	}, []);
 
-	const login = () => {
-		(async () => {
-			try {
-				//OAuth Step 1
-				const response = await axios.get('/api/twitter/oauth/request_token');
-				const { oauthToken } = response.data;
-				//Oauth Step 2
-				window.location.href = `https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`;
-			} catch (error) {
-				console.error(error);
-			}
-		})();
+	const login = async () => {
+		try {
+			// OAuth Step 1: retrieve request token from backend
+			const response = await axios.get('/api/twitter/oauth/request_token');
+			const { oauthToken } = response.data;
+
+			// Oauth Step 2: direct user to Twitter's login page
+			window.location.href = `https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`;
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
-	const logout = () => {
-		(async () => {
-			try {
-				await axios({
-					url: '/api/twitter/logout',
-					method: 'POST',
-				});
-				setIsLoggedIn(false);
-			} catch (error) {
-				console.error(error);
-			}
-		})();
+	const logout = async () => {
+		try {
+			await axios({
+				url: '/api/twitter/logout',
+				method: 'POST',
+			});
+			setIsLoggedIn(false);
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	return (

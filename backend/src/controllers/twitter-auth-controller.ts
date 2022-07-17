@@ -33,11 +33,19 @@ const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	// save/update account to file
-	insertOrUpdateAccount(twitterAccount);
-	console.log('[TW] Login completed');
+	// save/update account to file and if successful return account details
+	if (insertOrUpdateAccount(twitterAccount)) {
+		ctx.status = HttpStatus.CREATED;
+		ctx.body = {
+			userId: twitterAccount.userId,
+			screenName: twitterAccount.screenName,
+			profileImageUrl: twitterAccount.profileImageUrl,
+		};
+		return;
+	}
 
-	ctx.status = HttpStatus.OK;
+	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+	ctx.body = { error: 'Twitter account could not be stored.' };
 };
 
 export { requestToken, accessToken };

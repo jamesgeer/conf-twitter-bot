@@ -30,17 +30,25 @@ const accountExists = (userId: string): boolean => {
 	return twitterAccounts.some((account) => account.userId === userId);
 };
 
-const updateAccount = (): void => {
+const updateAccount = (): boolean => {
 	console.error('UPDATE NOT IMPLEMENTED');
+	return false;
 };
 
-const insertAccount = (twitterAccount: TwitterAccount): void => {
+const insertAccount = (twitterAccount: TwitterAccount): boolean => {
 	twitterAccounts.push(twitterAccount);
-	writeFileSync(pathToFile, JSON.stringify(twitterAccounts));
+	try {
+		writeFileSync(pathToFile, JSON.stringify(twitterAccounts));
+		return true;
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
 };
 
 // eslint-disable-next-line
-const insertOrUpdateAccount = (twitterAccount: TwitterAccount): void =>
-	accountExists(twitterAccount.userId) ? updateAccount() : insertAccount(twitterAccount);
+const insertOrUpdateAccount = (twitterAccount: TwitterAccount): boolean => {
+	return accountExists(twitterAccount.userId) ? updateAccount() : insertAccount(twitterAccount);
+};
 
 export { updateAccount, insertAccount, insertOrUpdateAccount, getAccount, getAccounts };
