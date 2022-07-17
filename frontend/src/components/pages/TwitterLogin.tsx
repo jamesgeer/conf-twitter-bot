@@ -106,11 +106,8 @@ const TwitterLogin = () => {
 			{isLoggedIn && (
 				<div>
 					<div>
-						<img alt="User profile" src={imageUrl} />
+						<img alt="User profile" src={profileImageUrl} />
 					</div>
-					<div>Name: {name}</div>
-					<div>URL: {url}</div>
-					<div>Status: {status}</div>
 					<button className="signout-btn" onClick={logout}>
 						Sign Out
 					</button>
