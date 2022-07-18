@@ -13,8 +13,9 @@ interface TwitterOAuthAccessToken {
 // Object containing credentials and user details
 interface TwitterAccount {
 	userId: string;
+	name: string;
 	screenName: string;
-	profileImageUrl?: string;
+	profileImageUrl: string;
 	oauth: TwitterOAuthAccessToken;
 }
 

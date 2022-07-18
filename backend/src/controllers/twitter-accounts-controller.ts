@@ -10,6 +10,7 @@ const account = async (ctx: ParameterizedContext): Promise<void> => {
 		ctx.status = HttpStatus.OK;
 		ctx.body = {
 			userId: twitterAccount.userId,
+			name: twitterAccount.name,
 			screenName: twitterAccount.screenName,
 			profileImageUrl: twitterAccount.profileImageUrl,
 		};
@@ -26,6 +27,7 @@ const accounts = async (ctx: ParameterizedContext): Promise<void> => {
 	if (twitterAccounts.length > 0) {
 		const accounts = twitterAccounts.map((account) => ({
 			userId: account.userId,
+			name: account.name,
 			screenName: account.screenName,
 			profileImageUrl: account.profileImageUrl,
 		}));

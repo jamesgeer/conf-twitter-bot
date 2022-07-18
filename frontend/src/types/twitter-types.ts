@@ -1,5 +1,6 @@
 export interface TwitterAccount {
 	userId: string;
+	name: string;
 	screenName: string;
 	profileImageUrl: string;
 }

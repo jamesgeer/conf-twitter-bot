@@ -1,4 +1,4 @@
-import { TwitterApi } from 'twitter-api-v2';
+import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
 import { TwitterOAuthRequestToken, TwitterAccount, TwitterError } from '../types/twitter-types';
 
@@ -27,14 +27,12 @@ const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken |
 };
 
 // need a better place for this method
-const getProfileImageUrl = async (userId: string): Promise<string> => {
+export const getAdditionalUserFields = async (userId: string): Promise<UserV1> => {
 	const client = new TwitterApi({
 		appKey: <string>appKey,
 		appSecret: <string>appSecret,
 	});
-	const user = await client.v1.user({ user_id: userId });
-	const { profile_image_url_https: profileImageUrl } = user;
-	return profileImageUrl;
+	return client.v1.user({ user_id: userId });
 };
 
 const getTwitterAccountByRequestToken = async (
@@ -62,11 +60,12 @@ const getTwitterAccountByRequestToken = async (
 		const { userId, screenName, accessToken, accessSecret } = loginResult;
 
 		// get the user's profile image, may be better to perform this task later
-		const profileImageUrl = await getProfileImageUrl(userId);
+		const { name, profile_image_url_https: profileImageUrl } = await getAdditionalUserFields(userId);
 
 		// return TwitterAccount
 		return {
 			userId,
+			name,
 			screenName,
 			profileImageUrl,
 			oauth: {
