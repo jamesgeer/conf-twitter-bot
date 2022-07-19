@@ -7,6 +7,7 @@ import SelectAccount from './pages/SelectAccount';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
+import ActiveAccountProvider from '../context/ActiveAccount';
 
 export default function App() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
@@ -38,7 +39,9 @@ export default function App() {
 		<div className="container mx-auto flex justify-center">
 			<Router>
 				<Routes>
-					{appLoggedIn && <Route path="/" element={<SelectAccount />} />}
+					<ActiveAccountProvider>
+						{appLoggedIn && <Route path="/" element={<SelectAccount />} />}
+					</ActiveAccountProvider>
 					{twitterLoggedIn && <Route path="/" element={<Index />} />}
 					{!appLoggedIn && !twitterLoggedIn && (
 						<Route path="/" element={<Login appLogin={setAppLoggedIn} />} />

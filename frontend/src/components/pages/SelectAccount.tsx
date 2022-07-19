@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { TwitterAccount, TwitterAccounts } from '../../types/twitter-types';
+import { ActiveAccountContext } from '../../context/ActiveAccount';
 
 const SelectAccount = () => {
 	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
-	const [activeAccount, setActiveAccount] = useState<TwitterAccount>();
+	const { activeAccount, setActiveAccount } = useContext(ActiveAccountContext);
 
 	useEffect(() => {
 		if (twitterAccounts.length === 0) {
