@@ -5,4 +5,9 @@ export interface TwitterAccount {
 	profileImageUrl: string;
 }
 
+export interface ActiveTwitterAccountContext {
+	activeAccount: TwitterAccount;
+	setActiveAccount: (twitterAccount: TwitterAccount) => void;
+}
+
 export type TwitterAccounts = Array<TwitterAccount>;

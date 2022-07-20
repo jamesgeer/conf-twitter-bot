@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
-import { TwitterAccount, TwitterAccounts } from '../../types/twitter-types';
-import { ActiveAccountContext } from '../../context/ActiveAccount';
+import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../../types/twitter-types';
+import { ActiveAccountContext } from '../../context/ActiveAccountContext';
 
 const SelectAccount = () => {
 	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
-	const { activeAccount, setActiveAccount } = useContext(ActiveAccountContext);
+	const { activeAccount, setActiveAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
 
 	useEffect(() => {
 		if (twitterAccounts.length === 0) {
@@ -27,7 +27,9 @@ const SelectAccount = () => {
 	const handleAccountSelection = (userId: string) => {
 		// extract matching account from array of accounts with the selected userId
 		const account = twitterAccounts.find((account) => account.userId === userId);
-		setActiveAccount(account);
+		if (account) {
+			setActiveAccount(account);
+		}
 	};
 
 	const accounts = twitterAccounts.map((account: TwitterAccount) => {
