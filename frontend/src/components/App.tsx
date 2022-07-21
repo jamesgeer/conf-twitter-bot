@@ -1,8 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Index from './pages/Index';
 import Login from './pages/Login';
-import TwitterLogin from './pages/TwitterLogin';
 import SelectAccount from './pages/SelectAccount';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -42,7 +40,7 @@ export default function App() {
 					<Routes>
 						{appLoggedIn && <Route path="/" element={<SelectAccount />} />}
 
-						{twitterLoggedIn && <Route path="/" element={<Index />} />}
+						{/*{twitterLoggedIn && <Route path="/" element={<Index />} />}*/}
 						{!appLoggedIn && !twitterLoggedIn && (
 							<Route path="/" element={<Login appLogin={setAppLoggedIn} />} />
 						)}

@@ -1,16 +1,3 @@
-/**
- * Route for app login
- * ---
- * GET: /api/session
- * Get session (True if exists)
- * ---
- * POST: /api/session/new
- * Create session (App login)
- * ---
- * POST: /api/session/delete
- * Delete session (App logout)
- * ---
- */
 import Router from '@koa/router';
 import HttpStatus from 'http-status';
 import koaBody from 'koa-body';
