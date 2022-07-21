@@ -1,19 +1,12 @@
 import Router from '@koa/router';
 import HttpStatus from 'http-status';
 import koaBody from 'koa-body';
+import { isLoggedIn } from '../../controllers/session-controller';
 
 const sessionRouter = new Router({ prefix: '/session' });
 
 // GET: /api/session
-sessionRouter.get('/', async (ctx) => {
-	console.log('get /');
-	if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
-		ctx.body = { loggedIn: false };
-	} else {
-		ctx.body = { loggedIn: true };
-	}
-	ctx.status = HttpStatus.OK;
-});
+sessionRouter.get('/', isLoggedIn);
 
 // POST: /api/session
 sessionRouter.post('/', koaBody(), async (ctx) => {
