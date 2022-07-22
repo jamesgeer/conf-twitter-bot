@@ -84,11 +84,3 @@ export const logout = async (ctx: ParameterizedContext): Promise<void> => {
 	// attempting to log out when not logged in, unauthorised
 	ctx.status = HttpStatus.UNAUTHORIZED;
 };
-
-export const isActiveTwitterAccount = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('NOT IMPLEMENTED');
-};
-
-export const activeTwitterAccount = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('NOT IMPLEMENTED');
-};
