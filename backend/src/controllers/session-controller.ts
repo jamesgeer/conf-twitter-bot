@@ -1,6 +1,9 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
+import * as dotenv from 'dotenv';
 import { validSessionCookie } from '../models/session-model';
+
+dotenv.config({ path: '../../.env' });
 
 export const isLoggedIn = async (ctx: ParameterizedContext): Promise<void> => {
 	// if no session exists or isLoggedIn is false then user not logged in
@@ -14,8 +17,8 @@ export const isLoggedIn = async (ctx: ParameterizedContext): Promise<void> => {
 	const requestCookie = ctx.request.header.cookie;
 	const sessionCookie = ctx.cookies.get('ConfTwBot');
 	if (validSessionCookie(requestCookie, sessionCookie)) {
-		ctx.body = { loggedIn: true };
 		ctx.status = HttpStatus.OK;
+		ctx.body = { loggedIn: true };
 		return;
 	}
 
@@ -25,11 +28,61 @@ export const isLoggedIn = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const login = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('NOT IMPLEMENTED');
+	// make sure request contains a body
+	if (!ctx.request.body) {
+		ctx.status = HttpStatus.BAD_REQUEST;
+		ctx.body = { message: 'Missing request body' };
+		return;
+	}
+
+	// duplicate code
+	const requestCookie = ctx.request.header.cookie;
+	const sessionCookie = ctx.cookies.get('ConfTwBot');
+
+	// already logged in
+	if (validSessionCookie(requestCookie, sessionCookie)) {
+		ctx.status = HttpStatus.OK;
+		return;
+	}
+
+	// response did not contain a valid cookie, perform password verification
+	const { password } = ctx.request.body;
+	if (password && password === process.env.APP_PASSWORD) {
+		// koa-session needs to be running to create/store session cookie
+		if (!ctx.session) {
+			ctx.body = { error: 'Session could not be established' };
+			ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return;
+		}
+
+		// save login session
+		ctx.session.isLoggedIn = true;
+		ctx.session.save();
+		ctx.session.manuallyCommit();
+
+		// return success (contains http cookie for ConfTwBot)
+		ctx.status = HttpStatus.OK;
+		ctx.body = { message: 'Login successful' };
+		return;
+	}
+
+	// invalid login credentials
+	ctx.status = HttpStatus.UNAUTHORIZED;
+	ctx.body = { error: 'Invalid login' };
 };
 
 export const logout = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('NOT IMPLEMENTED');
+	if (ctx.session.isLoggedIn) {
+		// destroy session by resetting variables
+		ctx.session.isLoggedIn = false;
+		ctx.session.userId = undefined;
+
+		// no content to respond with
+		ctx.status = HttpStatus.NO_CONTENT;
+	}
+
+	// attempting to log out when not logged in, unauthorised
+	ctx.status = HttpStatus.UNAUTHORIZED;
 };
 
 export const isActiveTwitterAccount = async (ctx: ParameterizedContext): Promise<void> => {
