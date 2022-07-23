@@ -7,7 +7,8 @@ export interface TwitterAccount {
 
 export interface ActiveTwitterAccountContext {
 	activeAccount: TwitterAccount;
-	setActiveAccount: (twitterAccount: TwitterAccount) => void;
+	setActiveAccount?: (twitterAccount: TwitterAccount) => void;
+	setActiveUser: (twitterAccount: TwitterAccount) => void;
 }
 
 export type TwitterAccounts = Array<TwitterAccount>;

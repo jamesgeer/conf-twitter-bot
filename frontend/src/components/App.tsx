@@ -28,8 +28,11 @@ export default function App() {
 			if (response.status === HttpStatus.OK) {
 				setAppLoggedIn(true);
 			}
-		} catch (err) {
-			console.error(err);
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				// @ts-ignore
+				console.error(error.response.data.message);
+			}
 		}
 	};
 

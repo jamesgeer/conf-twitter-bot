@@ -8,23 +8,22 @@ dotenv.config({ path: '../../.env' });
 export const isLoggedIn = async (ctx: ParameterizedContext): Promise<void> => {
 	// if no session exists or isLoggedIn is false then user not logged in
 	if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = { loggedIn: false };
+		ctx.status = HttpStatus.UNAUTHORIZED;
+		ctx.body = { message: 'You are not logged in.' };
 		return;
 	}
 
 	// check if user has a valid session cookie
 	const requestCookie = ctx.request.header.cookie;
 	const sessionCookie = ctx.cookies.get('ConfTwBot');
-	if (validSessionCookie(requestCookie, sessionCookie)) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = { loggedIn: true };
+	if (!validSessionCookie(requestCookie, sessionCookie)) {
+		ctx.status = HttpStatus.UNAUTHORIZED;
+		ctx.body = { message: 'You are not logged in.' };
 		return;
 	}
 
-	// invalid/no cookie/no session user is not logged in
+	// checks passed, user is logged in
 	ctx.status = HttpStatus.OK;
-	ctx.body = { loggedIn: false };
 };
 
 export const login = async (ctx: ParameterizedContext): Promise<void> => {

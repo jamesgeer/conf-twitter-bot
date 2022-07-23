@@ -15,7 +15,7 @@ sessionRouter.post('/login', koaBody(), login);
 sessionRouter.post('/logout', koaBody(), logout);
 
 // GET: /api/session/twitter/user/
-sessionRouter.get('/twitter/user/', koaBody(), getActiveTwitterUser);
+sessionRouter.get('/twitter/user/', getActiveTwitterUser);
 
 // POST: /api/session/twitter/user/:userId
 sessionRouter.post('/twitter/user/:userId', koaBody(), setActiveTwitterUser);
