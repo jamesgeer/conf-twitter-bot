@@ -18,7 +18,7 @@ export const isLoggedIn = async (ctx: ParameterizedContext): Promise<void> => {
 	const sessionCookie = ctx.cookies.get('ConfTwBot');
 	if (!validSessionCookie(requestCookie, sessionCookie)) {
 		ctx.status = HttpStatus.UNAUTHORIZED;
-		ctx.body = { message: 'You are not logged in.' };
+		ctx.body = { message: 'Invalid session cookie.' };
 		return;
 	}
 
@@ -71,15 +71,16 @@ export const login = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const logout = async (ctx: ParameterizedContext): Promise<void> => {
-	if (ctx.session.isLoggedIn) {
-		// destroy session by resetting variables
-		ctx.session.isLoggedIn = false;
-		ctx.session.userId = undefined;
-
-		// no content to respond with
-		ctx.status = HttpStatus.NO_CONTENT;
+	// attempting to log out when not logged in, unauthorised
+	if (!ctx.session.isLoggedIn) {
+		ctx.status = HttpStatus.UNAUTHORIZED;
+		return;
 	}
 
-	// attempting to log out when not logged in, unauthorised
-	ctx.status = HttpStatus.UNAUTHORIZED;
+	// destroy session by resetting variables
+	ctx.session.isLoggedIn = false;
+	ctx.session.userId = undefined;
+
+	// no content to respond with
+	ctx.status = HttpStatus.NO_CONTENT;
 };
