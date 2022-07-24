@@ -3,11 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../../types/twitter-types';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
 
-interface Props {
-	twitterLogin: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const SelectAccount = ({ twitterLogin }: Props) => {
+const SelectAccount = () => {
 	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
 	const { activeAccount, setActiveUser } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
 
@@ -32,9 +28,6 @@ const SelectAccount = ({ twitterLogin }: Props) => {
 		const account = twitterAccounts.find((account) => account.userId === userId);
 		if (account) {
 			setActiveUser(account);
-			if (activeAccount.userId.length > 0) {
-				twitterLogin(true);
-			}
 		}
 	};
 

@@ -2,14 +2,18 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Login from './pages/Login';
 import SelectAccount from './pages/SelectAccount';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 import Dashboard from './pages/Dashboard';
+import { ActiveAccountContext } from '../context/ActiveAccountContext';
+import { ActiveTwitterAccountContext } from '../types/twitter-types';
 
 export default function App() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
 	const [twitterLoggedIn, setTwitterLoggedIn] = useState(false);
+
+	const { activeAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
 
 	useEffect(() => {
 		// check if there is an existing user session on start up
@@ -36,12 +40,16 @@ export default function App() {
 		}
 	};
 
+	if (!twitterLoggedIn && activeAccount.userId.length > 0) {
+		setTwitterLoggedIn(true);
+	}
+
 	return (
 		<div className="container mx-auto flex justify-center">
 			<Router>
 				<Routes>
 					{appLoggedIn && twitterLoggedIn && <Route path="/" element={<Dashboard />} />}
-					{appLoggedIn && <Route path="/" element={<SelectAccount twitterLogin={setTwitterLoggedIn} />} />}
+					{appLoggedIn && <Route path="/" element={<SelectAccount />} />}
 					{!appLoggedIn && !twitterLoggedIn && (
 						<Route path="/" element={<Login appLogin={setAppLoggedIn} />} />
 					)}
