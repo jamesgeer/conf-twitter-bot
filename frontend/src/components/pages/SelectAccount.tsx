@@ -1,9 +1,13 @@
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../../types/twitter-types';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
 
-const SelectAccount = () => {
+interface Props {
+	twitterLogin: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const SelectAccount = ({ twitterLogin }: Props) => {
 	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
 	const { activeAccount, setActiveUser } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
 
@@ -17,7 +21,6 @@ const SelectAccount = () => {
 		try {
 			const response = await axios.get('/api/twitter/accounts');
 			const twitterAccounts: TwitterAccounts = response.data;
-			console.log(twitterAccounts);
 			setTwitterAccounts(twitterAccounts);
 		} catch (error) {
 			console.error(error);
@@ -29,6 +32,9 @@ const SelectAccount = () => {
 		const account = twitterAccounts.find((account) => account.userId === userId);
 		if (account) {
 			setActiveUser(account);
+			if (activeAccount.userId.length > 0) {
+				twitterLogin(true);
+			}
 		}
 	};
 
@@ -49,6 +55,11 @@ const SelectAccount = () => {
 		<div className="mt-8 w-full xl:w-2/5">
 			<h1 className="text-center text-4xl font-bold">Select an Account</h1>
 			<ul className="mt-6 grid gap-y-6">{accounts}</ul>
+			<div className="mt-6 flex justify-end">
+				<button className="flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+					+ Add Account
+				</button>
+			</div>
 		</div>
 	);
 };
