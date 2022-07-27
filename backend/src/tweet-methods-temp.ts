@@ -32,7 +32,8 @@ async function queueTweet() {
 	const persistedTweet = await postTweet(tweet);
 
 	if (persistedTweet) {
-		updateSchedule();
+		// scheduler: complicated
+		// updateSchedule();
 	}
 }
 

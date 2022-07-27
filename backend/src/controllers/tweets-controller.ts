@@ -1,22 +1,23 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
+import { getTweets } from '../models/tweets-model';
 
-export const getTweets = async (ctx: ParameterizedContext): Promise<void> => {
+export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
+	ctx.status = HttpStatus.OK;
+	ctx.body = { getTweets };
+};
+
+export const scheduledTweets = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.OK;
 	ctx.body = { message: 'Not implemented.' };
 };
 
-export const getScheduledTweets = async (ctx: ParameterizedContext): Promise<void> => {
+export const sentTweets = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.OK;
 	ctx.body = { message: 'Not implemented.' };
 };
 
-export const getSentTweets = async (ctx: ParameterizedContext): Promise<void> => {
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Not implemented.' };
-};
-
-export const postTweet = async (ctx: ParameterizedContext): Promise<void> => {
+export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.OK;
 	ctx.body = { message: 'Not implemented.' };
 };

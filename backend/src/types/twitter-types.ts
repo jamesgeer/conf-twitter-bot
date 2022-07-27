@@ -1,17 +1,17 @@
 // Temporary credentials
-interface TwitterOAuthRequestToken {
+export interface TwitterOAuthRequestToken {
 	oauthToken?: string;
 	oauthTokenSecret: string;
 }
 
 // Token credentials
-interface TwitterOAuthAccessToken {
+export interface TwitterOAuthAccessToken {
 	accessToken?: string;
 	accessSecret?: string;
 }
 
 // Object containing credentials and user details
-interface TwitterAccount {
+export interface TwitterAccount {
 	userId: string;
 	name: string;
 	screenName: string;
@@ -19,12 +19,25 @@ interface TwitterAccount {
 	oauth: TwitterOAuthAccessToken;
 }
 
-interface TwitterError {
+// Array of account objects
+export type TwitterAccounts = Array<TwitterAccount>;
+
+// Just an error type
+export interface TwitterError {
 	error: boolean;
 	message: string;
 }
 
-// Array of account objects
-type TwitterAccounts = Array<TwitterAccount>;
+// Single Tweet
+export interface Tweet {
+	id?: number;
+	text: string;
+	image64: string;
+	paperId: number;
+	userId?: string;
+	scheduledTimeUTC?: string;
+	sent?: boolean;
+}
 
-export { TwitterOAuthRequestToken, TwitterAccount, TwitterAccounts, TwitterError };
+// Array of Tweets
+export type Tweets = Array<Tweet>;

@@ -5,6 +5,8 @@ auth.json
 auth-twitter.sh
 data.json
 
+backend/src/data
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
