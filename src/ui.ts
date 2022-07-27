@@ -139,6 +139,10 @@ function paperDetails(d: Paper): JQuery<HTMLElement> {
 	return $(paper);
 }
 
+/**
+ * converts paper details to a base64 encoded image string
+ * @param paper
+ */
 async function renderPaperDetails(paper: Paper): Promise<string> {
 	if (!paper.fullAbstract) {
 		const withFullAbstract = await getPaperById(paper.id);
@@ -216,21 +220,24 @@ async function queueTweet() {
 		return;
 	}
 
-	const dataUrl = await renderPaperDetails(selectedPaper);
-	const tweetText = <string>$('#tweet').val();
-	const id = <number>selectedPaper.id;
+	const dataUrl = await renderPaperDetails(selectedPaper); // base64 encoded image string
+	const tweetText = <string>$('#tweet').val(); // tweet text
+	const id = <number>selectedPaper.id; // paper id
 
-	const elem = showInQueue({
+	// tweet object
+	const tweet = {
 		text: tweetText,
 		image: dataUrl,
 		paperId: id,
-	});
+	};
 
-	const persistedTweet = await postTweet({
-		text: tweetText,
-		image: dataUrl,
-		paperId: id,
-	});
+	// populate html with generated tweet
+	const elem = showInQueue(tweet);
+
+	// write tweet to file
+	const persistedTweet = await postTweet(tweet);
+
+	// if tweet was successful then add to schedule to be posted
 	if (persistedTweet !== null) {
 		elem.attr('data-tweet-id', <number>persistedTweet.id);
 		elem.data('tweetObj', persistedTweet);
