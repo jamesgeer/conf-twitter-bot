@@ -1,25 +1,19 @@
 import Router from '@koa/router';
+import koaBody from 'koa-body';
+import { getTweets, getScheduledTweets, getSentTweets, postTweet } from '../../controllers/tweets-controller';
 
 const tweetsRouter = new Router({ prefix: '/tweets' });
 
 // GET: /api/tweets
-tweetsRouter.get('/', () => {
-	console.log('get all tweets');
-});
+tweetsRouter.get('/', getTweets);
 
 // GET: /api/tweets/scheduled
-tweetsRouter.get('/scheduled', () => {
-	console.log('get all scheduled tweets');
-});
+tweetsRouter.get('/scheduled', getScheduledTweets);
 
 // GET: /api/tweets/sent
-tweetsRouter.get('/sent', () => {
-	console.log('get all sent tweets');
-});
+tweetsRouter.get('/sent', getSentTweets);
 
 // POST: /api/tweets
-tweetsRouter.post('/', () => {
-	console.log('post new tweet');
-});
+tweetsRouter.post('/', koaBody(), postTweet);
 
 export default tweetsRouter;
