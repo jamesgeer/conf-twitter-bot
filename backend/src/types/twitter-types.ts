@@ -39,5 +39,12 @@ export interface Tweet {
 	sent?: boolean;
 }
 
+// Tweet sent from frontend and received by backend
+export interface HTTPTweet {
+	userId: string;
+	text: string;
+	scheduledTimeUTC?: string;
+}
+
 // Array of Tweets
 export type Tweets = Array<Tweet>;
