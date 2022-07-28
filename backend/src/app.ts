@@ -4,6 +4,7 @@ import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import * as dotenv from 'dotenv';
 import router from './routes';
+import cronJobs from './jobs';
 
 dotenv.config({ path: '../.env' });
 
@@ -47,3 +48,6 @@ app.use(router.allowedMethods());
 app.listen(PORT, () => {
 	console.log('==> 🌎  Listening on port %s. Visit http://localhost:%s/', PORT, PORT);
 });
+
+// run cron jobs
+cronJobs();

@@ -56,10 +56,33 @@ const router = new Router();
 router.post('/queue-tweet', koaBody(), async (ctx) => {
 	const tweet = await ctx.request.body;
 	tweet.userId = ctx.session?.userId;
-	saveTweet(tweet);
+	scheduleTweeting(tweet);
 	ctx.type = 'json';
 	ctx.body = {
 		ok: true,
 		tweet,
 	};
 });
+
+function scheduleTweeting(tweet: Tweet): boolean {
+	if (!tweet.scheduledTime || !tweet.id || tweet.sent || !tweet.userId) {
+		return false;
+	}
+
+	cancelExistingJob(tweet.id);
+
+	const date = new Date(tweet.scheduledTime);
+	doAt(
+		date,
+		async () => {
+			tweet.sent = true;
+			persistData();
+			console.log(`Send tweet: ${tweet.id}  ${new Date().toJSON()}`);
+			const created = await createTweetWithImage(tweet);
+			console.log(`Sending tweet ${tweet.id} ${created ? 'succeeded' : 'failed'}`);
+		},
+		tweet.id,
+	);
+
+	return true;
+}
