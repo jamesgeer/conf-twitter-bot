@@ -1,7 +1,9 @@
+import TweetBox from '../../layout/TweetBox';
+
 const DashboardContent = () => {
 	return (
 		<div>
-			<p>Content here</p>
+			<TweetBox />
 		</div>
 	);
 };
