@@ -7,7 +7,7 @@ import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from '..
 // need a better solution than to store temp auth in a variable
 let tempAuthDetails: TwitterOAuthRequestToken;
 
-const requestToken = async (ctx: ParameterizedContext): Promise<void> => {
+export const requestToken = async (ctx: ParameterizedContext): Promise<void> => {
 	const oAuthRequestToken = await getTwitterOAuthRequestToken();
 
 	if ('error' in oAuthRequestToken) {
@@ -23,7 +23,7 @@ const requestToken = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.body = { oauthToken: oAuthRequestToken.oauthToken };
 };
 
-const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
+export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	const { oauth_verifier: oauthVerifier, oauth_token: oauthToken } = ctx.request.body;
 	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthVerifier, oauthToken);
 
@@ -47,5 +47,3 @@ const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 	ctx.body = { error: 'Twitter account could not be stored.' };
 };
-
-export { requestToken, accessToken };

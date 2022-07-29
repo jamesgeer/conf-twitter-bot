@@ -7,7 +7,7 @@ dotenv.config({ path: '../../.env' });
 const appKey = process.env.TWITTER_API_KEY;
 const appSecret = process.env.TWITTER_API_SECRET;
 
-const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | TwitterError> => {
+export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | TwitterError> => {
 	const client = new TwitterApi({
 		appKey: <string>appKey,
 		appSecret: <string>appSecret,
@@ -35,7 +35,7 @@ export const getAdditionalUserFields = async (userId: string): Promise<UserV1> =
 	return client.v1.user({ user_id: userId });
 };
 
-const getTwitterAccountByRequestToken = async (
+export const getTwitterAccountByRequestToken = async (
 	tempAuthDetails: TwitterOAuthRequestToken,
 	oauthVerifier: string,
 	oauthToken: string,
@@ -77,5 +77,3 @@ const getTwitterAccountByRequestToken = async (
 
 	return { error: true, message: 'Unable to create access token.' };
 };
-
-export { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken };

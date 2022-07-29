@@ -2,8 +2,7 @@ import * as cron from 'node-cron';
 import tweetsSchedule from './twitter/tweets-schedule';
 
 const cronJobs = (): void => {
-	console.log('Cron jobs initialised');
-
+	// run every minute of everyday
 	cron.schedule('* * * * *', tweetsSchedule);
 };
 

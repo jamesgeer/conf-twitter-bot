@@ -2,7 +2,7 @@ import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import { getAccount, getAccounts } from '../models/twitter-accounts.model';
 
-const account = async (ctx: ParameterizedContext): Promise<void> => {
+export const account = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
 	const twitterAccount = getAccount(userId);
 
@@ -21,7 +21,7 @@ const account = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.body = { message: 'Account not found.' };
 };
 
-const accounts = async (ctx: ParameterizedContext): Promise<void> => {
+export const accounts = async (ctx: ParameterizedContext): Promise<void> => {
 	const twitterAccounts = getAccounts();
 
 	if (twitterAccounts.length > 0) {
@@ -40,5 +40,3 @@ const accounts = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.OK;
 	ctx.body = { message: 'No accounts found.' };
 };
-
-export { account, accounts };
