@@ -45,7 +45,7 @@ export default function App() {
 	}
 
 	return (
-		<div className="container mx-auto flex justify-center">
+		<>
 			<Router>
 				<Routes>
 					{appLoggedIn && twitterLoggedIn && <Route path="/" element={<Dashboard />} />}
@@ -55,6 +55,6 @@ export default function App() {
 					)}
 				</Routes>
 			</Router>
-		</div>
+		</>
 	);
 }

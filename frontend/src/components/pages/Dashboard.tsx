@@ -3,8 +3,7 @@ import DashboardContent from './dashboard/DashboardContent';
 
 const Dashboard = () => {
 	return (
-		<div>
-			<h1 className="text-center text-4xl font-bold">Dashboard</h1>
+		<div className="container grid grid-cols-10 m-auto">
 			<DashboardSidebar />
 			<DashboardContent />
 		</div>

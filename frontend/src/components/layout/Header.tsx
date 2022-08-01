@@ -10,7 +10,7 @@ const Header = () => {
 	return (
 		<header className="bg-slate-100 mb-5">
 			<nav className="navbar container mx-auto py-4 flex justify-between items-center">
-				<h2>ConfTwBot</h2>
+				<h2 className="text-xl font-bold">ConfTwBot</h2>
 				{activeAccount.userId.length > 0 && <UserCard activeAccount={activeAccount} />}
 				{activeAccount.userId.length === 0 && <LoginButton />}
 			</nav>

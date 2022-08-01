@@ -45,13 +45,15 @@ const SelectAccount = () => {
 	});
 
 	return (
-		<div className="mt-8 w-full xl:w-2/5">
-			<h1 className="text-center text-4xl font-bold">Select an Account</h1>
-			<ul className="mt-6 grid gap-y-6">{accounts}</ul>
-			<div className="mt-6 flex justify-end">
-				<button className="flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-					+ Add Account
-				</button>
+		<div className="container mx-auto flex justify-center">
+			<div className="mt-8 w-full xl:w-2/5">
+				<h1 className="text-center text-4xl font-bold">Select an Account</h1>
+				<ul className="mt-6 grid gap-y-6">{accounts}</ul>
+				<div className="mt-6 flex justify-end">
+					<button className="flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+						+ Add Account
+					</button>
+				</div>
 			</div>
 		</div>
 	);

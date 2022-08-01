@@ -1,13 +1,12 @@
-import { TwitterAccount } from '../../../types/twitter-types';
 import React from 'react';
 
 const DashboardSidebar = () => {
-	const sideBarList = ['Scheduled', 'History', 'Data', 'Change Account', 'Tweet'];
+	const sideBarList = ['Schedule', 'History', 'Data', 'Change Account', 'Tweet'];
 
 	const sideBarButtons = sideBarList.map((item: string) => {
 		return (
 			<li>
-				<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+				<button className="bg-transparent hover:bg-slate-100 text-left text-xl font-bold py-2 px-4 rounded-full">
 					{item}
 				</button>
 			</li>
@@ -15,8 +14,8 @@ const DashboardSidebar = () => {
 	});
 
 	return (
-		<div>
-			<ul className="mt-6 grid gap-y-6">{sideBarButtons}</ul>
+		<div className="col-span-2">
+			<ul className="grid gap-y-6">{sideBarButtons}</ul>
 		</div>
 	);
 };
