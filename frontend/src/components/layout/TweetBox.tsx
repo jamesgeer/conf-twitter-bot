@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
 import { ActiveTwitterAccountContext } from '../../types/twitter-types';
+import DateTimeSelection from '../forms/DateTimeSelection';
 
 const TweetBox = () => {
 	const { activeAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
@@ -21,7 +22,7 @@ const TweetBox = () => {
 						onChange={(e) => setContent(e.target.value)}
 					></textarea>
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
-						<div className="flex items-center pt-1"></div>
+						<DateTimeSelection />
 						<div className="absolute right-0">
 							<button
 								className="bg-blue-500 text-[13px] text-white font-semibold p-1 rounded-full mt-4 shadow-xs hover:bg-dblue transition-all"

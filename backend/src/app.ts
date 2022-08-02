@@ -50,4 +50,4 @@ app.listen(PORT, () => {
 });
 
 // run cron jobs
-cronJobs();
+// cronJobs();
