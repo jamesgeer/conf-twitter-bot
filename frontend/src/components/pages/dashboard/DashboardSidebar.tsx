@@ -3,9 +3,9 @@ import React from 'react';
 const DashboardSidebar = () => {
 	const sideBarList = ['Schedule', 'History', 'Data', 'Change Account', 'Tweet'];
 
-	const sideBarButtons = sideBarList.map((item: string) => {
+	const sideBarButtons = sideBarList.map((item, index) => {
 		return (
-			<li>
+			<li key={index}>
 				<button className="bg-transparent hover:bg-slate-100 text-left text-xl font-bold py-2 px-4 rounded-full">
 					{item}
 				</button>
