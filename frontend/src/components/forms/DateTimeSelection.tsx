@@ -1,6 +1,18 @@
 import dayjs from 'dayjs';
+import { useState } from 'react';
 
 const DateTimeSelection = () => {
+	// new date time object containing temporal information for -> now <-
+	const currentDateTime = dayjs();
+	// three days from now
+	const defaultDateTime = currentDateTime.add(3, 'day');
+
+	const [day, setDay] = useState(defaultDateTime.date());
+	const [month, setMonth] = useState();
+	const [year, setYear] = useState();
+	const [hour, setHour] = useState();
+	const [minute, setMinute] = useState();
+
 	const months = [
 		'January',
 		'February',
@@ -16,6 +28,17 @@ const DateTimeSelection = () => {
 		'December',
 	];
 
+	const dayOptions = (length: number) => {
+		return Array.from({ length }).map((_, index) => {
+			const oneBasedIndex = index + 1;
+			return (
+				<option key={oneBasedIndex} value={oneBasedIndex}>
+					{oneBasedIndex}
+				</option>
+			);
+		});
+	};
+
 	const monthOptions = months.map((month, index) => {
 		return (
 			<option key={month} value={index}>
@@ -24,11 +47,12 @@ const DateTimeSelection = () => {
 		);
 	});
 
+	// hours and minutes
 	const timeOptions = (length: number) => {
 		return Array.from({ length }).map((_, index) => {
 			return (
 				<option key={index} value={index}>
-					{index < 10 ? `0${index}` : index}
+					{index < 10 ? `0${index}` : index + 1}
 				</option>
 			);
 		});
@@ -43,8 +67,8 @@ const DateTimeSelection = () => {
 						<label htmlFor="days" className="pr-1">
 							Day
 						</label>
-						<select name="days" id="days">
-							<option value="1">1</option>
+						<select name="days" id="days" value={day} onChange={(e) => setDay(parseInt(e.target.value))}>
+							{dayOptions(defaultDateTime.daysInMonth())}
 						</select>
 					</div>
 					<div>
