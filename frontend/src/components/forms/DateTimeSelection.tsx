@@ -69,6 +69,10 @@ const DateTimeSelection = () => {
 		});
 	};
 
+	// https://day.js.org/docs/en/display/format
+	const enteredDateTime = dayjs(`${year}-${month}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
+	console.log(enteredDateTime.toISOString());
+
 	return (
 		<div className="grid grid-flow-col gap-x-4">
 			<div className="rounded-2xl bg-slate-100 p-3">
