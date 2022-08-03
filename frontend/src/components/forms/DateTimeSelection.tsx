@@ -7,11 +7,11 @@ const DateTimeSelection = () => {
 	// three days from now
 	const defaultDateTime = currentDateTime.add(3, 'day');
 
-	const [day, setDay] = useState(defaultDateTime.date());
-	const [month, setMonth] = useState();
-	const [year, setYear] = useState();
-	const [hour, setHour] = useState();
-	const [minute, setMinute] = useState();
+	const [day, setDay] = useState(defaultDateTime.date().toString());
+	const [month, setMonth] = useState(defaultDateTime.month().toString());
+	const [year, setYear] = useState(defaultDateTime.year().toString());
+	const [hour, setHour] = useState(defaultDateTime.hour().toString());
+	const [minute, setMinute] = useState(defaultDateTime.minute().toString());
 
 	const months = [
 		'January',
@@ -47,12 +47,23 @@ const DateTimeSelection = () => {
 		);
 	});
 
+	const yearOptions = (length: number) => {
+		return Array.from({ length }).map((_, index) => {
+			const year = currentDateTime.year() + index;
+			return (
+				<option key={year} value={year}>
+					{year}
+				</option>
+			);
+		});
+	};
+
 	// hours and minutes
 	const timeOptions = (length: number) => {
 		return Array.from({ length }).map((_, index) => {
 			return (
 				<option key={index} value={index}>
-					{index < 10 ? `0${index}` : index + 1}
+					{index < 10 ? `0${index}` : index}
 				</option>
 			);
 		});
@@ -67,7 +78,7 @@ const DateTimeSelection = () => {
 						<label htmlFor="days" className="pr-1">
 							Day
 						</label>
-						<select name="days" id="days" value={day} onChange={(e) => setDay(parseInt(e.target.value))}>
+						<select name="days" id="days" value={day} onChange={(e) => setDay(e.target.value)}>
 							{dayOptions(defaultDateTime.daysInMonth())}
 						</select>
 					</div>
@@ -75,7 +86,7 @@ const DateTimeSelection = () => {
 						<label htmlFor="months" className="pr-1">
 							Month
 						</label>
-						<select name="months" id="months">
+						<select name="months" id="months" value={month} onChange={(e) => setMonth(e.target.value)}>
 							{monthOptions}
 						</select>
 					</div>
@@ -83,8 +94,8 @@ const DateTimeSelection = () => {
 						<label htmlFor="years" className="pr-1">
 							Year
 						</label>
-						<select name="years" id="years">
-							<option value="2022">2022</option>
+						<select name="years" id="years" value={year} onChange={(e) => setYear(e.target.value)}>
+							{yearOptions(3)}
 						</select>
 					</div>
 				</div>
@@ -96,7 +107,7 @@ const DateTimeSelection = () => {
 						<label htmlFor="hours" className="pr-1">
 							Hour
 						</label>
-						<select name="hours" id="hours">
+						<select name="hours" id="hours" value={hour} onChange={(e) => setHour(e.target.value)}>
 							{timeOptions(24)}
 						</select>
 					</div>
@@ -104,7 +115,7 @@ const DateTimeSelection = () => {
 						<label htmlFor="minutes" className="pr-1">
 							Minute
 						</label>
-						<select name="minutes" id="minutes">
+						<select name="minutes" id="minutes" value={minute} onChange={(e) => setMinute(e.target.value)}>
 							{timeOptions(60)}
 						</select>
 					</div>
