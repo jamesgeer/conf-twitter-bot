@@ -1,7 +1,11 @@
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-const DateTimeSelection = () => {
+interface Props {
+	setDateTimeISO: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const DateTimeSelection = ({ setDateTimeISO }: Props) => {
 	// new date time object containing temporal information for -> now <-
 	const currentDateTime = dayjs();
 	// three days from now
@@ -71,7 +75,7 @@ const DateTimeSelection = () => {
 
 	// https://day.js.org/docs/en/display/format
 	const enteredDateTime = dayjs(`${year}-${month}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
-	console.log(enteredDateTime.toISOString());
+	setDateTimeISO(enteredDateTime.toISOString());
 
 	return (
 		<div className="grid grid-flow-col gap-x-4">
