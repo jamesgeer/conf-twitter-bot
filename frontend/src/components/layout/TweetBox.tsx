@@ -13,7 +13,7 @@ const TweetBox = () => {
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
 			setError(true);
-			setErrorText('Please enter a tweet.');
+			setErrorText('Tweet did not contain any content!');
 			return false;
 		}
 		return true;
@@ -23,14 +23,16 @@ const TweetBox = () => {
 		return true;
 	};
 
-	const handleTweetSubmission = () => {
+	const handleTweetSubmission = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		console.log(dateTimeISO);
 		if (!validTextInput(tweetText) || !validScheduledDateTime(dateTimeISO)) {
 			return;
 		}
 	};
 
 	return (
-		<div className="px-7 mt-2 text-black">
+		<form className="px-7 mt-2 text-black" onSubmit={(e) => handleTweetSubmission(e)}>
 			<div className="flex gap-x-4 relative">
 				<div>
 					<img className="w-[48px] h-auto rounded-full" src={activeAccount.profileImageUrl} alt="profile" />
@@ -45,19 +47,15 @@ const TweetBox = () => {
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
 						<DateTimeSelection setDateTimeISO={setDateTimeISO} />
 						<div className="absolute right-0">
-							<button
-								className="pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full"
-								disabled={tweetText.length === 0}
-								onClick={() => console.log('Create Tweet')}
-							>
+							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
 								Tweet
 							</button>
 						</div>
 					</div>
-					<p className={`text-red-500 text-xs italic ${error ? 'block' : 'hidden'}`}>{errorText}</p>
+					<p className={`text-red-500 ${error ? 'block' : 'hidden'}`}>{errorText}</p>
 				</div>
 			</div>
-		</div>
+		</form>
 	);
 };
 

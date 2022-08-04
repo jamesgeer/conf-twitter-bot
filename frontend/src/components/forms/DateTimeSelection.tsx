@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
 	setDateTimeISO: React.Dispatch<React.SetStateAction<string>>;
@@ -73,9 +73,12 @@ const DateTimeSelection = ({ setDateTimeISO }: Props) => {
 		});
 	};
 
-	// https://day.js.org/docs/en/display/format
-	const enteredDateTime = dayjs(`${year}-${month}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
-	setDateTimeISO(enteredDateTime.toISOString());
+	// set date time once component has fully loaded otherwise an error will occur
+	useEffect(() => {
+		// https://day.js.org/docs/en/display/format
+		const enteredDateTime = dayjs(`${year}-${month}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
+		setDateTimeISO(enteredDateTime.toISOString());
+	}, [day, month, year, hour, minute, setDateTimeISO]);
 
 	return (
 		<div className="grid grid-flow-col gap-x-4">
