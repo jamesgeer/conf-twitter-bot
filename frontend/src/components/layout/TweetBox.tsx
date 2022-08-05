@@ -58,7 +58,7 @@ const TweetBox = () => {
 			};
 			const response = await axios.post('/api/tweets', payload);
 			if (response.status === HttpStatus.CREATED) {
-				console.log('Tweet created!');
+				setTweetText('');
 			}
 		} catch (err) {
 			if (axios.isAxiosError(err)) {

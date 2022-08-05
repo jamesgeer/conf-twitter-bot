@@ -12,3 +12,24 @@ export interface ActiveTwitterAccountContext {
 }
 
 export type TwitterAccounts = Array<TwitterAccount>;
+
+// Single Tweet
+export interface Tweet {
+	id?: number;
+	text: string;
+	image64: string;
+	paperId: number;
+	userId?: string;
+	scheduledTimeUTC?: string;
+	sent?: boolean;
+}
+
+// Array of Tweets
+export type Tweets = Array<Tweet>;
+
+// Tweet sent from frontend and received by backend
+export interface HTTPTweet {
+	userId: string;
+	text: string;
+	scheduledTimeUTC?: string;
+}
