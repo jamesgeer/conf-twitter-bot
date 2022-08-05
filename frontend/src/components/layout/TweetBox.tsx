@@ -2,6 +2,9 @@ import React, { useContext, useState } from 'react';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
 import { ActiveTwitterAccountContext } from '../../types/twitter-types';
 import DateTimeSelection from '../forms/DateTimeSelection';
+import dayjs from 'dayjs';
+import axios from 'axios';
+import HttpStatus from 'http-status';
 
 const TweetBox = () => {
 	const { activeAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
@@ -12,23 +15,68 @@ const TweetBox = () => {
 
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
-			setError(true);
-			setErrorText('Tweet did not contain any content!');
+			formError('Tweet did not contain any content!');
 			return false;
 		}
 		return true;
 	};
 
 	const validScheduledDateTime = (dateTimeIso: string): boolean => {
+		const currentDateTime = dayjs();
+		const submittedDateTime = dayjs(dateTimeIso);
+
+		if (submittedDateTime.isBefore(currentDateTime)) {
+			formError('You cannot Tweet to the past!');
+			return false;
+		}
+
 		return true;
+	};
+
+	const resetFormErrors = () => {
+		formError('');
 	};
 
 	const handleTweetSubmission = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log(dateTimeISO);
+		resetFormErrors();
+
 		if (!validTextInput(tweetText) || !validScheduledDateTime(dateTimeISO)) {
 			return;
 		}
+
+		// validation passed, post tweet to backend
+		postTweet().then();
+	};
+
+	const postTweet = async (): Promise<void> => {
+		try {
+			const payload = {
+				userId: activeAccount.userId,
+				text: tweetText,
+				scheduledTimeUTC: dateTimeISO,
+			};
+			const response = await axios.post('/api/tweets', payload);
+			if (response.status === HttpStatus.CREATED) {
+				console.log('Tweet created!');
+			}
+		} catch (err) {
+			if (axios.isAxiosError(err)) {
+				if (err.response?.status === HttpStatus.UNAUTHORIZED) {
+					formError('You are not logged in.');
+					return;
+				}
+				if (err.response?.status === HttpStatus.INTERNAL_SERVER_ERROR) {
+					formError('Internal server error.');
+					return;
+				}
+			}
+		}
+	};
+
+	const formError = (errorMessage: string): void => {
+		setError(true);
+		setErrorText(errorMessage);
 	};
 
 	return (
