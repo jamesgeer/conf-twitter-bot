@@ -7,52 +7,54 @@ Example proceeding: https://dl.acm.org/doi/proceedings/10.1145/3357390
 [ ]   - parse ACM DL paper pages
 */
 import { JSDOM } from 'jsdom';
-import { fetch, CookieJar } from 'node-fetch-cookies';
+import axios from 'axios';
+import * as fs from 'fs';
+import UserAgent from 'user-agents';
 import { Paper } from '../../types/paper-types';
 
 export function isAcmUrl(url: string): boolean {
 	return url.includes('/dl.acm.org/');
 }
 
-async function fetchHtmlOrUsedCached(url: string): Promise<string | Buffer> {
-	// if (!url) {
-	// 	return '';
-	// }
-	//
-	// const pathToFile = path.relative(process.cwd(), 'cache/');
-	// const hashedName = `${pathToFile + hashToString(url)}.html`;
-	//
-	// if (existsSync(hashedName)) {
-	// 	return readFileSync(hashedName);
-	// }
+// async function fetchHtmlOrUsedCached(url: string): Promise<string | Buffer> {
+// 	// if (!url) {
+// 	// 	return '';
+// 	// }
+// 	//
+// 	// const pathToFile = path.relative(process.cwd(), 'cache/');
+// 	// const hashedName = `${pathToFile + hashToString(url)}.html`;
+// 	//
+// 	// if (existsSync(hashedName)) {
+// 	// 	return readFileSync(hashedName);
+// 	// }
+//
+// 	console.log(`Fetch ${url}`);
+// 	const cookieJar = new CookieJar();
+// 	const response = await fetch(cookieJar, url);
+// 	const html = await response.text();
+// 	// writeFileSync(hashedName, html);
+//
+// 	return html;
+// }
 
-	console.log(`Fetch ${url}`);
-	const cookieJar = new CookieJar();
-	const response = await fetch(cookieJar, url);
-	const html = await response.text();
-	// writeFileSync(hashedName, html);
-
-	return html;
-}
-
-export function toDataTable(papers: Paper[]): string[][] {
-	const result: string[][] = [];
-	for (const p of papers) {
-		result.push([
-			'',
-			p.title,
-			p.type,
-			<string>p.url,
-			<string>(<any>p.authors),
-			<string>p.monthYear,
-			<string>p.pages,
-			<string>p.shortAbstract,
-			<string>(<unknown>p.citations),
-			<string>(<unknown>p.downloads),
-		]);
-	}
-	return result;
-}
+// export function toDataTable(papers: Paper[]): string[][] {
+// 	const result: string[][] = [];
+// 	for (const p of papers) {
+// 		result.push([
+// 			'',
+// 			p.title,
+// 			p.type,
+// 			<string>p.url,
+// 			<string>(<any>p.authors),
+// 			<string>p.monthYear,
+// 			<string>p.pages,
+// 			<string>p.shortAbstract,
+// 			<string>(<unknown>p.citations),
+// 			<string>(<unknown>p.downloads),
+// 		]);
+// 	}
+// 	return result;
+// }
 
 // export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
 // 	const html = await fetchHtmlOrUsedCached(<string>paper.url);
@@ -65,12 +67,30 @@ export function toDataTable(papers: Paper[]): string[][] {
 // 	return paper;
 // }
 
+const fetchHTML = async (url: string): Promise<string> => {
+	const { data: html } = await axios.get(url, {
+		headers: {
+			Accept: '*/*',
+			Host: 'dl.acm.org',
+			'User-Agent': new UserAgent(),
+		},
+		withCredentials: true,
+	});
+
+	try {
+		fs.writeFileSync('output.html', html);
+	} catch (err) {
+		console.error(err);
+	}
+	return html;
+};
+
 export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
-	const html = await fetchHtmlOrUsedCached(url);
+	const html = await fetchHTML(url);
 
 	console.log(html);
 
-	const dom = new JSDOM(url);
+	const dom = new JSDOM(html);
 	const { document } = dom.window;
 	const paperTypes = document.querySelectorAll('.issue-heading');
 	const paperTitleHTags = document.querySelectorAll('.issue-item__title');
@@ -79,6 +99,8 @@ export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 	const shortAbstracts = document.querySelectorAll('.issue-item__abstract');
 	const citations = document.querySelectorAll('span.citation');
 	const downloads = document.querySelectorAll('span.metric');
+
+	console.log(paperTitleHTags);
 
 	const numPapers = paperTypes.length;
 	const papers: Paper[] = [];
@@ -145,3 +167,5 @@ function extractPaper(
 		downloads: Number(downloads[i].textContent),
 	};
 }
+
+fetchHTML('https://dl.acm.org/doi/proceedings/10.1145/3357390').then();
