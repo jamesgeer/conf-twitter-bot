@@ -146,6 +146,12 @@ function addPapersToProceedings(papers: Paper[], proc: Proceeding) {
 
 function getOrAddProceedings(url: string) {
 	const data = loadData();
+
+	/*
+	interface Proceeding {
+		id: number;
+		url: string;
+	} */
 	let proc = data.proceedings.find((val) => val.url === url);
 
 	if (proc === undefined) {
