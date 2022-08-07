@@ -10,6 +10,7 @@
   "dependencies": {
     "@koa/cors": "^3.3.0",
     "@koa/router": "^11.0.1",
+    "axios": "^0.27.2",
     "dotenv": "^16.0.1",
     "http-status": "^1.5.2",
     "jsdom": "^20.0.0",
@@ -21,7 +22,7 @@
     "koa-static": "^5.0.0",
     "mustache": "4.2.0",
     "node-cron": "^3.0.1",
-    "node-fetch-cookies": "2.0.3",
+    "node-fetch-cookies": "^2.0.3",
     "twitter-api-v2": "1.8.0"
   },
   "devDependencies": {

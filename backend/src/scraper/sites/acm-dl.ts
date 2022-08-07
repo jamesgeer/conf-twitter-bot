@@ -7,11 +7,32 @@ Example proceeding: https://dl.acm.org/doi/proceedings/10.1145/3357390
 [ ]   - parse ACM DL paper pages
 */
 import { JSDOM } from 'jsdom';
+import { fetch, CookieJar } from 'node-fetch-cookies';
 import { Paper } from '../../types/paper-types';
-import { fetchHtmlOrUsedCached } from '../index';
 
 export function isAcmUrl(url: string): boolean {
 	return url.includes('/dl.acm.org/');
+}
+
+async function fetchHtmlOrUsedCached(url: string): Promise<string | Buffer> {
+	// if (!url) {
+	// 	return '';
+	// }
+	//
+	// const pathToFile = path.relative(process.cwd(), 'cache/');
+	// const hashedName = `${pathToFile + hashToString(url)}.html`;
+	//
+	// if (existsSync(hashedName)) {
+	// 	return readFileSync(hashedName);
+	// }
+
+	console.log(`Fetch ${url}`);
+	const cookieJar = new CookieJar();
+	const response = await fetch(cookieJar, url);
+	const html = await response.text();
+	// writeFileSync(hashedName, html);
+
+	return html;
 }
 
 export function toDataTable(papers: Paper[]): string[][] {
@@ -33,19 +54,23 @@ export function toDataTable(papers: Paper[]): string[][] {
 	return result;
 }
 
-export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
-	const html = await fetchHtmlOrUsedCached(<string>paper.url);
-
-	const dom = new JSDOM(html);
-	const { document } = dom.window;
-	paper.fullAbstract = document.querySelector('.abstractInFull')?.innerHTML;
-	return paper;
-}
+// export async function fetchFullPaperDetails(paper: Paper): Promise<Paper> {
+// 	const html = await fetchHtmlOrUsedCached(<string>paper.url);
+//
+// 	console.log(html);
+//
+// 	const dom = new JSDOM(html);
+// 	const { document } = dom.window;
+// 	paper.fullAbstract = document.querySelector('.abstractInFull')?.innerHTML;
+// 	return paper;
+// }
 
 export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 	const html = await fetchHtmlOrUsedCached(url);
 
-	const dom = new JSDOM(html);
+	console.log(html);
+
+	const dom = new JSDOM(url);
 	const { document } = dom.window;
 	const paperTypes = document.querySelectorAll('.issue-heading');
 	const paperTitleHTags = document.querySelectorAll('.issue-item__title');
@@ -78,6 +103,8 @@ export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 			// ignore entry
 		}
 	}
+
+	console.log(papers);
 
 	return papers;
 }

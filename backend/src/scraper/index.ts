@@ -8,22 +8,22 @@ export function hashToString(str: string): string {
 }
 
 export async function fetchHtmlOrUsedCached(url: string): Promise<string | Buffer> {
-	if (!url) {
-		return '';
-	}
-
-	const pathToFile = path.relative(process.cwd(), 'cache/');
-	const hashedName = `${pathToFile + hashToString(url)}.html`;
-
-	if (existsSync(hashedName)) {
-		return readFileSync(hashedName);
-	}
+	// if (!url) {
+	// 	return '';
+	// }
+	//
+	// const pathToFile = path.relative(process.cwd(), 'cache/');
+	// const hashedName = `${pathToFile + hashToString(url)}.html`;
+	//
+	// if (existsSync(hashedName)) {
+	// 	return readFileSync(hashedName);
+	// }
 
 	console.log(`Fetch ${url}`);
 	const cookieJar = new CookieJar();
 	const response = await fetch(cookieJar, url);
 	const html = await response.text();
-	writeFileSync(hashedName, html);
+	// writeFileSync(hashedName, html);
 
 	return html;
 }
