@@ -40,6 +40,7 @@ module.exports = {
 		'node/no-missing-import': 'off',
 		'implicit-arrow-linebreak': 'off',
 		'node/no-unsupported-features/es-syntax': 'off',
+		'node/no-unsupported-features/node-builtins': 'off',
 		'max-len': ['error', { 'code': 120 }],
 		'quotes': [2, 'single', { 'avoidEscape': true, 'allowTemplateLiterals': true }],
 		'no-use-before-define': ['error', {"functions": false, "classes": false}],
