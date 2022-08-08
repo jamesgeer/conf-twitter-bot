@@ -26,3 +26,5 @@ export interface PaperForTemplate extends Paper {
 	abstract: string;
 	fullAuthors: string;
 }
+
+export type Papers = Array<Paper>;

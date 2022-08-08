@@ -74,17 +74,6 @@ const fetchHTML = async (url: string): Promise<string> => {
 		return readFileSync('output.html').toString();
 	}
 
-	axios.interceptors.request.use(
-		(config) => {
-			// Do something before request is sent
-			console.log(config);
-			return config;
-		},
-		(error) =>
-			// Do something with request error
-			Promise.reject(error),
-	);
-
 	// new request, retrieve html
 	// note: this website is very temperamental and will not consistently return the correct data
 	const { hostname } = new URL(url);

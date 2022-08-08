@@ -1,15 +1,12 @@
 import Router from '@koa/router';
+import { paper, papers } from '../../controllers/papers-controller';
 
 const papersRouter = new Router({ prefix: '/papers' });
 
-const placeholder = () => {
-	console.log('NOT IMPLEMENTED');
-};
-
 // GET /api/papers
-papersRouter.get('/', placeholder);
+papersRouter.get('/', papers);
 
 // GET /api/papers/:paperId
-papersRouter.get('/:paperId', placeholder);
+papersRouter.get('/:paperId', paper);
 
 export default papersRouter;
