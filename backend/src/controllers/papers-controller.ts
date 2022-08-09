@@ -12,7 +12,7 @@ export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 export const paper = async (ctx: ParameterizedContext): Promise<void> => {
 	const { paperId } = ctx.params;
 	const paper = getPaper(parseInt(paperId, 10));
-	console.log(paper);
+
 	if (paper) {
 		ctx.status = HttpStatus.OK;
 		ctx.body = paper;

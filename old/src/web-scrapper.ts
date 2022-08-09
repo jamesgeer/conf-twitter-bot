@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { fetch, CookieJar } from 'node-fetch-cookies';
+// import { fetch, CookieJar } from 'node-fetch-cookies';
 import { robustPath } from './util';
 
 export function hashToString(str: string): string {
@@ -19,10 +19,11 @@ export async function fetchHtmlOrUsedCached(url: string): Promise<string | Buffe
 	}
 
 	console.log(`Fetch ${url}`);
-	const cookieJar = new CookieJar();
-	const response = await fetch(cookieJar, url);
-	const html = await response.text();
-	writeFileSync(hashedName, html);
+	// const cookieJar = new CookieJar();
+	// const response = await fetch(cookieJar, url);
+	// const html = await response.text();
+	// writeFileSync(hashedName, html);
 
-	return html;
+	// return html;
+	return '';
 }

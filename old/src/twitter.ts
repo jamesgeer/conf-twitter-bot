@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { TwitterApi } from 'twitter-api-v2';
-import { Tweet } from './data-types.js';
-import { dataUrlToBuffer } from './data.js';
-import { robustPath } from './util.js';
+import { Tweet } from './data-types';
+import { dataUrlToBuffer } from './data';
+import { robustPath } from './util';
 
 const dataFilePath = robustPath('../twitter-accounts.json');
 

@@ -7,8 +7,8 @@
 // https://dl.acm.org/doi/proceedings/10.1145/3357390
 
 import { JSDOM } from 'jsdom';
-import { Paper } from './data-types.js';
-import { fetchHtmlOrUsedCached } from './web-scrapper.js';
+import { Paper } from './data-types';
+import { fetchHtmlOrUsedCached } from './web-scrapper';
 
 export function isAcmUrl(url: string): boolean {
 	return url.includes('/dl.acm.org/');
@@ -93,6 +93,7 @@ function extractPaper(
 	downloads: NodeListOf<Element>,
 ): Paper {
 	const authors: string[] = [];
+	// @ts-ignore
 	for (const author of authorContainers[i].querySelectorAll('li a')) {
 		const authorName = <string>author.textContent;
 		if (authorName[0] !== ' ') {

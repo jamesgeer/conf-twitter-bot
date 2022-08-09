@@ -1,8 +1,7 @@
-import { URL } from 'url';
 import { readFileSync, writeFileSync } from 'fs';
 import { Config, ConfigForUser } from './data-types.js';
 
-const dirName = new URL('.', import.meta.url).pathname;
+const dirName = `${process.env.PWD}/src/`;
 
 export const robustPath = dirName.includes('/dist')
 	? (path) => `${dirName}/../src/${path}`

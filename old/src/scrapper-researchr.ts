@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
-import { Paper } from './data-types.js';
-import { fetchHtmlOrUsedCached } from './web-scrapper.js';
+import { Paper } from './data-types';
+import { fetchHtmlOrUsedCached } from './web-scrapper';
 
 const orgTypes = ['Day opening', 'Meeting', 'Day closing', 'Coffee break', 'Lunch', 'Dinner'];
 
@@ -27,6 +27,8 @@ export default async function fetchListOfPapersResearchr(url: string): Promise<P
 		const commonContainer = <HTMLElement>titleElem.parentElement?.parentElement;
 		const authors: string[] = [];
 		const authorEs = <NodeListOf<Element>>commonContainer.querySelectorAll('.performers a');
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		for (const a of authorEs) {
 			if (a.textContent) {
 				authors.push(a.textContent);
@@ -37,6 +39,8 @@ export default async function fetchListOfPapersResearchr(url: string): Promise<P
 		let preprint: string | undefined;
 		let detailLink: string | undefined;
 
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		for (const link of commonContainer.querySelectorAll('a.publication-link')) {
 			const url = link.getAttribute('href');
 			if (url?.includes('doi')) {

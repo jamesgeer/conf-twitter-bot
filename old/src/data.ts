@@ -1,10 +1,10 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { cancelExistingJob, doAt } from './do-on-date.js';
-import { fetchListOfPapersACM, fetchFullPaperDetails, isAcmUrl } from './scrapper-acm-dl.js';
-import { robustPath } from './util.js';
-import { Data, Paper, Proceeding, Tweet } from './data-types.js';
-import { createTweetWithImage } from './twitter.js';
-import { fetchListOfPapersResearchr } from './scrapper-researchr.js';
+import { cancelExistingJob, doAt } from './do-on-date';
+import { fetchListOfPapersACM, fetchFullPaperDetails, isAcmUrl } from './scrapper-acm-dl';
+import { robustPath } from './util';
+import { Data, Paper, Proceeding, Tweet } from './data-types';
+import { createTweetWithImage } from './twitter';
+import fetchListOfPapersResearchr from './scrapper-researchr';
 
 export function scheduleTweeting(tweet: Tweet): boolean {
 	if (!tweet.scheduledTime || !tweet.id || tweet.sent || !tweet.userId) {

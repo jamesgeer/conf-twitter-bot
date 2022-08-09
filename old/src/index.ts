@@ -1,8 +1,8 @@
 import { readFileSync, existsSync } from 'fs';
 import Koa from 'koa';
 import koaBody from 'koa-body';
-import Router from 'koa-router';
 import koaSession from 'koa-session';
+import Router from '@koa/router';
 import processTemplate from './templates';
 import { getConfiguration, setConfiguration, robustPath } from './util';
 import { ConfigForUser } from './data-types';
