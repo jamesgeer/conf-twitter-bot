@@ -54,14 +54,8 @@
     ]
   },
   "scripts": {
-    "start": "node ./dist/index.js",
-    "nodemon": "nodemon --enable-source-maps ./dist/index.js --watch ./dist --watch package.json --watch ./src/views --ext js,html",
-    "compile": "tsc && mkdir -p cache",
-    "format": "prettier --config .prettierrc '{src,tests,resources}/**/*.{ts,js}' --write",
-    "verify": "npm run lint",
-    "lint": "npx eslint . --fix --ext .js,.jsx,.ts,.tsx",
-    "update": "git pull && npm install . && pm2 restart 0",
-    "watch": "tsc -w",
+    "start": "cd src && nodemon app.ts",
+    "build": "npx tsc",
     "test": "jest"
   }
 }
