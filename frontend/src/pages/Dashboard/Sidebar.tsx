@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DashboardSidebar = () => {
+const Sidebar = () => {
 	const sideBarList = ['Schedule', 'History', 'Data', 'Change Account', 'Tweet'];
 
 	const sideBarButtons = sideBarList.map((item, index) => {
@@ -20,4 +20,4 @@ const DashboardSidebar = () => {
 	);
 };
 
-export default DashboardSidebar;
+export default Sidebar;

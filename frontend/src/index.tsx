@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './components/App';
+import Index from './pages/Index';
 import Header from './components/layout/Header';
 import { ActiveAccountProvider } from './context/ActiveAccountContext';
 
@@ -10,7 +10,7 @@ root.render(
 	<React.StrictMode>
 		<ActiveAccountProvider>
 			<Header />
-			<App />
+			<Index />
 		</ActiveAccountProvider>
 	</React.StrictMode>,
 );

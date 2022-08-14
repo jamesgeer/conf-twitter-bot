@@ -1,4 +1,4 @@
-import UserCard from './UserCard';
+import UserCard from '../ui/UserCard';
 import { useContext } from 'react';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
 import { ActiveTwitterAccountContext } from '../../types/twitter-types';

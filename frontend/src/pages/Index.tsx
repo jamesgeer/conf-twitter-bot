@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Login from '../pages/Login';
-import SelectAccount from '../pages/SelectAccount';
+import AccountSelection from '../pages/AccountSelection';
 import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
@@ -9,7 +9,7 @@ import Dashboard from '../pages/Dashboard';
 import { ActiveAccountContext } from '../context/ActiveAccountContext';
 import { ActiveTwitterAccountContext } from '../types/twitter-types';
 
-export default function App() {
+export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
 	const [twitterLoggedIn, setTwitterLoggedIn] = useState(false);
 
@@ -49,7 +49,7 @@ export default function App() {
 			<Router>
 				<Routes>
 					{appLoggedIn && twitterLoggedIn && <Route path="/" element={<Dashboard />} />}
-					{appLoggedIn && <Route path="/" element={<SelectAccount />} />}
+					{appLoggedIn && <Route path="/" element={<AccountSelection />} />}
 					{!appLoggedIn && !twitterLoggedIn && (
 						<Route path="/" element={<Login appLogin={setAppLoggedIn} />} />
 					)}

@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { Tweet, Tweets } from '../../types/twitter-types';
+import { Tweet, Tweets } from '../../../types/twitter-types';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
-const DashboardTweets = () => {
+const AllTweets = () => {
 	const [tweets, setTweets] = useState<Tweets>([]);
 
 	useEffect(() => {
@@ -34,4 +34,4 @@ const DashboardTweets = () => {
 	return <div className="grid gap-4">{displayTweets}</div>;
 };
 
-export default DashboardTweets;
+export default AllTweets;
