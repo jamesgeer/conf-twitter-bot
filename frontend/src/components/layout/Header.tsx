@@ -2,7 +2,7 @@ import UserCard from './UserCard';
 import { useContext } from 'react';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
 import { ActiveTwitterAccountContext } from '../../types/twitter-types';
-import LoginButton from '../buttons/LoginButton';
+import Button from '../ui/Button';
 
 const Header = () => {
 	const { activeAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
@@ -12,7 +12,7 @@ const Header = () => {
 			<nav className="navbar container mx-auto py-4 flex justify-between items-center">
 				<h2 className="text-xl font-bold">ConfTwBot</h2>
 				{activeAccount.userId.length > 0 && <UserCard activeAccount={activeAccount} />}
-				{activeAccount.userId.length === 0 && <LoginButton />}
+				{activeAccount.userId.length === 0 && <Button text={'Sign In'} />}
 			</nav>
 		</header>
 	);

@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Login from './pages/Login';
-import SelectAccount from './pages/SelectAccount';
+import Login from '../pages/Login';
+import SelectAccount from '../pages/SelectAccount';
 import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
-import Dashboard from './pages/Dashboard';
+import Dashboard from '../pages/Dashboard';
 import { ActiveAccountContext } from '../context/ActiveAccountContext';
 import { ActiveTwitterAccountContext } from '../types/twitter-types';
 

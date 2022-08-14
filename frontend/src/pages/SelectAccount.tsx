@@ -1,7 +1,8 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
-import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../../types/twitter-types';
-import { ActiveAccountContext } from '../../context/ActiveAccountContext';
+import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../types/twitter-types';
+import { ActiveAccountContext } from '../context/ActiveAccountContext';
+import Button from '../components/ui/Button';
 
 const SelectAccount = () => {
 	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
@@ -50,9 +51,7 @@ const SelectAccount = () => {
 				<h1 className="text-center text-4xl font-bold">Select an Account</h1>
 				<ul className="mt-6 grid gap-y-6">{accounts}</ul>
 				<div className="mt-6 flex justify-end">
-					<button className="flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-						+ Add Account
-					</button>
+					<Button text={'+ Add Account'} />
 				</div>
 			</div>
 		</div>

@@ -1,4 +1,4 @@
-import TweetBox from '../../layout/TweetBox';
+import TweetBox from '../../components/layout/TweetBox';
 import DashboardTweets from './DashboardTweets';
 
 const DashboardContent = () => {
