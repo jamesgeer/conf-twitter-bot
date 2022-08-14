@@ -1,4 +1,4 @@
-import { TwitterAccount } from '../../types/twitter-types';
+import { TwitterAccount } from '../../types';
 
 interface Props {
 	activeAccount: TwitterAccount;

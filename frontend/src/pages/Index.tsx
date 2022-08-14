@@ -7,7 +7,7 @@ import axios from 'axios';
 import HttpStatus from 'http-status';
 import Dashboard from '../pages/Dashboard';
 import { ActiveAccountContext } from '../context/ActiveAccountContext';
-import { ActiveTwitterAccountContext } from '../types/twitter-types';
+import { ActiveTwitterAccountContext } from '../types';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);

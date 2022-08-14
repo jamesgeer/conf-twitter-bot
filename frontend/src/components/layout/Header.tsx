@@ -1,7 +1,7 @@
 import UserCard from '../ui/UserCard';
 import { useContext } from 'react';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
-import { ActiveTwitterAccountContext } from '../../types/twitter-types';
+import { ActiveTwitterAccountContext } from '../../types';
 import Button from '../ui/Button';
 
 const Header = () => {

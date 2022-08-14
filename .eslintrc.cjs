@@ -5,25 +5,36 @@ module.exports = {
 		project: 'tsconfig.json',
 		tsconfigRootDir: __dirname,
 		sourceType: 'module',
+		ecmaFeatures: {
+			jsx: true
+		}
+	},
+	settings: {
+		react: {
+			version: '18.2.0'
+		},
 	},
 	env: {
+		es6: true,
 		browser: true,
 		node: true,
 	},
 	plugins: [
-		'@typescript-eslint',
+		'react',
 		'jest',
 		'prettier',
+		'@typescript-eslint'
 	],
 	extends: [
 		'eslint:recommended',
+		'prettier',
 		'node',
 		'plugin:node/recommended',
 		'plugin:@typescript-eslint/recommended',
 		'plugin:jest/recommended',
-		'prettier',
+		'plugin:react/recommended',
 		'airbnb-base',
-		'airbnb-typescript/base',
+		'airbnb-typescript/base'
 	],
 	ignorePatterns: ['dist/**/*', 'node_modules/**/*'],
 	rules: {

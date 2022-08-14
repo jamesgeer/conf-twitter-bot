@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Tweet, Tweets } from '../../../types/twitter-types';
+import { Tweet, Tweets } from '../../../types';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
-import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../types/twitter-types';
+import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../types';
 import { ActiveAccountContext } from '../context/ActiveAccountContext';
 import Button from '../components/ui/Button';
 

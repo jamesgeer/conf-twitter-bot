@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { ActiveAccountContext } from '../../context/ActiveAccountContext';
-import { ActiveTwitterAccountContext } from '../../types/twitter-types';
+import { ActiveTwitterAccountContext } from '../../types';
 import DateTimeSelection from '../forms/DateTimeSelection';
 import dayjs from 'dayjs';
 import axios from 'axios';
