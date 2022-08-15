@@ -6,8 +6,8 @@ import {
 	getConfiguration,
 	persistConfig,
 	deleteTweetFromQueue,
-} from './data-client.js';
-import { Paper, PaperForTemplate, Tweet, SchedulingConfig, SchedulingConfigJson, ConfigForUser } from './data-types.js';
+} from './data-client';
+import { Paper, PaperForTemplate, Tweet, SchedulingConfig, SchedulingConfigJson, ConfigForUser } from './data-types';
 import {
 	afterNDays,
 	formatDateOnly,
@@ -17,7 +17,7 @@ import {
 	getRandomMinute,
 	hourMinuteStrToMinutesSinceMidnightUTC,
 	isWithinScheduleParameters,
-} from './scheduling.js';
+} from './scheduling';
 
 declare function html2canvas(div: any): Promise<any>;
 declare const Mustache: any;

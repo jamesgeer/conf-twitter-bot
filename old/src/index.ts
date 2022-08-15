@@ -3,6 +3,7 @@ import Koa from 'koa';
 import koaBody from 'koa-body';
 import koaSession from 'koa-session';
 import Router from '@koa/router';
+import * as dotenv from 'dotenv';
 import processTemplate from './templates';
 import { getConfiguration, setConfiguration, robustPath } from './util';
 import { ConfigForUser } from './data-types';
@@ -22,6 +23,8 @@ import {
 	initTwitterKeys,
 } from './twitter';
 import 'dotenv/config';
+
+dotenv.config({ path: '../.env' });
 
 const port = process.env.PORT || 33333;
 const appPassword = process.env.APP_PASSWORD || '';

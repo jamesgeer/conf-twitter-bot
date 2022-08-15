@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { Config, ConfigForUser } from './data-types.js';
 
-const dirName = `${process.env.PWD}/src/`;
+const dirName = `${process.env.PWD}`;
 
 export const robustPath = dirName.includes('/dist')
 	? (path) => `${dirName}/../src/${path}`

@@ -1,5 +1,5 @@
 {
-  "name": "conf-twitter-bot-server",
+  "name": "conf-twitter-bot",
   "version": "0.0.1",
   "description": "CS Conference Twitter Bot Server",
   "author": {
@@ -70,7 +70,7 @@
     ]
   },
   "scripts": {
-    "start": "node ./dist/index.js",
+    "start": "cd src && nodemon index.ts",
     "nodemon": "nodemon --enable-source-maps ./dist/index.js --watch ./dist --watch package.json --watch ./src/views --ext js,html",
     "compile": "tsc && mkdir -p cache",
     "format": "prettier --config .prettierrc '{src,tests,resources}/**/*.{ts,js}' --write",
