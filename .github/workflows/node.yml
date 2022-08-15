@@ -9,7 +9,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install Packages
+      - name: Install Lint Packages
+        run: npm install
+
+      - name: Install Backend Packages
+        working-directory: ./backend
+        run: npm install
+
+      - name: Install Frontend Packages
+        working-directory: ./frontend
         run: npm install
 
       - name: Lint Source Files

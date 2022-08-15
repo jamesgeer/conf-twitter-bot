@@ -5,40 +5,55 @@ module.exports = {
 		project: 'tsconfig.json',
 		tsconfigRootDir: __dirname,
 		sourceType: 'module',
+		ecmaFeatures: {
+			jsx: true
+		}
+	},
+	settings: {
+		react: {
+			version: '18.2.0'
+		},
 	},
 	env: {
+		es6: true,
 		browser: true,
 		node: true,
 	},
 	plugins: [
-		'@typescript-eslint',
+		'react',
 		'jest',
 		'prettier',
+		'@typescript-eslint'
 	],
 	extends: [
 		'eslint:recommended',
+		'prettier',
 		'node',
 		'plugin:node/recommended',
 		'plugin:@typescript-eslint/recommended',
 		'plugin:jest/recommended',
-		'prettier',
+		'plugin:react/recommended',
 		'airbnb-base',
-		'airbnb-typescript/base',
+		'airbnb-typescript/base'
 	],
 	ignorePatterns: ['dist/**/*', 'node_modules/**/*'],
 	rules: {
+		'no-tabs': 'off',
 		'no-shadow': 'off',
 		'no-console': 'off',
 		'func-names': 'off',
 		'no-continue': 'off',
+		'no-plusplus': 'off',
 		'no-param-reassign': 'off',
 		'operator-linebreak': 'off',
 		'object-curly-newline': 'off',
 		'no-restricted-syntax': 'off',
 		'node/no-missing-import': 'off',
+		'implicit-arrow-linebreak': 'off',
+		'import/prefer-default-export': 'off',
 		'node/no-unsupported-features/es-syntax': 'off',
+		'node/no-unsupported-features/node-builtins': 'off',
 		'max-len': ['error', { 'code': 120 }],
-		'no-tabs': ['error', { allowIndentationTabs: true }],
 		'quotes': [2, 'single', { 'avoidEscape': true, 'allowTemplateLiterals': true }],
 		'no-use-before-define': ['error', {"functions": false, "classes": false}],
 		'@typescript-eslint/no-shadow': 'off',
