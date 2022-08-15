@@ -4,7 +4,7 @@ import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import * as dotenv from 'dotenv';
 import router from './routes';
-import cronJobs from './jobs';
+// import cronJobs from './jobs';
 
 dotenv.config({ path: '../.env' });
 

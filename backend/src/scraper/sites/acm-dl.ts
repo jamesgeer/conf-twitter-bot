@@ -10,7 +10,7 @@ import { JSDOM } from 'jsdom';
 import axios from 'axios';
 import UserAgent from 'user-agents';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { minify } from 'html-minifier-terser';
+// import { minify } from 'html-minifier-terser';
 import { Paper } from '../../types/paper-types';
 
 export function isAcmUrl(url: string): boolean {

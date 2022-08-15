@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../types';
+import { ActiveTwitterAccountContext, TwitterAccount } from '../types';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 

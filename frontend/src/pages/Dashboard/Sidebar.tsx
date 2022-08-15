@@ -1,12 +1,18 @@
-import React from 'react';
+interface Props {
+	handleClick: (index: number, item: string) => void;
+}
 
-const Sidebar = () => {
-	const sideBarList = ['Schedule', 'History', 'Data', 'Change Account', 'Tweet'];
+const Sidebar = ({ handleClick }: Props) => {
+	// 'Schedule', 'History', 'Papers', 'Change Account', 'Tweets'
+	const sideBarList = ['Tweets', 'Papers'];
 
 	const sideBarButtons = sideBarList.map((item, index) => {
 		return (
 			<li key={index}>
-				<button className="bg-transparent hover:bg-slate-100 text-left text-xl font-bold py-2 px-4 rounded-full">
+				<button
+					className="bg-transparent hover:bg-slate-100 text-left text-xl font-bold py-2 px-4 rounded-full"
+					onClick={() => handleClick(index, item)}
+				>
 					{item}
 				</button>
 			</li>

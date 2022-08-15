@@ -50,6 +50,7 @@ module.exports = {
 		'no-restricted-syntax': 'off',
 		'node/no-missing-import': 'off',
 		'implicit-arrow-linebreak': 'off',
+		'import/prefer-default-export': 'off',
 		'node/no-unsupported-features/es-syntax': 'off',
 		'node/no-unsupported-features/node-builtins': 'off',
 		'max-len': ['error', { 'code': 120 }],

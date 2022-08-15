@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 
 const AccountSelection = () => {
 	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
-	const { activeAccount, setActiveUser } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
+	const { setActiveUser } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
 
 	useEffect(() => {
 		if (twitterAccounts.length === 0) {
