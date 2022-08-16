@@ -39,10 +39,13 @@
     ]
   },
   "scripts": {
-    "start": "",
+    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm start\"",
     "format": "prettier --config .prettierrc '{src,tests,resources}/**/*.{ts,js}' --write",
     "verify": "npm run lint",
     "lint": "npx eslint . --fix --ext .js,.jsx,.ts,.tsx",
     "test": "jest"
+  },
+  "dependencies": {
+    "concurrently": "^7.3.0"
   }
 }
