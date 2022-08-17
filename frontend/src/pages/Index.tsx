@@ -8,6 +8,7 @@ import HttpStatus from 'http-status';
 import Dashboard from '../pages/Dashboard';
 import { ActiveAccountContext } from '../context/ActiveAccountContext';
 import { ActiveTwitterAccountContext } from '../types';
+import SignUp from './SignUp';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
@@ -48,6 +49,7 @@ export default function Index() {
 		<>
 			<Router>
 				<Routes>
+					<Route path="/sign-up" element={<SignUp />} />
 					{appLoggedIn && twitterLoggedIn && <Route path="/" element={<Dashboard />} />}
 					{appLoggedIn && <Route path="/" element={<AccountSelection />} />}
 					{!appLoggedIn && !twitterLoggedIn && (
