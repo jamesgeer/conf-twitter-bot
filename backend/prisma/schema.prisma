@@ -10,46 +10,30 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-// model Post {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   title     String   @db.VarChar(255)
-//   content   String?
-//   published Boolean  @default(false)
-//   author    User     @relation(fields: [authorId], references: [id])
-//   authorId  Int
-// }
-
-// model Profile {
-//   id     Int     @id @default(autoincrement())
-//   bio    String?
-//   user   User    @relation(fields: [userId], references: [id])
-//   userId Int     @unique
-// }
-
-// model User {
-//   id      Int      @id @default(autoincrement())
-//   email   String   @unique
-//   name    String?
-//   posts   Post[]
-//   profile Profile?
-// }
-
 model ConfUser {
     id        Int       @id @default(autoincrement())
     username  String    @unique
     password  String
     createdAt DateTime  @default(now())
     account   Account[]
-    Session   Session[]
+    Session   Session?
+}
+
+model Session {
+    id         Int      @id @default(autoincrement())
+    confUser   ConfUser @relation(fields: [confUserId], references: [id])
+    confUserId Int      @unique
+    key        String
+    maxAge     String
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime
 }
 
 model Account {
-    id            Int            @id @default(autoincrement())
-    confUser      ConfUser       @relation(fields: [confUserId], references: [id])
+    id            Int           @id @default(autoincrement())
+    confUser      ConfUser      @relation(fields: [confUserId], references: [id])
     confUserId    Int
-    twitterUser   TwitterUser    @relation(fields: [twitterUserId], references: [id])
+    twitterUser   TwitterUser   @relation(fields: [twitterUserId], references: [id])
     twitterUserId BigInt
     tweet         Tweet[]
     TwitterOAuth  TwitterOAuth?
@@ -74,16 +58,6 @@ model Tweet {
     updatedAt     DateTime
     content       String      @db.VarChar(280)
     sent          Boolean     @default(false)
-}
-
-model Session {
-    id         Int      @id @default(autoincrement())
-    confUser   ConfUser @relation(fields: [confUserId], references: [id])
-    confUserId Int
-    key        String
-    maxAge     String
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime
 }
 
 model TwitterOAuth {
