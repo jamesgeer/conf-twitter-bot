@@ -2,12 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 // model Post {
@@ -37,18 +37,60 @@ datasource db {
 // }
 
 model ConfUser {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  password String
-  twitterAccount TwitterAccount[]
+    id        Int       @id @default(autoincrement())
+    username  String    @unique
+    password  String
+    createdAt DateTime  @default(now())
+    account   Account[]
+    Session   Session[]
 }
 
-model TwitterAccount {
-  id      Int      @id @default(autoincrement())
-  confUser ConfUser @relation(fields: [confUserId], references: [id])
-  confUserId Int
-  userId String
-  name String
-  screenName String
-  profileImageUrl String
+model Account {
+    id            Int            @id @default(autoincrement())
+    confUser      ConfUser       @relation(fields: [confUserId], references: [id])
+    confUserId    Int
+    twitterUser   TwitterUser    @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt
+    tweet         Tweet[]
+    TwitterOAuth  TwitterOAuth?
+}
+
+model TwitterUser {
+    id              BigInt    @id @default(autoincrement())
+    name            String
+    screenName      String
+    profileImageUrl String
+    Account         Account[]
+    Tweet           Tweet[]
+}
+
+model Tweet {
+    id            Int         @id @default(autoincrement())
+    account       Account     @relation(fields: [accountId], references: [id])
+    accountId     Int
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime
+    content       String      @db.VarChar(280)
+    sent          Boolean     @default(false)
+}
+
+model Session {
+    id         Int      @id @default(autoincrement())
+    confUser   ConfUser @relation(fields: [confUserId], references: [id])
+    confUserId Int
+    key        String
+    maxAge     String
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime
+}
+
+model TwitterOAuth {
+    account      Account  @relation(fields: [accountId], references: [id])
+    accountId    Int      @id @unique
+    accessToken  String
+    accessSecret String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime
 }
