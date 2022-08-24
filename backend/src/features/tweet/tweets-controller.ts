@@ -1,7 +1,12 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getTweets, insertTweet } from '../models/tweets-model';
-import { HTTPTweet } from '../types/twitter-types';
+import { getTweets, insertTweet } from './tweets-model';
+
+interface HTTPTweet {
+	userId: string;
+	text: string;
+	scheduledTimeUTC?: string;
+}
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 	const tweets = getTweets();

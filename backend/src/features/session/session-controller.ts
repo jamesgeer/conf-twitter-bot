@@ -1,7 +1,7 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import * as dotenv from 'dotenv';
-import { validSessionCookie } from '../models/session-model';
+import { validSessionCookie } from './session-model';
 
 dotenv.config({ path: '../../.env' });
 

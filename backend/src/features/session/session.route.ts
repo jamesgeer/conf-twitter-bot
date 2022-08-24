@@ -1,7 +1,7 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { isLoggedIn, login, logout } from '../../controllers/session-controller';
-import { getActiveTwitterUser, setActiveTwitterUser } from '../../controllers/session-twitter-controller';
+import { isLoggedIn, login, logout } from './session-controller';
+import { getActiveTwitterUser, setActiveTwitterUser } from './session-twitter-controller';
 
 const sessionRouter = new Router({ prefix: '/session' });
 

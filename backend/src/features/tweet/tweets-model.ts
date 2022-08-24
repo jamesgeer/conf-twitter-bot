@@ -4,7 +4,7 @@
  */
 import path from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import { HTTPTweet, Tweets } from '../types/twitter-types';
+import { HTTPTweet, Tweets } from './tweet';
 
 let tweets: Tweets;
 const pathToFile = path.relative(process.cwd(), 'data/tweets.json');

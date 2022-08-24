@@ -1,6 +1,6 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getPaper, getPapers } from '../models/papers-model';
+import { getPaper, getPapers } from './papers-model';
 
 export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 	const papers = getPapers();
