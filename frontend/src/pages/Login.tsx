@@ -90,7 +90,7 @@ const Login = ({ appLogin }: Props) => {
 							{errorText}
 						</p>
 					</div>
-					<div className="flex items-center justify-between">
+					<div className="flex flex-col gap-5 items-center">
 						<button
 							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
 							type="button"
@@ -98,6 +98,7 @@ const Login = ({ appLogin }: Props) => {
 						>
 							Sign In
 						</button>
+						<p className='text-sm'>Don't have an account yet? <a className="text-blue-500" href="./sign-up">Sign Up</a> </p>
 					</div>
 				</form>
 			</div>
