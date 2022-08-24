@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const SignUp = () => {
 	const [username, setUsername] = useState('');
@@ -8,9 +9,8 @@ const SignUp = () => {
 	const [pwdValidationError, setPwdValidationError] = useState(false);
 	const [pwdErrorText, setPwdErrorText] = useState('');
 
-
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if(e.target.id === "username"){
+		if (e.target.id === 'username') {
 			setUsername(e.target.value);
 
 			// reset validation errors when password input is modified
@@ -51,12 +51,12 @@ const SignUp = () => {
 			error = true;
 		}
 
-		if (password.length > 0 && password.length < 7 ) {
+		if (password.length > 0 && password.length < 7) {
 			pwdFormError('Password must have at least 7 characters.');
 			error = true;
 		}
 
-		if(error){
+		if (error) {
 			return;
 		}
 	};
@@ -117,12 +117,11 @@ const SignUp = () => {
 						</div>
 					</div>
 					<div className="flex items-center justify-between">
-						<a className="text-sm text-blue-500" href="/">
+						<Link to="/" className="text-sm text-blue-500">
 							Already have an account?
-						</a>
+						</Link>
 						<button
-							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-[8rem] h-[1.25rem] text-sm flex items-center justify-center"
-							type="button"
+							className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded w-[8rem] h-[1.25rem] text-sm flex items-center justify-center"
 							onClick={(e) => handleSubmission(e)}
 						>
 							Sign Up

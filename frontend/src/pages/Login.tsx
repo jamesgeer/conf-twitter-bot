@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
+import { Link } from 'react-router-dom';
 
 interface Props {
 	appLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -92,13 +93,14 @@ const Login = ({ appLogin }: Props) => {
 					</div>
 					<div className="flex flex-col gap-5 items-center">
 						<button
-							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-							type="button"
+							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
 							onClick={(e) => handleSubmission(e)}
 						>
 							Sign In
 						</button>
-						<p className='text-sm'>Don't have an account yet? <a className="text-blue-500" href="./sign-up">Sign Up</a> </p>
+						<Link to="/sign-up" className="text-sm text-blue-500">
+							Don't have an account yet?
+						</Link>
 					</div>
 				</form>
 			</div>
