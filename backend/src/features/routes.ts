@@ -1,10 +1,10 @@
 import Router from '@koa/router';
-import userRouter from './api/user';
-import sessionRouter from './api/session';
-import twitterAuthRouter from './api/twitter';
-import twitterAccountRouter from './api/account';
-import tweetsRouter from './api/tweets';
-import papersRouter from './api/papers';
+import userRouter from './user/user.route';
+import sessionRouter from './session/session.route';
+import twitterAuthRouter from './twitter-oauth/twitter-oauth.route';
+import twitterAccountRouter from './account/account.route';
+import tweetsRouter from './tweet/tweet.route';
+import papersRouter from './paper/paper.route';
 
 // routes located in ./api will be prefixed with /api
 const router = new Router({ prefix: '/api' });

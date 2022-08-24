@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { user, createUser } from '../../controllers/user-controller';
+import { user, createUser } from './user-controller';
 
 const userRouter = new Router({ prefix: '/user' });
 

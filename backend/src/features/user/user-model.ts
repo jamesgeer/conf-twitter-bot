@@ -1,4 +1,4 @@
-import prisma from '../../lib/prisma';
+import prisma from '../../../lib/prisma';
 
 export const getUser = (userId: string): void => {
 	console.log('NOT IMPLEMENTED', userId);

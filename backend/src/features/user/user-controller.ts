@@ -1,6 +1,6 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { insertUser } from '../models/user-model';
+import { insertUser } from './user-model';
 
 export const user = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
