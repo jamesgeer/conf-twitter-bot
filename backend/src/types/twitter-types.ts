@@ -10,18 +10,6 @@ export interface TwitterOAuthAccessToken {
 	accessSecret?: string;
 }
 
-// Object containing credentials and user details
-export interface TwitterAccount {
-	userId: string;
-	name: string;
-	screenName: string;
-	profileImageUrl: string;
-	oauth: TwitterOAuthAccessToken;
-}
-
-// Array of account objects
-export type TwitterAccounts = Array<TwitterAccount>;
-
 // Just an error type
 export interface TwitterError {
 	error: boolean;
