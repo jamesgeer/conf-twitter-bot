@@ -1,4 +1,5 @@
 import Router from '@koa/router';
+import userRouter from './api/user';
 import sessionRouter from './api/session';
 import twitterAuthRouter from './api/twitter';
 import twitterAccountRouter from './api/account';
@@ -9,7 +10,7 @@ import papersRouter from './api/papers';
 const router = new Router({ prefix: '/api' });
 
 // append additional routes to below variable to enable
-const routes = [sessionRouter, twitterAuthRouter, twitterAccountRouter, tweetsRouter, papersRouter];
+const routes = [userRouter, sessionRouter, twitterAuthRouter, twitterAccountRouter, tweetsRouter, papersRouter];
 
 // loop over routes to enable them
 for (const route of routes) {
