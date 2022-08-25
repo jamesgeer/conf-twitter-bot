@@ -1,6 +1,6 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { accountExists } from '../account/accounts-model';
+import { accountExists } from '../accounts/accounts-model';
 
 export const getActiveTwitterUser = async (ctx: ParameterizedContext): Promise<void> => {
 	if (ctx.session.isLoggedIn && ctx.session.userId) {

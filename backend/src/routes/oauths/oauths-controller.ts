@@ -1,8 +1,8 @@
 import HttpStatus from 'http-status';
 import { ParameterizedContext } from 'koa';
 import { insertOrUpdateAccount } from '../account/accounts-model';
-import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from './twitter-oauth-model';
-import { TwitterOAuthRequestToken } from './oauth';
+import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from './oauths-model';
+import { TwitterOAuthRequestToken } from './oauths';
 
 // need a better solution than to store temp auth in a variable
 let tempAuthDetails: TwitterOAuthRequestToken;

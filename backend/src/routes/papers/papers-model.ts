@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import path from 'path';
-import { Paper, Papers } from './paper';
+import { Paper, Papers } from './papers';
 
 let papers: Papers;
 const pathToFile = path.relative(process.cwd(), 'data/papers.json');
