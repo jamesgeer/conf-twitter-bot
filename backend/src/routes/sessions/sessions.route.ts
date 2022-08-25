@@ -2,21 +2,21 @@ import Router from '@koa/router';
 import koaBody from 'koa-body';
 import { accountLogin, userSession, userLogin, userLogout, accountSession } from './sessions-controller';
 
-const sessionRouter = new Router({ prefix: '/session' });
+const sessionsRouter = new Router({ prefix: '/sessions' });
 
 // GET: /api/sessions
-sessionRouter.get('/', userSession);
+sessionsRouter.get('/', userSession);
 
 // POST: /api/sessions
-sessionRouter.post('/', koaBody(), userLogin);
+sessionsRouter.post('/', koaBody(), userLogin);
 
 // POST: /api/sessions/logout
-sessionRouter.post('/logout', koaBody(), userLogout);
+sessionsRouter.post('/logout', koaBody(), userLogout);
 
 // GET: /api/sessions/account
-sessionRouter.get('/account', accountSession);
+sessionsRouter.get('/account', accountSession);
 
 // POST: /api/sessions/account
-sessionRouter.post('/account', koaBody(), accountLogin);
+sessionsRouter.post('/account', koaBody(), accountLogin);
 
-export default sessionRouter;
+export default sessionsRouter;

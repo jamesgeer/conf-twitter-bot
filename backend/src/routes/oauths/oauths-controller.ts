@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
 import { ParameterizedContext } from 'koa';
-import { insertOrUpdateAccount } from '../account/accounts-model';
+import { insertOrUpdateAccount } from '../accounts/accounts-model';
 import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from './oauths-model';
 import { TwitterOAuthRequestToken } from './oauths';
 

@@ -1,10 +1,12 @@
 import Router from '@koa/router';
 import { account, accounts } from './accounts-controller';
 
-const twitterAccountRouter = new Router({ prefix: '/twitter' });
+const accountsRouter = new Router({ prefix: '/accounts' });
 
-twitterAccountRouter.get('/account/:userId', account);
+// GET /api/accounts/:accountId
+accountsRouter.get('/:userId', account);
 
-twitterAccountRouter.get('/accounts', accounts);
+// GET /api/accounts
+accountsRouter.get('/', accounts);
 
-export default twitterAccountRouter;
+export default accountsRouter;

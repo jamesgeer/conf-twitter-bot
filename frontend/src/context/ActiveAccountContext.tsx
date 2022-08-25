@@ -29,7 +29,7 @@ const ActiveAccountProvider: React.FC<Props> = ({ children }) => {
 		}
 		try {
 			const payload = { userId };
-			const response = await axios.post('/api/account', payload);
+			const response = await axios.post('/api/sessions/account', payload);
 			if (response.status === HttpStatus.OK) {
 				setActiveAccount(twitterAccount);
 				console.log(`${userId} now active`);
