@@ -1,5 +1,5 @@
 import Router from '@koa/router';
-import { paper, papers } from '../../controllers/papers-controller';
+import { paper, papers } from './papers-controller';
 
 const papersRouter = new Router({ prefix: '/papers' });
 
