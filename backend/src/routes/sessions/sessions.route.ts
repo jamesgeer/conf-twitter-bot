@@ -1,23 +1,22 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { isLoggedIn, login, logout } from './sessions-controller';
-import { getActiveTwitterUser, setActiveTwitterUser } from './session-twitter-controller';
+import { accountLogin, userSession, userLogin, userLogout, accountSession } from './sessions-controller';
 
 const sessionRouter = new Router({ prefix: '/session' });
 
-// GET: /api/session
-sessionRouter.get('/', isLoggedIn);
+// GET: /api/sessions
+sessionRouter.get('/', userSession);
 
-// POST: /api/session/login
-sessionRouter.post('/login', koaBody(), login);
+// POST: /api/sessions
+sessionRouter.post('/', koaBody(), userLogin);
 
-// POST: /api/session/logout
-sessionRouter.post('/logout', koaBody(), logout);
+// POST: /api/sessions/logout
+sessionRouter.post('/logout', koaBody(), userLogout);
 
-// GET: /api/session/twitter/user/
-sessionRouter.get('/twitter/user/', getActiveTwitterUser);
+// GET: /api/sessions/account
+sessionRouter.get('/account', accountSession);
 
-// POST: /api/session/twitter/user/:userId
-sessionRouter.post('/twitter/user/:userId', koaBody(), setActiveTwitterUser);
+// POST: /api/sessions/account
+sessionRouter.post('/account', koaBody(), accountLogin);
 
 export default sessionRouter;

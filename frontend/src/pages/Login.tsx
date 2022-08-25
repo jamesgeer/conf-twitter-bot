@@ -47,7 +47,7 @@ const Login = ({ appLogin }: Props) => {
 				withCredentials: true,
 			};
 			const payload = { password };
-			const response = await axios.post('/api/session/login', payload, config);
+			const response = await axios.post('/api/session', payload, config);
 			if (response.status === HttpStatus.OK) {
 				appLogin(true);
 			}

@@ -2,10 +2,11 @@ import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import * as dotenv from 'dotenv';
 import { validSessionCookie } from './sessions-model';
+import { accountExists } from '../accounts/accounts-model';
 
 dotenv.config({ path: '../../.env' });
 
-export const isLoggedIn = async (ctx: ParameterizedContext): Promise<void> => {
+export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 	// if no session exists or isLoggedIn is false then user not logged in
 	if (!ctx.session || ctx.session.isNew || !ctx.session.isLoggedIn) {
 		ctx.status = HttpStatus.UNAUTHORIZED;
@@ -26,7 +27,7 @@ export const isLoggedIn = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.OK;
 };
 
-export const login = async (ctx: ParameterizedContext): Promise<void> => {
+export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 	// make sure request contains a body
 	if (!ctx.request.body) {
 		ctx.status = HttpStatus.BAD_REQUEST;
@@ -70,7 +71,7 @@ export const login = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.body = { error: 'Invalid login' };
 };
 
-export const logout = async (ctx: ParameterizedContext): Promise<void> => {
+export const userLogout = async (ctx: ParameterizedContext): Promise<void> => {
 	// attempting to log out when not logged in, unauthorised
 	if (!ctx.session.isLoggedIn) {
 		ctx.status = HttpStatus.UNAUTHORIZED;
@@ -83,4 +84,42 @@ export const logout = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// no content to respond with
 	ctx.status = HttpStatus.NO_CONTENT;
+};
+
+export const accountSession = async (ctx: ParameterizedContext): Promise<void> => {
+	if (ctx.session.isLoggedIn && ctx.session.userId) {
+		ctx.status = HttpStatus.OK;
+		ctx.body = ctx.session.userId;
+		return;
+	}
+
+	// user is not logged in
+	ctx.status = HttpStatus.UNAUTHORIZED;
+};
+
+export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => {
+	if (!ctx.session.isLoggedIn) {
+		ctx.status = HttpStatus.UNAUTHORIZED;
+		ctx.body = { message: 'You must be logged in.' };
+		return;
+	}
+
+	const { userId } = ctx.request.body;
+	const stringOnlyContainsNumbers = (str: string): boolean => /^\d+$/.test(str);
+
+	if (!stringOnlyContainsNumbers(userId)) {
+		ctx.status = HttpStatus.UNAUTHORIZED;
+		ctx.body = { message: 'Invalid username.' };
+		return;
+	}
+
+	if (!accountExists(userId)) {
+		ctx.status = HttpStatus.NOT_FOUND;
+		ctx.body = { message: 'Unable to locate user.' };
+		return;
+	}
+
+	// checks passed, set user to active
+	ctx.session.userId = userId;
+	ctx.status = HttpStatus.OK;
 };
