@@ -1,4 +1,5 @@
 import HttpStatus from 'http-status';
+import bcrypt from 'bcrypt';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 
@@ -18,10 +19,13 @@ const userExists = async (username: string): Promise<boolean> => {
 };
 
 // attempts to insert user, fails if username taken
-export const insertUser = async (username: string, password: string): Promise<boolean | ServerError> => {
+export const insertUser = async (username: string, plainTextPassword: string): Promise<boolean | ServerError> => {
 	if (await userExists(username)) {
 		return new ServerError(HttpStatus.CONFLICT, 'Username already in use.');
 	}
+
+	// plain text password converted to a hashed string
+	const password = bcrypt.hashSync(plainTextPassword, 10);
 
 	try {
 		await prisma.user.create({
