@@ -1,4 +1,6 @@
+import HttpStatus from 'http-status';
 import prisma from '../../../lib/prisma';
+import { ServerError } from '../types';
 
 export const getUser = (userId: string): void => {
 	console.log('NOT IMPLEMENTED', userId);
@@ -6,7 +8,7 @@ export const getUser = (userId: string): void => {
 
 // counts users with username, 0 === no users exist
 const userExists = async (username: string): Promise<boolean> => {
-	const result = await prisma.confUser.count({
+	const result = await prisma.user.count({
 		where: {
 			username,
 		},
@@ -16,14 +18,13 @@ const userExists = async (username: string): Promise<boolean> => {
 };
 
 // attempts to insert user, fails if username taken
-export const insertUser = async (username: string, password: string): Promise<boolean> => {
+export const insertUser = async (username: string, password: string): Promise<boolean | ServerError> => {
 	if (await userExists(username)) {
-		console.log('error: username taken');
-		return false;
+		return new ServerError(HttpStatus.CONFLICT, 'Username already in use.');
 	}
 
 	try {
-		await prisma.confUser.create({
+		await prisma.user.create({
 			data: {
 				username,
 				password,

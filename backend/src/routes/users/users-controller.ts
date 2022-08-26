@@ -1,6 +1,7 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import { insertUser } from './users-model';
+import { ServerError } from '../types';
 
 export const user = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
@@ -13,11 +14,12 @@ export const user = async (ctx: ParameterizedContext): Promise<void> => {
 export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 	const { username, password } = ctx.request.body;
 
-	if (await insertUser(username, password)) {
-		ctx.status = HttpStatus.CREATED;
+	const result = await insertUser(username, password);
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = result.getErrorMessage();
 		return;
 	}
 
-	ctx.status = HttpStatus.CONFLICT;
-	ctx.body = { error: 'Username taken' };
+	ctx.status = HttpStatus.CREATED;
 };
