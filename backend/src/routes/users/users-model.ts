@@ -8,7 +8,7 @@ export const getUser = (userId: string): void => {
 };
 
 // counts users with username, 0 === no users exist
-const userExists = async (username: string): Promise<boolean> => {
+export const userExists = async (username: string): Promise<boolean> => {
 	const result = await prisma.user.count({
 		where: {
 			username,
@@ -35,10 +35,9 @@ export const insertUser = async (username: string, plainTextPassword: string): P
 			},
 		});
 	} catch (e) {
-		console.log(e);
-		return false;
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
 
-	console.log(username, 'successfully inserted');
+	// successfully inserted
 	return true;
 };
