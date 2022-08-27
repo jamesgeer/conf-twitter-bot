@@ -11,7 +11,7 @@ import axios from 'axios';
 import UserAgent from 'user-agents';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 // import { minify } from 'html-minifier-terser';
-import { Paper } from '../../types/paper-types';
+import { Paper } from '../../routes/papers/papers';
 
 export function isAcmUrl(url: string): boolean {
 	return url.includes('/dl.acm.org/');

@@ -4,7 +4,7 @@
  */
 import path from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import { TwitterAccount, TwitterAccounts } from '../types/twitter-types';
+import { TwitterAccount, TwitterAccounts } from '../oauths/oauths';
 
 let twitterAccounts: TwitterAccounts;
 const pathToFile = path.relative(process.cwd(), 'data/twitter-accounts.json');

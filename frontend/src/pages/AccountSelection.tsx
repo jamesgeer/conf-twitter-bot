@@ -16,7 +16,7 @@ const AccountSelection = () => {
 
 	const getAccounts = async () => {
 		try {
-			const response = await axios.get('/api/twitter/accounts');
+			const response = await axios.get('/api/accounts');
 			const twitterAccounts: TwitterAccounts = response.data;
 			setTwitterAccounts(twitterAccounts);
 		} catch (error) {

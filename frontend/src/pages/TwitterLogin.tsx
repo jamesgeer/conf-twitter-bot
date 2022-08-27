@@ -23,7 +23,7 @@ const TwitterLogin = () => {
 	// OAuth Step 1: get request token from backend
 	const getOAuthRequestToken = async () => {
 		try {
-			const response = await axios.get('/api/twitter/oauth/request_token');
+			const response = await axios.get('/api/oauths/twitter/request_token');
 			const { oauthToken: oAuthToken } = response.data;
 
 			if (oAuthToken.length > 0) {
@@ -50,7 +50,7 @@ const TwitterLogin = () => {
 			try {
 				const config = { withCredentials: true };
 				const payload = { oauth_token, oauth_verifier };
-				const response = await axios.post('/api/twitter/oauth/access_token', payload, config);
+				const response = await axios.post('/api/oauths/twitter/access_token', payload, config);
 
 				if (response.status === HttpStatus.CREATED) {
 					const twitterAccount = response.data;
@@ -83,7 +83,7 @@ const TwitterLogin = () => {
 	const logout = async () => {
 		try {
 			await axios({
-				url: '/api/twitter/logout',
+				url: '/api/sessions/logout',
 				method: 'POST',
 			});
 			setIsLoggedIn(false);
