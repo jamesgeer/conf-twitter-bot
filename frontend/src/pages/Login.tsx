@@ -8,11 +8,21 @@ interface Props {
 }
 
 const Login = ({ appLogin }: Props) => {
+	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [validationError, setValidationError] = useState(false);
 	const [errorText, setErrorText] = useState('');
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setUsername(e.target.value);
+
+		// reset validation errors when password input is modified
+		if (validationError) {
+			setValidationError(false);
+		}
+	};
+
+	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value);
 
 		// reset validation errors when password input is modified
@@ -47,8 +57,8 @@ const Login = ({ appLogin }: Props) => {
 			const config = {
 				withCredentials: true,
 			};
-			const payload = { password };
-			const response = await axios.post('/api/session/login', payload, config);
+			const payload = { username, password };
+			const response = await axios.post('/api/sessions', payload, config);
 			if (response.status === HttpStatus.OK) {
 				appLogin(true);
 			}
@@ -73,6 +83,25 @@ const Login = ({ appLogin }: Props) => {
 			<div className="w-full max-w-xs">
 				<form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 					<div className="mb-6">
+						<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+							Username
+						</label>
+						<input
+							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+								validationError ? 'border-red-500' : ''
+							}`}
+							id="username"
+							type="text"
+							placeholder="Username"
+							value={username}
+							onChange={(e) => handleUsernameChange(e)}
+							onKeyDown={(e) => handleKeyDown(e)}
+						/>
+						<p className={`text-red-500 text-xs italic ${validationError ? 'block' : 'hidden'}`}>
+							{errorText}
+						</p>
+					</div>
+					<div className="mb-6">
 						<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
 							Password
 						</label>
@@ -84,7 +113,7 @@ const Login = ({ appLogin }: Props) => {
 							type="password"
 							placeholder="Password"
 							value={password}
-							onChange={(e) => handleChange(e)}
+							onChange={(e) => handlePasswordChange(e)}
 							onKeyDown={(e) => handleKeyDown(e)}
 						/>
 						<p className={`text-red-500 text-xs italic ${validationError ? 'block' : 'hidden'}`}>

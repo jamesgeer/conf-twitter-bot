@@ -1,15 +1,16 @@
 import Router from '@koa/router';
-import sessionRouter from './api/session';
-import twitterAuthRouter from './api/twitter';
-import twitterAccountRouter from './api/account';
-import tweetsRouter from './api/tweets';
-import papersRouter from './api/papers';
+import usersRouter from './users/users.route';
+import sessionsRouter from './sessions/sessions.route';
+import oAuthsRouter from './oauths/oauths.route';
+import accountsRouter from './accounts/accounts.route';
+import tweetsRouter from './tweets/tweets.route';
+import papersRouter from './papers/papers.route';
 
 // routes located in ./api will be prefixed with /api
 const router = new Router({ prefix: '/api' });
 
 // append additional routes to below variable to enable
-const routes = [sessionRouter, twitterAuthRouter, twitterAccountRouter, tweetsRouter, papersRouter];
+const routes = [usersRouter, sessionsRouter, oAuthsRouter, accountsRouter, tweetsRouter, papersRouter];
 
 // loop over routes to enable them
 for (const route of routes) {

@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { tweets, scheduledTweets, sentTweets, createTweet } from '../../controllers/tweets-controller';
+import { tweets, scheduledTweets, sentTweets, createTweet } from './tweets-controller';
 
 const tweetsRouter = new Router({ prefix: '/tweets' });
 

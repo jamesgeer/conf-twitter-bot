@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        Int       @id @default(autoincrement())
+    username  String    @unique
+    password  String
+    createdAt DateTime  @default(now())
+    account   Account[]
+    Session   Session?
+}
+
+model Session {
+    id        Int      @id @default(autoincrement())
+    User      User     @relation(fields: [userId], references: [id])
+    userId    Int      @unique
+    key       String
+    maxAge    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime
+}
+
+model Account {
+    id            Int           @id @default(autoincrement())
+    User          User          @relation(fields: [userId], references: [id])
+    userId        Int
+    twitterUser   TwitterUser   @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt
+    tweet         Tweet[]
+    TwitterOAuth  TwitterOAuth?
+}
+
+model TwitterUser {
+    id              BigInt    @id @default(autoincrement())
+    name            String
+    screenName      String
+    profileImageUrl String
+    Account         Account[]
+    Tweet           Tweet[]
+}
+
+model Tweet {
+    id            Int         @id @default(autoincrement())
+    account       Account     @relation(fields: [accountId], references: [id])
+    accountId     Int
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime
+    content       String      @db.VarChar(280)
+    sent          Boolean     @default(false)
+}
+
+model TwitterOAuth {
+    account      Account  @relation(fields: [accountId], references: [id])
+    accountId    Int      @id @unique
+    accessToken  String
+    accessSecret String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime
+}

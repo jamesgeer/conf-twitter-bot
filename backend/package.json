@@ -10,9 +10,12 @@
   "dependencies": {
     "@koa/cors": "^3.3.0",
     "@koa/router": "^11.0.1",
+    "@prisma/client": "^4.2.1",
+    "@types/bcrypt": "^5.0.0",
     "@types/html-minifier-terser": "^6.1.0",
     "@types/user-agents": "^1.0.2",
     "axios": "^0.27.2",
+    "bcrypt": "^5.0.1",
     "dotenv": "^16.0.1",
     "html-minifier-terser": "^7.0.0-beta.0",
     "http-status": "^1.5.2",
@@ -38,6 +41,7 @@
     "@typescript-eslint/parser": "^5.30.0",
     "jest": "27.4.5",
     "nodemon": "^2.0.15",
+    "prisma": "^4.2.1",
     "ts-jest": "27.1.1",
     "ts-node": "^10.8.2",
     "typescript": "4.5.4"

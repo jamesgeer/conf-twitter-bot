@@ -29,7 +29,7 @@ export default function Index() {
 			const config = {
 				withCredentials: true,
 			};
-			const response = await axios.get('/api/session', config);
+			const response = await axios.get('/api/sessions', config);
 			if (response.status === HttpStatus.OK) {
 				setAppLoggedIn(true);
 			}

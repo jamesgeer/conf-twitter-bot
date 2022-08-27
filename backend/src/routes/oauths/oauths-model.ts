@@ -1,6 +1,6 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
-import { TwitterOAuthRequestToken, TwitterAccount, TwitterError } from '../types/twitter-types';
+import { TwitterOAuthRequestToken, TwitterAccount, TwitterError } from './oauths';
 
 dotenv.config({ path: '../../.env' });
 
