@@ -17,7 +17,7 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 	const result = await insertUser(username, password);
 	if (result instanceof ServerError) {
 		ctx.status = result.getStatusCode();
-		ctx.body = result.getErrorMessage();
+		ctx.body = { message: result.getMessage() };
 		return;
 	}
 

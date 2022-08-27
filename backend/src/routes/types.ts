@@ -9,7 +9,7 @@ export class ServerError extends Error {
 		Object.setPrototypeOf(this, ServerError.prototype);
 	}
 
-	getErrorMessage(): string {
+	getMessage(): string {
 		return this.message;
 	}
 

@@ -1,8 +1,9 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import * as dotenv from 'dotenv';
-import { validSessionCookie } from './sessions-model';
+import { validSessionCookie, validUserLogin } from './sessions-model';
 import { accountExists } from '../accounts/accounts-model';
+import { ServerError } from '../types';
 
 dotenv.config({ path: '../../.env' });
 
@@ -28,47 +29,36 @@ export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
-	// make sure request contains a body
-	if (!ctx.request.body) {
-		ctx.status = HttpStatus.BAD_REQUEST;
-		ctx.body = { message: 'Missing request body' };
+	const { username, password } = ctx.request.body;
+
+	const validLogin = await validUserLogin(username, password);
+	if (validLogin instanceof ServerError) {
+		ctx.status = validLogin.getStatusCode();
+		ctx.body = { message: validLogin.getMessage() };
 		return;
 	}
 
-	// duplicate code
-	const requestCookie = ctx.request.header.cookie;
-	const sessionCookie = ctx.cookies.get('ConfTwBot');
-
-	// already logged in
-	if (validSessionCookie(requestCookie, sessionCookie)) {
-		ctx.status = HttpStatus.OK;
+	if (!validLogin) {
+		ctx.status = HttpStatus.UNAUTHORIZED;
+		ctx.body = { error: 'Incorrect password' };
 		return;
 	}
 
-	// response did not contain a valid cookie, perform password verification
-	const { password } = ctx.request.body;
-	if (password && password === process.env.APP_PASSWORD) {
-		// koa-session needs to be running to create/store session cookie
-		if (!ctx.session) {
-			ctx.body = { error: 'Session could not be established' };
-			ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-			return;
-		}
-
-		// save login session
-		ctx.session.isLoggedIn = true;
-		ctx.session.save();
-		ctx.session.manuallyCommit();
-
-		// return success (contains http cookie for ConfTwBot)
-		ctx.status = HttpStatus.OK;
-		ctx.body = { message: 'Login successful' };
+	// koa-session needs to be running to create/store session cookie
+	if (!ctx.session) {
+		ctx.body = { error: 'Session could not be established' };
+		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 		return;
 	}
 
-	// invalid login credentials
-	ctx.status = HttpStatus.UNAUTHORIZED;
-	ctx.body = { error: 'Invalid login' };
+	// save login session
+	ctx.session.isLoggedIn = true;
+	ctx.session.save();
+	ctx.session.manuallyCommit();
+
+	// return success (contains http cookie for ConfTwBot)
+	ctx.status = HttpStatus.OK;
+	ctx.body = { message: 'Login successful' };
 };
 
 export const userLogout = async (ctx: ParameterizedContext): Promise<void> => {
