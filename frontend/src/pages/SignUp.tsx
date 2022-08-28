@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import HttpStatus from 'http-status';
+import { useNavigate } from 'react-router-dom';
 
 interface ServerError {
 	response: {
@@ -15,6 +16,7 @@ interface ServerError {
 const SignUp = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const navigate = useNavigate();
 
 	const [inputError, setInputError] = useState({
 		username: {
@@ -133,7 +135,7 @@ const SignUp = () => {
 			const payload = { username, password };
 			const response = await axios.post('/api/users', payload);
 			if (response.status === HttpStatus.CREATED) {
-				console.log('Account created!');
+				navigate('/select-account');
 			}
 		} catch (e) {
 			if (axios.isAxiosError(e)) {

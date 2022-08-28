@@ -50,9 +50,11 @@ export default function Index() {
 			<Router>
 				<Routes>
 					<Route path="/sign-up" element={<SignUp />} />
-					{appLoggedIn && twitterLoggedIn && <Route path="/" element={<Dashboard />} />}
-					{appLoggedIn && <Route path="/" element={<AccountSelection />} />}
-					{!appLoggedIn && !twitterLoggedIn && (
+					<Route path="/login" element={<Login appLogin={setAppLoggedIn} />} />
+					<Route path="/select-account" element={<AccountSelection />} />
+					{appLoggedIn && twitterLoggedIn ? (
+						<Route path="/" element={<Dashboard />} />
+					) : (
 						<Route path="/" element={<Login appLogin={setAppLoggedIn} />} />
 					)}
 				</Routes>

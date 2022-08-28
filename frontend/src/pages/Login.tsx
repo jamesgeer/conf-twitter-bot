@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface Props {
 	appLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,6 +12,7 @@ const Login = ({ appLogin }: Props) => {
 	const [password, setPassword] = useState('');
 	const [validationError, setValidationError] = useState(false);
 	const [errorText, setErrorText] = useState('');
+	const navigate = useNavigate();
 
 	const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(e.target.value);
@@ -61,6 +62,7 @@ const Login = ({ appLogin }: Props) => {
 			const response = await axios.post('/api/sessions', payload, config);
 			if (response.status === HttpStatus.OK) {
 				appLogin(true);
+				navigate('/select-account');
 			}
 		} catch (err) {
 			if (axios.isAxiosError(err)) {
