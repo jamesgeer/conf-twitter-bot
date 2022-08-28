@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import HttpStatus from 'http-status';
+
+interface ServerError {
+	response: {
+		status: number;
+		data: {
+			message: string;
+		};
+	};
+}
 
 const SignUp = () => {
 	const [username, setUsername] = useState('');
@@ -42,21 +53,21 @@ const SignUp = () => {
 		}));
 	};
 
-	// const setFormError = (error: boolean, message: string) => {
-	// 	setInputError((prevState) => ({
-	// 		username: {
-	// 			...prevState.username,
-	// 		},
-	// 		password: {
-	// 			...prevState.password,
-	// 		},
-	// 		form: {
-	// 			...prevState.form,
-	// 			error,
-	// 			message,
-	// 		},
-	// 	}));
-	// };
+	const setFormError = (error: boolean, message: string) => {
+		setInputError((prevState) => ({
+			username: {
+				...prevState.username,
+			},
+			password: {
+				...prevState.password,
+			},
+			form: {
+				...prevState.form,
+				error,
+				message,
+			},
+		}));
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.id === 'username') {
@@ -83,26 +94,59 @@ const SignUp = () => {
 		}
 	};
 
-	// submission from input itself or from button
-	const handleSubmission = (e: React.FormEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
-		e.preventDefault();
-
+	const validUsername = (): boolean => {
 		// check username length on submission
 		if (username.length === 0) {
 			setUsernameError(true, 'Please enter a username.');
+			return false;
 		}
 
+		return true;
+	};
+
+	const validPassword = (): boolean => {
 		// check password length on submission
 		if (password.length === 0) {
 			setPasswordError(true, 'Please enter a password.');
+			return false;
 		}
 
 		if (password.length > 0 && password.length < 7) {
 			setPasswordError(true, 'Password must have at least 7 characters.');
+			return false;
 		}
 
-		if (!inputError.username.error && !inputError.password.error) {
-			console.log('No errors, submit');
+		return true;
+	};
+
+	// submission from input itself or from button
+	const handleSubmission = (e: React.FormEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+
+		if (validUsername() && validPassword()) {
+			requestNewUser().then();
+		}
+	};
+
+	const requestNewUser = async (): Promise<void> => {
+		try {
+			const payload = { username, password };
+			const response = await axios.post('/api/users', payload);
+			if (response.status === HttpStatus.CREATED) {
+				console.log('Account created!');
+			}
+		} catch (e) {
+			if (axios.isAxiosError(e)) {
+				const status = (e as ServerError).response.status;
+				const errorMessage = (e as ServerError).response.data.message;
+				switch (status) {
+					case HttpStatus.INTERNAL_SERVER_ERROR:
+						setFormError(true, errorMessage);
+						break;
+					case HttpStatus.CONFLICT:
+						setUsernameError(true, errorMessage);
+				}
+			}
 		}
 	};
 
@@ -159,6 +203,9 @@ const SignUp = () => {
 							</p>
 						</div>
 					</div>
+					<p className={`text-red-500 text-xs italic ${inputError.form.error ? 'block' : 'hidden'}`}>
+						{inputError.form.message}
+					</p>
 					<div className="flex items-center justify-between">
 						<Link to="/" className="text-sm text-blue-500">
 							Already have an account?
