@@ -1,3 +1,4 @@
+/*
 import { JSDOM } from 'jsdom';
 import { Paper } from '../../routes/papers/papers';
 // import { fetchHtmlOrUsedCached } from '../index';
@@ -73,3 +74,4 @@ export default async function fetchListOfPapersResearchr(url: string): Promise<P
 
 	return papers;
 }
+ */

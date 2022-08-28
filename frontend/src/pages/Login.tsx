@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface Props {
 	appLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,6 +12,7 @@ const Login = ({ appLogin }: Props) => {
 	const [password, setPassword] = useState('');
 	const [validationError, setValidationError] = useState(false);
 	const [errorText, setErrorText] = useState('');
+	const navigate = useNavigate();
 
 	const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(e.target.value);
@@ -60,6 +62,7 @@ const Login = ({ appLogin }: Props) => {
 			const response = await axios.post('/api/sessions', payload, config);
 			if (response.status === HttpStatus.OK) {
 				appLogin(true);
+				navigate('/select-account');
 			}
 		} catch (err) {
 			if (axios.isAxiosError(err)) {
@@ -119,14 +122,16 @@ const Login = ({ appLogin }: Props) => {
 							{errorText}
 						</p>
 					</div>
-					<div className="flex items-center justify-between">
+					<div className="flex flex-col gap-5 items-center">
 						<button
-							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-							type="button"
+							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
 							onClick={(e) => handleSubmission(e)}
 						>
 							Sign In
 						</button>
+						<Link to="/sign-up" className="text-sm text-blue-500">
+							Don't have an account yet?
+						</Link>
 					</div>
 				</form>
 			</div>
