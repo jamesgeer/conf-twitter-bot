@@ -4,25 +4,74 @@ import { Link } from 'react-router-dom';
 const SignUp = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [usrValidationError, setUsrValidationError] = useState(false);
-	const [usrErrorText, setUsrErrorText] = useState('');
-	const [pwdValidationError, setPwdValidationError] = useState(false);
-	const [pwdErrorText, setPwdErrorText] = useState('');
+
+	const [inputError, setInputError] = useState({
+		username: {
+			error: false,
+			message: '',
+		},
+		password: {
+			error: false,
+			message: '',
+		},
+		form: {
+			error: false,
+			message: '',
+		},
+	});
+
+	const setPasswordError = (error: boolean, message: string) => {
+		setInputError((prevState) => ({
+			...prevState,
+			password: {
+				...prevState.password,
+				error,
+				message,
+			},
+		}));
+	};
+
+	const setUsernameError = (error: boolean, message: string) => {
+		setInputError((prevState) => ({
+			...prevState,
+			username: {
+				...prevState.username,
+				error,
+				message,
+			},
+		}));
+	};
+
+	// const setFormError = (error: boolean, message: string) => {
+	// 	setInputError((prevState) => ({
+	// 		username: {
+	// 			...prevState.username,
+	// 		},
+	// 		password: {
+	// 			...prevState.password,
+	// 		},
+	// 		form: {
+	// 			...prevState.form,
+	// 			error,
+	// 			message,
+	// 		},
+	// 	}));
+	// };
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.id === 'username') {
 			setUsername(e.target.value);
 
-			// reset validation errors when password input is modified
-			if (usrValidationError) {
-				setUsrValidationError(false);
+			// clear any errors when user modifies input
+			if (inputError.username.error) {
+				setUsernameError(false, '');
 			}
 		} else {
 			setPassword(e.target.value);
 
-			// reset validation errors when password input is modified
-			if (pwdValidationError) {
-				setPwdValidationError(false);
+			// clear any errors when user modifies input
+			if (inputError.password) {
+				setPasswordError(false, '');
 			}
 		}
 	};
@@ -38,37 +87,23 @@ const SignUp = () => {
 	const handleSubmission = (e: React.FormEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
-		let error = false;
 		// check username length on submission
 		if (username.length === 0) {
-			usrFormError('Please enter a username.');
-			error = true;
+			setUsernameError(true, 'Please enter a username.');
 		}
 
 		// check password length on submission
 		if (password.length === 0) {
-			pwdFormError('Please enter a password.');
-			error = true;
+			setPasswordError(true, 'Please enter a password.');
 		}
 
 		if (password.length > 0 && password.length < 7) {
-			pwdFormError('Password must have at least 7 characters.');
-			error = true;
+			setPasswordError(true, 'Password must have at least 7 characters.');
 		}
 
-		if (error) {
-			return;
+		if (!inputError.username.error && !inputError.password.error) {
+			console.log('No errors, submit');
 		}
-	};
-
-	const usrFormError = (errorMessage: string): void => {
-		setUsrValidationError(true);
-		setUsrErrorText(errorMessage);
-	};
-
-	const pwdFormError = (errorMessage: string): void => {
-		setPwdValidationError(true);
-		setPwdErrorText(errorMessage);
 	};
 
 	return (
@@ -83,7 +118,7 @@ const SignUp = () => {
 							</label>
 							<input
 								className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline ${
-									usrValidationError ? 'border-red-500' : ''
+									inputError.username.error ? 'border-red-500' : ''
 								}`}
 								id="username"
 								type="text"
@@ -92,8 +127,12 @@ const SignUp = () => {
 								onChange={(e) => handleChange(e)}
 								onKeyDown={(e) => handleKeyDown(e)}
 							/>
-							<p className={`text-red-500 text-xs italic ${usrValidationError ? 'block' : 'hidden'}`}>
-								{usrErrorText}
+							<p
+								className={`text-red-500 text-xs italic ${
+									inputError.username.error ? 'block' : 'hidden'
+								}`}
+							>
+								{inputError.username.message}
 							</p>
 						</div>
 						<div>
@@ -102,7 +141,7 @@ const SignUp = () => {
 							</label>
 							<input
 								className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline ${
-									pwdValidationError ? 'border-red-500' : ''
+									inputError.password.error ? 'border-red-500' : ''
 								}`}
 								id="password"
 								type="password"
@@ -111,8 +150,12 @@ const SignUp = () => {
 								onChange={(e) => handleChange(e)}
 								onKeyDown={(e) => handleKeyDown(e)}
 							/>
-							<p className={`text-red-500 text-xs italic ${pwdValidationError ? 'block' : 'hidden'}`}>
-								{pwdErrorText}
+							<p
+								className={`text-red-500 text-xs italic ${
+									inputError.password.error ? 'block' : 'hidden'
+								}`}
+							>
+								{inputError.password.message}
 							</p>
 						</div>
 					</div>
