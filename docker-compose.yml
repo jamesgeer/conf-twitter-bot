@@ -1,9 +1,16 @@
 version: '3'
 services:
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3000:80'
   postgres:
-    image: 'postgres:12'
-    environment:
-      - POSTGRES_PASSWORD=password
+      image: 'postgres:12'
+      environment:
+        - POSTGRES_PASSWORD=password
   backend:
     build:
       dockerfile: Dockerfile.dev
@@ -11,3 +18,10 @@ services:
     volumes:
       - /app/node_modules
       - ./backend:/app
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./frontend
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
