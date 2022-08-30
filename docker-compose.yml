@@ -23,6 +23,8 @@ services:
       - ./backend:/app
   frontend:
     stdin_open: true
+    environment:
+      - WDS_SOCKET_PORT=0
     build:
       dockerfile: Dockerfile.dev
       context: ./frontend
