@@ -1,33 +1,53 @@
 version: '3'
 services:
-  nginx:
-    restart: always
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./nginx
-    ports:
-      - '3000:80'
-    depends_on:
-      - backend
-      - frontend
-  postgres:
-      image: 'postgres:12'
-      environment:
-        - POSTGRES_PASSWORD=password
-  backend:
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./backend
-    volumes:
-      - /app/node_modules
-      - ./backend:/app
-  frontend:
-    stdin_open: true
-    environment:
-      - WDS_SOCKET_PORT=0
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./frontend
-    volumes:
-      - /app/node_modules
-      - ./frontend:/app
+    postgres:
+        image: 'postgres:12'
+        container_name: postgres
+        hostname: postgres
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: ConfTwitterBot
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        restart: unless-stopped
+
+    nginx:
+        container_name: nginx
+        restart: always
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./nginx
+        ports:
+            - '3000:80'
+        depends_on:
+            - backend
+            - frontend
+
+    backend:
+        container_name: conf-twitter-bot-backend
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./backend
+        volumes:
+            - /app/node_modules
+            - ./backend:/app
+        depends_on:
+            - postgres
+
+    frontend:
+        container_name: conf-twitter-bot-frontend
+        stdin_open: true
+        environment:
+            - WDS_SOCKET_PORT=0
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./frontend
+        volumes:
+            - /app/node_modules
+            - ./frontend:/app
+
+volumes:
+    postgres-data:
