@@ -1,5 +1,5 @@
 import HttpStatus from 'http-status';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 
