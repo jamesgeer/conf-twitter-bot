@@ -1,7 +1,7 @@
-version: '3'
+version: "3"
 services:
     postgres:
-        image: 'postgres:12'
+        image: "postgres:12"
         container_name: postgres
         hostname: postgres
         ports:
@@ -37,7 +37,7 @@ services:
             dockerfile: Dockerfile.dev
             context: ./nginx
         ports:
-            - '3000:80'
+            - "3000:80"
         depends_on:
             - backend
             - frontend
@@ -47,6 +47,8 @@ services:
         build:
             dockerfile: Dockerfile.dev
             context: ./backend
+        environment:
+            - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ConfTwitterBot
         volumes:
             - /app/node_modules
             - ./backend:/app
