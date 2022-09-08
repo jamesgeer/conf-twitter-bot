@@ -31,7 +31,12 @@ const AccountSelection = () => {
 		const account = twitterAccounts.find((account) => account.userId === userId);
 		if (account) {
 			setActiveUser(account);
-			navigate('/');
+
+			// since context state isn't immediately updated we need to wait, otherwise
+			// the user will just be sent back to the login screen since the state won't be set
+			setTimeout(() => {
+				navigate('/');
+			}, 100);
 		}
 	};
 
