@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 
 import Login from '../pages/Login';
 import AccountSelection from '../pages/AccountSelection';
@@ -52,11 +52,10 @@ export default function Index() {
 					<Route path="sign-up" element={<SignUp />} />
 					<Route path="login" element={<Login appLogin={setAppLoggedIn} />} />
 					<Route path="select-account" element={<AccountSelection />} />
-					{appLoggedIn && twitterLoggedIn ? (
-						<Route path="/" element={<Dashboard />} />
-					) : (
-						<Route path="/" element={<Login appLogin={setAppLoggedIn} />} />
-					)}
+					<Route
+						path="/"
+						element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />}
+					/>
 				</Routes>
 			</Router>
 		</>

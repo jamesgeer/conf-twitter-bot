@@ -3,10 +3,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../types';
 import { ActiveAccountContext } from '../context/ActiveAccountContext';
 import Button from '../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 const AccountSelection = () => {
 	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
 	const { setActiveUser } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (twitterAccounts.length === 0) {
@@ -29,6 +31,7 @@ const AccountSelection = () => {
 		const account = twitterAccounts.find((account) => account.userId === userId);
 		if (account) {
 			setActiveUser(account);
+			navigate('/');
 		}
 	};
 
