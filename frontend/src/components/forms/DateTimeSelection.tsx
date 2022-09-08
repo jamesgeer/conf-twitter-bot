@@ -75,8 +75,11 @@ const DateTimeSelection = ({ setDateTimeISO }: Props) => {
 
 	// set date time once component has fully loaded otherwise an error will occur
 	useEffect(() => {
-		// https://day.js.org/docs/en/display/format
-		const enteredDateTime = dayjs(`${year}-${month}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
+		// add one to the months as "dayjs" treats months as zero-based, but ISO 86001 treats them as one-based
+		// so when "dayjs" parses a ISO string it converts it back to zero-based, removing a month
+		// also months are strings so must be parsed before +/-, otherwise you'll do something like "8" + 1 = "81"
+		const oneBasedMonth = (parseInt(month) + 1).toString();
+		const enteredDateTime = dayjs(`${year}-${oneBasedMonth}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
 		setDateTimeISO(enteredDateTime.toISOString());
 	}, [day, month, year, hour, minute, setDateTimeISO]);
 
