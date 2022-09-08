@@ -209,7 +209,7 @@ const SignUp = () => {
 						{inputError.form.message}
 					</p>
 					<div className="flex items-center justify-between">
-						<Link to="/" className="text-sm text-blue-500">
+						<Link to="/login" className="text-sm text-blue-500">
 							Already have an account?
 						</Link>
 						<button
