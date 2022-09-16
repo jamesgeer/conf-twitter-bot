@@ -1,6 +1,9 @@
 {
   "name": "conf-twitter-bot-server",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "description": "CS Conference Twitter Bot Server",
   "author": {
     "name": "Stefan Marr",

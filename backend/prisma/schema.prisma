@@ -49,15 +49,16 @@ model TwitterUser {
 }
 
 model Tweet {
-    id            Int         @id @default(autoincrement())
-    account       Account     @relation(fields: [accountId], references: [id])
-    accountId     Int
-    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
-    twitterUserId BigInt
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime
-    content       String      @db.VarChar(280)
-    sent          Boolean     @default(false)
+    id               Int         @id @default(autoincrement())
+    account          Account     @relation(fields: [accountId], references: [id])
+    accountId        Int
+    twitterUser      TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId    BigInt
+    createdAt        DateTime    @default(now())
+    updatedAt        DateTime
+    scheduledTimeUTC DateTime    @db.Timestamptz(3)
+    content          String      @db.VarChar(280)
+    sent             Boolean     @default(false)
 }
 
 model TwitterOAuth {

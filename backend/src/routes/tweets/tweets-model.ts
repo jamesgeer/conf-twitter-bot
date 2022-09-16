@@ -1,23 +1,35 @@
 /**
  * Model for creating/reading/updating/deleting stored tweets
- * TODO: Convert from JSON store to DB Object
  */
-import path from 'path';
-import { readFileSync, writeFileSync } from 'fs';
 import { HTTPTweet, Tweets } from './tweets';
+import prisma from '../../../lib/prisma';
 
 let tweets: Tweets;
-const pathToFile = path.relative(process.cwd(), 'data/tweets.json');
 
-export const getTweets = (): Tweets => {
-	try {
-		const fileContent = readFileSync(pathToFile).toString();
-		tweets = <Tweets>JSON.parse(fileContent);
-	} catch (e) {
-		console.error(e);
-		tweets = [];
-	}
-	return tweets;
+export const getTweets = (): Tweets =>
+	// try {
+	// 	const fileContent = readFileSync(pathToFile).toString();
+	// 	tweets = <Tweets>JSON.parse(fileContent);
+	// } catch (e) {
+	// 	console.error(e);
+	// 	tweets = [];
+	// }
+	tweets;
+
+export const getAllTweets = async (twitterUserId: string): Promise<void> => {
+	const result = prisma.tweet.findMany({
+		where: {
+			twitterUserId: BigInt(twitterUserId),
+		},
+		select: {
+			id: true,
+			twitterUserId: true,
+			scheduledTimeUTC: true,
+			content: true,
+			sent: true,
+		},
+	});
+	console.log(result);
 };
 
 export const insertTweet = (httpTweet: HTTPTweet): boolean => {
@@ -39,10 +51,10 @@ export const insertTweet = (httpTweet: HTTPTweet): boolean => {
 
 	// temp until a real database is implemented, load data
 	tweets = getTweets();
-	tweets.push(tweet);
+	// tweets.push(tweet);
 
 	try {
-		writeFileSync(pathToFile, JSON.stringify(tweets));
+		// writeFileSync(pathToFile, JSON.stringify(tweets));
 		return true;
 	} catch (e) {
 		console.log(e);

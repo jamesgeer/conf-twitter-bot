@@ -1,5 +1,5 @@
 // Single Tweet
-export interface Tweet {
+export interface OldTweet {
 	id?: number;
 	text: string;
 	image64: string;
@@ -7,6 +7,14 @@ export interface Tweet {
 	userId?: string;
 	scheduledTimeUTC?: string;
 	sent?: boolean;
+}
+
+export interface Tweet {
+	id: number;
+	twitterUserId: string;
+	scheduledTimeUTC: string;
+	content: string;
+	sent: boolean;
 }
 
 // Tweet sent from frontend and received by backend
