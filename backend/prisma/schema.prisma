@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("DATABASE_URL")
+    url      = env("DATABASE_URL") // "postgresql://postgres:postgres@localhost:5400/ConfTwitterBot"
 }
 
 model User {
@@ -55,7 +55,7 @@ model Tweet {
     twitterUser      TwitterUser @relation(fields: [twitterUserId], references: [id])
     twitterUserId    BigInt
     createdAt        DateTime    @default(now())
-    updatedAt        DateTime
+    updatedAt        DateTime?
     scheduledTimeUTC DateTime    @db.Timestamptz(3)
     content          String      @db.VarChar(280)
     sent             Boolean     @default(false)

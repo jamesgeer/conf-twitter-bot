@@ -1,12 +1,8 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import { getTweets, insertTweet } from './tweets-model';
-
-interface HTTPTweet {
-	userId: string;
-	text: string;
-	scheduledTimeUTC?: string;
-}
+import { ServerError } from '../types';
+import { HTTPTweet } from './tweets';
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 	const tweets = getTweets();
@@ -27,10 +23,11 @@ export const sentTweets = async (ctx: ParameterizedContext): Promise<void> => {
 
 export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const httpTweet: HTTPTweet = ctx.request.body;
+	const result = await insertTweet(httpTweet);
 
-	// failed to insert tweet
-	if (!insertTweet(httpTweet)) {
-		ctx.status = HttpStatus.UNAUTHORIZED;
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
 		return;
 	}
 
