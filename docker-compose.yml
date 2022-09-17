@@ -48,7 +48,7 @@ services:
             dockerfile: Dockerfile.dev
             context: ./backend
         environment:
-            - DATABASE_URL=postgresql://postgres:postgres@postgres:5400/ConfTwitterBot
+            - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ConfTwitterBot
         volumes:
             - /app/node_modules
             - ./backend:/app
