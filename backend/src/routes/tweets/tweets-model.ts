@@ -6,20 +6,8 @@ import { HTTPTweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 
-let tweets: Tweets;
-
-export const getTweets = (): Tweets =>
-	// try {
-	// 	const fileContent = readFileSync(pathToFile).toString();
-	// 	tweets = <Tweets>JSON.parse(fileContent);
-	// } catch (e) {
-	// 	console.error(e);
-	// 	tweets = [];
-	// }
-	tweets;
-
-export const getAllTweets = async (twitterUserId: string): Promise<void> => {
-	const result = prisma.tweet.findMany({
+export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
+	prisma.tweet.findMany({
 		where: {
 			twitterUserId: BigInt(twitterUserId),
 		},
@@ -31,8 +19,6 @@ export const getAllTweets = async (twitterUserId: string): Promise<void> => {
 			sent: true,
 		},
 	});
-	console.log(result);
-};
 
 export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | ServerError> => {
 	const { accountId, twitterUserId, scheduledTimeUTC, content } = httpTweet;

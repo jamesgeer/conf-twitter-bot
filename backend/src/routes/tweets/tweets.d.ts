@@ -11,8 +11,8 @@ export interface OldTweet {
 
 export interface Tweet {
 	id: number;
-	twitterUserId: string;
-	scheduledTimeUTC: string;
+	twitterUserId: bigint;
+	scheduledTimeUTC: Date | string;
 	content: string;
 	sent: boolean;
 }

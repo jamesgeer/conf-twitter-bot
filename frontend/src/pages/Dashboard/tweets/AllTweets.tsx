@@ -26,7 +26,7 @@ const AllTweets = () => {
 		return (
 			<div key={index} className="border-b border-slate-200 pb-4">
 				<small>{tweetDate}</small>
-				<p>{tweet.text}</p>
+				<p>{tweet.content}</p>
 			</div>
 		);
 	});

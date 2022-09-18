@@ -5,7 +5,7 @@ import { ServerError } from '../types';
 import { HTTPTweet } from './tweets';
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
-	const tweets = getTweets();
+	const tweets = await getTweets(ctx.session.userId);
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = tweets;
