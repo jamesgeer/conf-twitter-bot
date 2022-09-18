@@ -1,13 +1,13 @@
 export interface TwitterUser {
+	id: bigint;
 	name: string;
 	screenName: string;
 	profileImageUrl: string;
 }
 
 export interface Account {
-	accountId: number;
+	id: number;
 	userId: number;
-	twitterUserId: bigint;
 	twitterUser: TwitterUser;
 }
 

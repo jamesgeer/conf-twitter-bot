@@ -5,10 +5,22 @@
 import prisma from '../../../lib/prisma';
 import { Accounts } from './accounts';
 
-export const getAccounts = async (userId: string): Promise<Accounts> =>
+export const getAccounts = async (userId: number): Promise<Accounts> =>
 	prisma.account.findMany({
 		where: {
-			userId: +userId,
+			userId,
+		},
+		select: {
+			id: true,
+			userId: true,
+			twitterUser: {
+				select: {
+					id: true,
+					name: true,
+					screenName: true,
+					profileImageUrl: true,
+				},
+			},
 		},
 	});
 
