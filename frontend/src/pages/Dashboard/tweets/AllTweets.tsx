@@ -7,10 +7,8 @@ const AllTweets = () => {
 	const [tweets, setTweets] = useState<Tweets>([]);
 
 	useEffect(() => {
-		if (tweets.length === 0) {
-			getTweets().then();
-		}
-	}, [tweets]);
+		getTweets().then();
+	}, []);
 
 	const getTweets = async () => {
 		try {
@@ -26,12 +24,12 @@ const AllTweets = () => {
 		return (
 			<div key={index} className="border-b border-slate-200 pb-4">
 				<small>{tweetDate}</small>
-				<p>{tweet.text}</p>
+				<p>{tweet.content}</p>
 			</div>
 		);
 	});
 
-	return <div className="grid gap-4">{displayTweets}</div>;
+	return <>{tweets.length > 0 ? <div className="grid gap-4">{displayTweets}</div> : <p>No tweets to display.</p>}</>;
 };
 
 export default AllTweets;

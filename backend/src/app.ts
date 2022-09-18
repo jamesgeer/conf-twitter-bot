@@ -30,6 +30,11 @@ app.keys = ['Session Key Secret 5346fdg434'];
 app.proxy = true;
 app.use(koaSession(SESSION_CONFIG, app));
 
+// fix for: TypeError: Do not know how to serialize a BigInt
+(BigInt.prototype as any).toJSON = function () {
+	return this.toString();
+};
+
 app.use(async (ctx, next) => {
 	try {
 		await next();

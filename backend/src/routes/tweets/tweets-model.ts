@@ -1,51 +1,48 @@
 /**
  * Model for creating/reading/updating/deleting stored tweets
- * TODO: Convert from JSON store to DB Object
  */
-import path from 'path';
-import { readFileSync, writeFileSync } from 'fs';
+import HttpStatus from 'http-status';
 import { HTTPTweet, Tweets } from './tweets';
+import prisma from '../../../lib/prisma';
+import { ServerError } from '../types';
 
-let tweets: Tweets;
-const pathToFile = path.relative(process.cwd(), 'data/tweets.json');
+export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
+	prisma.tweet.findMany({
+		where: {
+			twitterUserId: BigInt(twitterUserId),
+		},
+		select: {
+			id: true,
+			twitterUserId: true,
+			scheduledTimeUTC: true,
+			content: true,
+			sent: true,
+		},
+	});
 
-export const getTweets = (): Tweets => {
-	try {
-		const fileContent = readFileSync(pathToFile).toString();
-		tweets = <Tweets>JSON.parse(fileContent);
-	} catch (e) {
-		console.error(e);
-		tweets = [];
-	}
-	return tweets;
-};
-
-export const insertTweet = (httpTweet: HTTPTweet): boolean => {
-	const { text, userId, scheduledTimeUTC } = httpTweet;
+export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | ServerError> => {
+	const { accountId, twitterUserId, scheduledTimeUTC, content } = httpTweet;
 
 	// temp, need a better check
-	if (userId.length === 0 || text.length === 0 || scheduledTimeUTC.length === 0) {
-		return false;
+	if (accountId.length === 0 || twitterUserId.length === 0 || scheduledTimeUTC.length === 0 || content.length === 0) {
+		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');
 	}
 
-	// temp, convert httpTweet to regular tweet
-	const tweet = {
-		text,
-		image64: '',
-		paperId: 0,
-		userId,
-		scheduledTimeUTC,
-	};
-
-	// temp until a real database is implemented, load data
-	tweets = getTweets();
-	tweets.push(tweet);
+	const isoDate = new Date(scheduledTimeUTC);
 
 	try {
-		writeFileSync(pathToFile, JSON.stringify(tweets));
-		return true;
+		await prisma.tweet.create({
+			data: {
+				accountId: +accountId,
+				twitterUserId: BigInt(twitterUserId),
+				scheduledTimeUTC: isoDate,
+				content,
+			},
+		});
 	} catch (e) {
-		console.log(e);
-		return false;
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
+
+	// successfully inserted
+	return true;
 };

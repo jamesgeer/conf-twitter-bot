@@ -14,14 +14,22 @@ export interface ActiveTwitterAccountContext {
 export type TwitterAccounts = Array<TwitterAccount>;
 
 // Single Tweet
+// export interface Tweet {
+// 	id?: number;
+// 	text: string;
+// 	image64: string;
+// 	paperId: number;
+// 	userId?: string;
+// 	scheduledTimeUTC?: string;
+// 	sent?: boolean;
+// }
+
 export interface Tweet {
-	id?: number;
-	text: string;
-	image64: string;
-	paperId: number;
-	userId?: string;
-	scheduledTimeUTC?: string;
-	sent?: boolean;
+	id: number;
+	twitterUserId: bigint;
+	scheduledTimeUTC: Date | string;
+	content: string;
+	sent: boolean;
 }
 
 // Array of Tweets

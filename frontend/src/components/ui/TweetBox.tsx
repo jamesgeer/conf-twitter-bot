@@ -52,9 +52,10 @@ const TweetBox = () => {
 	const postTweet = async (): Promise<void> => {
 		try {
 			const payload = {
-				userId: activeAccount.userId,
-				text: tweetText,
+				accountId: 1,
+				twitterUserId: activeAccount.userId,
 				scheduledTimeUTC: dateTimeISO,
+				content: tweetText,
 			};
 			const response = await axios.post('/api/tweets', payload);
 			if (response.status === HttpStatus.CREATED) {
