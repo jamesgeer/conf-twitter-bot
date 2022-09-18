@@ -1,14 +1,4 @@
 // Single Tweet
-export interface OldTweet {
-	id?: number;
-	text: string;
-	image64: string;
-	paperId: number;
-	userId?: string;
-	scheduledTimeUTC?: string;
-	sent?: boolean;
-}
-
 export interface Tweet {
 	id: number;
 	twitterUserId: bigint;

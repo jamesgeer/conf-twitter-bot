@@ -46,33 +46,3 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | Serve
 	// successfully inserted
 	return true;
 };
-
-// export const insertTweet = (httpTweet: HTTPTweet): boolean => {
-// 	const { text, userId, scheduledTimeUTC } = httpTweet;
-//
-// 	// temp, need a better check
-// 	if (userId.length === 0 || text.length === 0 || scheduledTimeUTC.length === 0) {
-// 		return false;
-// 	}
-//
-// 	// temp, convert httpTweet to regular tweet
-// 	const tweet = {
-// 		text,
-// 		image64: '',
-// 		paperId: 0,
-// 		userId,
-// 		scheduledTimeUTC,
-// 	};
-//
-// 	// temp until a real database is implemented, load data
-// 	tweets = getTweets();
-// 	// tweets.push(tweet);
-//
-// 	try {
-// 		// writeFileSync(pathToFile, JSON.stringify(tweets));
-// 		return true;
-// 	} catch (e) {
-// 		console.log(e);
-// 		return false;
-// 	}
-// };
