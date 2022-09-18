@@ -31,16 +31,10 @@ export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 	const { username, password } = ctx.request.body;
 
-	const validLogin = await validUserLogin(username, password);
-	if (validLogin instanceof ServerError) {
-		ctx.status = validLogin.getStatusCode();
-		ctx.body = { message: validLogin.getMessage() };
-		return;
-	}
-
-	if (!validLogin) {
-		ctx.status = HttpStatus.UNAUTHORIZED;
-		ctx.body = { error: 'Incorrect password' };
+	const userId = await validUserLogin(username, password);
+	if (userId instanceof ServerError) {
+		ctx.status = userId.getStatusCode();
+		ctx.body = { message: userId.getMessage() };
 		return;
 	}
 
@@ -53,6 +47,7 @@ export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// save login session
 	ctx.session.isLoggedIn = true;
+	ctx.session.userId = userId;
 	ctx.session.save();
 	ctx.session.manuallyCommit();
 

@@ -1,10 +1,11 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getAccount, getAccounts } from './accounts-model';
+import { getAccounts } from './accounts-model';
 
 export const account = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
-	const twitterAccount = getAccount(userId);
+	// const twitterAccount = getAccount(userId);
+	const twitterAccount = await getAccounts(userId)[0]; // temp -> remove
 
 	if (twitterAccount) {
 		ctx.status = HttpStatus.OK;
@@ -22,7 +23,7 @@ export const account = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const accounts = async (ctx: ParameterizedContext): Promise<void> => {
-	const twitterAccounts = getAccounts();
+	const twitterAccounts = await getAccounts(ctx.);
 
 	if (twitterAccounts.length > 0) {
 		const accounts = twitterAccounts.map((account) => ({
