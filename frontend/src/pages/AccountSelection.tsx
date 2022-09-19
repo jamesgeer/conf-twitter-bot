@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 
 const AccountSelection = () => {
-	const [twitterAccounts, setTwitterAccounts] = useState<Accounts>([]);
+	const [accounts, setAccounts] = useState<Accounts>([]);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
 
@@ -17,8 +17,7 @@ const AccountSelection = () => {
 	const getAccounts = async () => {
 		try {
 			const response = await axios.get('/api/accounts');
-			const accounts: Accounts = response.data;
-			setTwitterAccounts(accounts);
+			setAccounts(response.data);
 		} catch (error) {
 			console.error(error);
 		}
@@ -26,7 +25,7 @@ const AccountSelection = () => {
 
 	const handleAccountSelection = (accountId: number) => {
 		// extract matching account from array of accounts with the selected userId
-		const account = twitterAccounts.find((account) => account.id === accountId);
+		const account = accounts.find((account) => account.id === accountId);
 		if (account) {
 			handleAccountChange(account);
 
@@ -38,7 +37,7 @@ const AccountSelection = () => {
 		}
 	};
 
-	const accounts = twitterAccounts.map((account: Account) => {
+	const displayAccounts = accounts.map((account: Account) => {
 		return (
 			<li
 				className="flex items-center rounded-full py-3 px-4 bg-slate-100 cursor-pointer hover:bg-red-100"
@@ -59,8 +58,12 @@ const AccountSelection = () => {
 		<div className="container mx-auto flex justify-center">
 			<div className="mt-8 w-full xl:w-2/5">
 				<h1 className="text-center text-4xl font-bold">Select an Account</h1>
-				<ul className="mt-6 grid gap-y-6">{accounts}</ul>
-				<div className="mt-6 flex justify-end">
+				{accounts.length > 0 ? (
+					<ul className="mt-6 grid gap-y-6">{displayAccounts}</ul>
+				) : (
+					<p className="text-center mt-6">Click on "Add Account" to link your first Twitter account.</p>
+				)}
+				<div className="mt-6 flex justify-center">
 					<Button text={'+ Add Account'} />
 				</div>
 			</div>

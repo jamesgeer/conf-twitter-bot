@@ -26,12 +26,6 @@ export const account = async (ctx: ParameterizedContext): Promise<void> => {
 export const accounts = async (ctx: ParameterizedContext): Promise<void> => {
 	const userAccounts = await getAccounts(ctx.session.userId);
 
-	if (userAccounts.length > 0) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = userAccounts;
-		return;
-	}
-
 	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'No accounts found.' };
+	ctx.body = userAccounts;
 };
