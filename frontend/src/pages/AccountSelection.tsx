@@ -11,10 +11,8 @@ const AccountSelection = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (twitterAccounts.length === 0) {
-			getAccounts().then();
-		}
-	}, [twitterAccounts]);
+		getAccounts().then();
+	}, []);
 
 	const getAccounts = async () => {
 		try {

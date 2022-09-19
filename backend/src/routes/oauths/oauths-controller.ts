@@ -1,6 +1,5 @@
 import HttpStatus from 'http-status';
 import { ParameterizedContext } from 'koa';
-import { insertOrUpdateAccount } from '../accounts/accounts-model';
 import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from './oauths-model';
 import { TwitterOAuthRequestToken } from './oauths';
 
@@ -34,15 +33,15 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	// save/update account to file and if successful return account details
-	if (insertOrUpdateAccount(twitterAccount)) {
-		ctx.status = HttpStatus.CREATED;
-		ctx.body = {
-			userId: twitterAccount.userId,
-			screenName: twitterAccount.screenName,
-			profileImageUrl: twitterAccount.profileImageUrl,
-		};
-		return;
-	}
+	// if (insertOrUpdateAccount(twitterAccount)) {
+	// 	ctx.status = HttpStatus.CREATED;
+	// 	ctx.body = {
+	// 		userId: twitterAccount.userId,
+	// 		screenName: twitterAccount.screenName,
+	// 		profileImageUrl: twitterAccount.profileImageUrl,
+	// 	};
+	// 	return;
+	// }
 
 	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 	ctx.body = { error: 'Twitter account could not be stored.' };
