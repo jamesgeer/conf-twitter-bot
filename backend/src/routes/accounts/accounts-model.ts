@@ -61,5 +61,17 @@ export const insertAccount = async (userId: number, twitterUserId: bigint): Prom
 		return new ServerError(HttpStatus.CONFLICT, 'Account already exists.');
 	}
 
+	try {
+		await prisma.account.create({
+			data: {
+				userId,
+				twitterUserId,
+			},
+		});
+	} catch (e) {
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
+	}
+
+	// success
 	return true;
 };
