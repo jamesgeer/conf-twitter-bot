@@ -1,8 +1,10 @@
 /**
  * Model for creating/reading/updating/deleting stored Twitter accounts
  */
+import HttpStatus from 'http-status';
 import prisma from '../../../lib/prisma';
 import { Account, Accounts } from './accounts';
+import { ServerError } from '../types';
 
 export const getAccounts = async (userId: number): Promise<Accounts> =>
 	prisma.account.findMany({
@@ -42,34 +44,22 @@ export const getAccount = async (accountId: string): Promise<Account> =>
 		},
 	});
 
-export const accountExists = async (accountId: number, userId: number): Promise<boolean> => {
+// check if an account exists for the provided userId and twitterUserId
+export const accountExists = async (userId: number, twitterUserId: bigint): Promise<boolean> => {
 	const result = await prisma.account.count({
 		where: {
-			id: accountId,
-			userId,
+			userId: +userId,
+			twitterUserId: BigInt(twitterUserId),
 		},
 	});
 
 	return result > 0;
 };
 
-// export const updateAccount = (): boolean => {
-// 	console.error('UPDATE NOT IMPLEMENTED');
-// 	return false;
-// };
-//
-// export const insertAccount = (twitterAccount: TwitterAccount): boolean => {
-// 	twitterAccounts.push(twitterAccount);
-// 	try {
-// 		writeFileSync(pathToFile, JSON.stringify(twitterAccounts));
-// 		return true;
-// 	} catch (e) {
-// 		console.log(e);
-// 		return false;
-// 	}
-// };
-//
-// // eslint-disable-next-line
-// export const insertOrUpdateAccount = (twitterAccount: TwitterAccount): boolean => {
-// 	return accountExists(twitterAccount.userId) ? updateAccount() : insertAccount(twitterAccount);
-// };
+export const insertAccount = async (userId: number, twitterUserId: bigint): Promise<boolean | ServerError> => {
+	if (await accountExists(userId, twitterUserId)) {
+		return new ServerError(HttpStatus.CONFLICT, 'Account already exists.');
+	}
+
+	return true;
+};

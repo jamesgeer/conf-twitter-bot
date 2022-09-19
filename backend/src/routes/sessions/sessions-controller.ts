@@ -47,7 +47,7 @@ export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// save login session
 	ctx.session.isLoggedIn = true;
-	ctx.session.userId = userId;
+	ctx.session.userId = +userId;
 	ctx.session.save();
 	ctx.session.manuallyCommit();
 
@@ -92,11 +92,11 @@ export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => 
 	}
 
 	const { accountId, userId, twitterUserId } = ctx.request.body;
-	if (await accountExists(accountId, userId)) {
+	if (await accountExists(userId, twitterUserId)) {
 		// checks passed, store account details in session
-		ctx.session.userId = userId;
-		ctx.session.accountId = accountId;
-		ctx.session.twitterUserId = twitterUserId;
+		ctx.session.userId = +userId;
+		ctx.session.accountId = +accountId;
+		ctx.session.twitterUserId = BigInt(twitterUserId);
 
 		ctx.status = HttpStatus.OK;
 		return;
