@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { ActiveTwitterAccountContext, TwitterAccount } from '../types';
+import { ActiveTwitterAccountContext, Account } from '../types';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 
@@ -13,25 +13,29 @@ const ActiveAccountContext = createContext<ActiveTwitterAccountContext | null>(n
 
 // typescript requires an initial state for an active account to be set and updated
 const initialAccountState = {
-	userId: '',
-	name: '',
-	screenName: '',
-	profileImageUrl: '',
+	id: 0,
+	userId: 0,
+	twitterUser: {
+		id: BigInt(0),
+		name: '',
+		screenName: '',
+		profileImageUrl: '',
+	},
 };
 
 const ActiveAccountProvider: React.FC<Props> = ({ children }) => {
-	const [activeAccount, setActiveAccount] = useState<TwitterAccount>(initialAccountState);
+	const [activeAccount, setActiveAccount] = useState<Account>(initialAccountState);
 
-	const setActiveUser = async (twitterAccount: TwitterAccount) => {
-		const { userId } = twitterAccount;
-		if (userId.length === 0) {
+	const setActiveUser = async (account: Account) => {
+		const { userId } = account;
+		if (userId === 0) {
 			return;
 		}
 		try {
 			const payload = { userId };
 			const response = await axios.post('/api/sessions/account', payload);
 			if (response.status === HttpStatus.OK) {
-				setActiveAccount(twitterAccount);
+				setActiveAccount(account);
 				console.log(`${userId} now active`);
 			}
 		} catch (error) {

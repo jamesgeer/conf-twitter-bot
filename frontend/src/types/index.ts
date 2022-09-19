@@ -1,17 +1,32 @@
-export interface TwitterAccount {
-	userId: string;
+export interface TwitterUser {
+	id: bigint;
 	name: string;
 	screenName: string;
 	profileImageUrl: string;
 }
 
-export interface ActiveTwitterAccountContext {
-	activeAccount: TwitterAccount;
-	setActiveAccount?: (twitterAccount: TwitterAccount) => void;
-	setActiveUser: (twitterAccount: TwitterAccount) => void;
+export interface Account {
+	id: number;
+	userId: number;
+	twitterUser: TwitterUser;
 }
 
-export type TwitterAccounts = Array<TwitterAccount>;
+export type Accounts = Array<Account>;
+
+// export interface TwitterAccount {
+// 	userId: string;
+// 	name: string;
+// 	screenName: string;
+// 	profileImageUrl: string;
+// }
+
+export interface ActiveTwitterAccountContext {
+	activeAccount: Account;
+	setActiveAccount?: (account: Account) => void;
+	setActiveUser: (account: Account) => void;
+}
+
+// export type TwitterAccounts = Array<TwitterAccount>;
 
 // Single Tweet
 // export interface Tweet {
