@@ -1,9 +1,8 @@
 /**
  * Model for creating/reading/updating/deleting stored Twitter accounts
- * TODO: Convert from JSON store to DB Object
  */
 import prisma from '../../../lib/prisma';
-import { Accounts } from './accounts';
+import { Account, Accounts } from './accounts';
 
 export const getAccounts = async (userId: number): Promise<Accounts> =>
 	prisma.account.findMany({
@@ -24,10 +23,24 @@ export const getAccounts = async (userId: number): Promise<Accounts> =>
 		},
 	});
 
-// export const getAccount = (userId: string): TwitterAccount => {
-// 	twitterAccounts = getAccounts();
-// 	return twitterAccounts.find((account) => account.userId === userId);
-// };
+export const getAccount = async (accountId: string): Promise<Account> =>
+	prisma.account.findUnique({
+		where: {
+			id: +accountId,
+		},
+		select: {
+			id: true,
+			userId: true,
+			twitterUser: {
+				select: {
+					id: true,
+					name: true,
+					screenName: true,
+					profileImageUrl: true,
+				},
+			},
+		},
+	});
 
 export const accountExists = async (accountId: number, userId: number): Promise<boolean> => {
 	const result = await prisma.account.count({

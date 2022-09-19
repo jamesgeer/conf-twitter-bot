@@ -1,25 +1,19 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getAccounts } from './accounts-model';
+import { getAccount, getAccounts } from './accounts-model';
 
 // needs to be updated
 export const account = async (ctx: ParameterizedContext): Promise<void> => {
-	const { userId } = ctx.params;
-	// const twitterAccount = getAccount(userId);
-	const twitterAccount = await getAccounts(userId)[0]; // temp -> remove
+	const { id: accountId } = ctx.params;
+	const account = await getAccount(accountId);
 
-	if (twitterAccount) {
+	if (account) {
 		ctx.status = HttpStatus.OK;
-		ctx.body = {
-			userId: twitterAccount.userId,
-			name: twitterAccount.name,
-			screenName: twitterAccount.screenName,
-			profileImageUrl: twitterAccount.profileImageUrl,
-		};
+		ctx.body = account;
 		return;
 	}
 
-	ctx.status = HttpStatus.OK;
+	ctx.status = HttpStatus.NOT_FOUND;
 	ctx.body = { message: 'Account not found.' };
 };
 
