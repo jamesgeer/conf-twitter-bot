@@ -20,10 +20,10 @@ export type Accounts = Array<Account>;
 // 	profileImageUrl: string;
 // }
 
-export interface ActiveTwitterAccountContext {
-	activeAccount: Account;
-	setActiveAccount?: (account: Account) => void;
-	setActiveUser: (account: Account) => void;
+export interface AccountContextProps {
+	account: Account;
+	setAccount?: (account: Account) => void;
+	handleAccountChange: (account: Account) => void;
 }
 
 // export type TwitterAccounts = Array<TwitterAccount>;

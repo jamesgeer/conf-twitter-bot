@@ -1,13 +1,13 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
-import { ActiveTwitterAccountContext, TwitterAccount, TwitterAccounts } from '../types';
-import { ActiveAccountContext } from '../context/ActiveAccountContext';
+import { AccountContextProps, Account, Accounts } from '../types';
+import { AccountContext } from '../context/AccountContext';
 import Button from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 
 const AccountSelection = () => {
-	const [twitterAccounts, setTwitterAccounts] = useState<TwitterAccounts>([]);
-	const { setActiveUser } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
+	const [twitterAccounts, setTwitterAccounts] = useState<Accounts>([]);
+	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -19,18 +19,18 @@ const AccountSelection = () => {
 	const getAccounts = async () => {
 		try {
 			const response = await axios.get('/api/accounts');
-			const twitterAccounts: TwitterAccounts = response.data;
-			setTwitterAccounts(twitterAccounts);
+			const accounts: Accounts = response.data;
+			setTwitterAccounts(accounts);
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
-	const handleAccountSelection = (userId: string) => {
+	const handleAccountSelection = (accountId: number) => {
 		// extract matching account from array of accounts with the selected userId
-		const account = twitterAccounts.find((account) => account.userId === userId);
+		const account = twitterAccounts.find((account) => account.id === accountId);
 		if (account) {
-			setActiveUser(account);
+			handleAccountChange(account);
 
 			// since context state isn't immediately updated we need to wait, otherwise
 			// the user will just be sent back to the login screen since the state won't be set
@@ -40,15 +40,19 @@ const AccountSelection = () => {
 		}
 	};
 
-	const accounts = twitterAccounts.map((account: TwitterAccount) => {
+	const accounts = twitterAccounts.map((account: Account) => {
 		return (
 			<li
 				className="flex items-center rounded-full py-3 px-4 bg-slate-100 cursor-pointer hover:bg-red-100"
-				onClick={() => handleAccountSelection(account.userId)}
-				key={account.userId}
+				onClick={() => handleAccountSelection(account.id)}
+				key={account.id}
 			>
-				<img className="rounded-full border-2 border-white" src={account.profileImageUrl} alt="Profile icon" />
-				<p className="pl-3 text-2xl">{account.name}</p>
+				<img
+					className="rounded-full border-2 border-white"
+					src={account.twitterUser.profileImageUrl}
+					alt="Profile icon"
+				/>
+				<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
 			</li>
 		);
 	});

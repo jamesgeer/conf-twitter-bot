@@ -1,11 +1,11 @@
 import UserCard from '../ui/UserCard';
 import { useContext } from 'react';
-import { ActiveAccountContext } from '../../context/ActiveAccountContext';
+import { AccountContext } from '../../context/AccountContext';
 import { ActiveTwitterAccountContext } from '../../types';
 import Button from '../ui/Button';
 
 const Header = () => {
-	const { activeAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
+	const { activeAccount } = useContext(AccountContext) as ActiveTwitterAccountContext;
 
 	return (
 		<header className="bg-slate-100 mb-5">
