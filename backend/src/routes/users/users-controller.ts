@@ -2,6 +2,7 @@ import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import { insertUser } from './users-model';
 import { ServerError } from '../types';
+import { userLogin } from '../sessions/sessions-controller';
 
 export const user = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
@@ -21,5 +22,9 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
+	// once created, log user in
+	await userLogin(ctx);
+
+	// account successfully created and logged in
 	ctx.status = HttpStatus.CREATED;
 };

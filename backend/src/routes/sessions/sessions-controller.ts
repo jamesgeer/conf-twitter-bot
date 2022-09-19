@@ -66,6 +66,8 @@ export const userLogout = async (ctx: ParameterizedContext): Promise<void> => {
 	// destroy session by resetting variables
 	ctx.session.isLoggedIn = false;
 	ctx.session.userId = undefined;
+	ctx.session.accountId = undefined;
+	ctx.session.twitterUserId = undefined;
 
 	// no content to respond with
 	ctx.status = HttpStatus.NO_CONTENT;
