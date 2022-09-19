@@ -29,13 +29,14 @@ export const AccountProvider: React.FC<Props> = ({ children }) => {
 	const handleAccountChange = async (account: Account) => {
 		const {
 			id: accountId,
+			userId,
 			twitterUser: { id: twitterUserId },
 		} = account;
 		if (accountId === 0) {
 			return;
 		}
 		try {
-			const payload = { accountId, twitterUserId };
+			const payload = { accountId, userId, twitterUserId };
 
 			const response = await axios.post('/api/sessions/account', payload);
 			if (response.status === HttpStatus.OK) {

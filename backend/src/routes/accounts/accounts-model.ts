@@ -28,12 +28,18 @@ export const getAccounts = async (userId: number): Promise<Accounts> =>
 // 	twitterAccounts = getAccounts();
 // 	return twitterAccounts.find((account) => account.userId === userId);
 // };
-//
-// export const accountExists = (userId: string): boolean => {
-// 	twitterAccounts = getAccounts();
-// 	return twitterAccounts.some((account) => account.userId === userId);
-// };
-//
+
+export const accountExists = async (accountId: number, userId: number): Promise<boolean> => {
+	const result = await prisma.account.count({
+		where: {
+			id: accountId,
+			userId,
+		},
+	});
+
+	return result > 0;
+};
+
 // export const updateAccount = (): boolean => {
 // 	console.error('UPDATE NOT IMPLEMENTED');
 // 	return false;

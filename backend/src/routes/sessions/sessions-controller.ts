@@ -89,22 +89,17 @@ export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => 
 		return;
 	}
 
-	const { userId } = ctx.request.body;
-	const stringOnlyContainsNumbers = (str: string): boolean => /^\d+$/.test(str);
+	const { accountId, userId, twitterUserId } = ctx.request.body;
+	if (await accountExists(accountId, userId)) {
+		// checks passed, store account details in session
+		ctx.session.userId = userId;
+		ctx.session.accountId = accountId;
+		ctx.session.twitterUserId = twitterUserId;
 
-	if (!stringOnlyContainsNumbers(userId)) {
-		ctx.status = HttpStatus.UNAUTHORIZED;
-		ctx.body = { message: 'Invalid username.' };
+		ctx.status = HttpStatus.OK;
 		return;
 	}
 
-	if (!accountExists(userId)) {
-		ctx.status = HttpStatus.NOT_FOUND;
-		ctx.body = { message: 'Unable to locate user.' };
-		return;
-	}
-
-	// checks passed, set user to active
-	ctx.session.userId = userId;
-	ctx.status = HttpStatus.OK;
+	ctx.status = HttpStatus.NOT_FOUND;
+	ctx.body = { message: 'Account does not exist.' };
 };
