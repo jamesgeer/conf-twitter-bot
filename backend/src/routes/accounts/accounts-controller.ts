@@ -2,7 +2,6 @@ import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import { getAccount, getAccounts } from './accounts-model';
 
-// needs to be updated
 export const account = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id: accountId } = ctx.params;
 	const account = await getAccount(accountId);
