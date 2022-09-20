@@ -1,6 +1,9 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
+import HttpStatus from 'http-status';
 import { TwitterOAuthRequestToken, TwitterAccount, TwitterError } from './oauths';
+import { ServerError } from '../types';
+import prisma from '../../../lib/prisma';
 
 dotenv.config({ path: '../../.env' });
 
@@ -76,4 +79,24 @@ export const getTwitterAccountByRequestToken = async (
 	}
 
 	return { error: true, message: 'Unable to create access token.' };
+};
+
+export const insertTwitterOAuth = async (
+	accountId: number,
+	accessToken: string,
+	accessSecret: string,
+): Promise<boolean | ServerError> => {
+	try {
+		await prisma.twitterOAuth.create({
+			data: {
+				accountId,
+				accessToken,
+				accessSecret,
+			},
+		});
+	} catch (e) {
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
+	}
+
+	return true;
 };

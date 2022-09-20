@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = "postgresql://postgres:postgres@localhost:5400/ConfTwitterBot"
+    url      = env("DATABASE_URL") // "postgresql://postgres:postgres@localhost:5400/ConfTwitterBot"
 }
 
 model User {
@@ -67,5 +67,5 @@ model TwitterOAuth {
     accessToken  String
     accessSecret String
     createdAt    DateTime @default(now())
-    updatedAt    DateTime
+    updatedAt    DateTime?
 }
