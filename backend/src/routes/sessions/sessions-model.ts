@@ -19,7 +19,8 @@ export const validSessionCookie = (requestCookie: string, sessionCookie: string)
 	return false;
 };
 
-export const validUserLogin = async (username: string, plainTextPassword: string): Promise<boolean | ServerError> => {
+// return user id if login successful, otherwise return error
+export const validUserLogin = async (username: string, plainTextPassword: string): Promise<number | ServerError> => {
 	// check to see if an account with that username exists before trying password
 	if (!(await userExists(username))) {
 		return new ServerError(HttpStatus.NOT_FOUND, 'Sorry, an account with that username does not exist.');
@@ -31,13 +32,18 @@ export const validUserLogin = async (username: string, plainTextPassword: string
 			username,
 		},
 		select: {
+			id: true,
 			password: true,
 		},
 	});
 
 	// extract password from result and rename to hash
-	const { password: hash } = result;
+	const { id: userId, password: hash } = result;
 
 	// returns comparison result of provided password and stored hash
-	return bcrypt.compareSync(plainTextPassword, hash);
+	if (bcrypt.compareSync(plainTextPassword, hash)) {
+		return userId;
+	}
+
+	return new ServerError(HttpStatus.UNAUTHORIZED, 'Incorrect password.');
 };

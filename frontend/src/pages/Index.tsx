@@ -6,15 +6,15 @@ import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 import Dashboard from '../pages/Dashboard';
-import { ActiveAccountContext } from '../context/ActiveAccountContext';
-import { ActiveTwitterAccountContext } from '../types';
+import { AccountContext } from '../context/AccountContext';
+import { AccountContextProps } from '../types';
 import SignUp from './SignUp';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
 	const [twitterLoggedIn, setTwitterLoggedIn] = useState(false);
 
-	const { activeAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
+	const { account } = useContext(AccountContext) as AccountContextProps;
 
 	useEffect(() => {
 		// check if there is an existing user session on start up
@@ -41,7 +41,7 @@ export default function Index() {
 		}
 	};
 
-	if (!twitterLoggedIn && activeAccount.userId.length > 0) {
+	if (!twitterLoggedIn && account.id > 0) {
 		setTwitterLoggedIn(true);
 	}
 

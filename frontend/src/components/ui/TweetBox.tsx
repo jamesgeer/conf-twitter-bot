@@ -1,13 +1,13 @@
 import React, { useContext, useState } from 'react';
-import { ActiveAccountContext } from '../../context/ActiveAccountContext';
-import { ActiveTwitterAccountContext } from '../../types';
+import { AccountContext } from '../../context/AccountContext';
+import { AccountContextProps } from '../../types';
 import DateTimeSelection from '../forms/DateTimeSelection';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 
 const TweetBox = () => {
-	const { activeAccount } = useContext(ActiveAccountContext) as ActiveTwitterAccountContext;
+	const { account } = useContext(AccountContext) as AccountContextProps;
 	const [tweetText, setTweetText] = useState('');
 	const [dateTimeISO, setDateTimeISO] = useState('');
 	const [error, setError] = useState(false);
@@ -52,8 +52,8 @@ const TweetBox = () => {
 	const postTweet = async (): Promise<void> => {
 		try {
 			const payload = {
-				accountId: 1,
-				twitterUserId: activeAccount.userId,
+				accountId: account.id,
+				twitterUserId: account.twitterUser.id,
 				scheduledTimeUTC: dateTimeISO,
 				content: tweetText,
 			};
@@ -84,7 +84,11 @@ const TweetBox = () => {
 		<form className="px-7 mt-2 text-black" onSubmit={(e) => handleTweetSubmission(e)}>
 			<div className="flex gap-x-4 relative">
 				<div>
-					<img className="w-[48px] h-auto rounded-full" src={activeAccount.profileImageUrl} alt="profile" />
+					<img
+						className="w-[48px] h-auto rounded-full"
+						src={account.twitterUser.profileImageUrl}
+						alt="profile"
+					/>
 				</div>
 				<div className="text-xl mt-2 w-full">
 					<textarea

@@ -1,52 +1,75 @@
 /**
  * Model for creating/reading/updating/deleting stored Twitter accounts
- * TODO: Convert from JSON store to DB Object
  */
-import path from 'path';
-import { readFileSync, writeFileSync } from 'fs';
-import { TwitterAccount, TwitterAccounts } from '../oauths/oauths';
+import HttpStatus from 'http-status';
+import prisma from '../../../lib/prisma';
+import { Account, Accounts } from './accounts';
+import { ServerError } from '../types';
 
-let twitterAccounts: TwitterAccounts;
-const pathToFile = path.relative(process.cwd(), 'data/twitter-accounts.json');
+export const getAccounts = async (userId: number): Promise<Accounts> =>
+	prisma.account.findMany({
+		where: {
+			userId,
+		},
+		select: {
+			id: true,
+			userId: true,
+			twitterUser: {
+				select: {
+					id: true,
+					name: true,
+					screenName: true,
+					profileImageUrl: true,
+				},
+			},
+		},
+	});
 
-export const getAccounts = (): TwitterAccounts => {
-	try {
-		const fileContent = readFileSync(pathToFile).toString();
-		twitterAccounts = <TwitterAccounts>JSON.parse(fileContent);
-	} catch (e) {
-		console.error(e);
-		twitterAccounts = [];
+export const getAccount = async (accountId: string): Promise<Account> =>
+	prisma.account.findUnique({
+		where: {
+			id: +accountId,
+		},
+		select: {
+			id: true,
+			userId: true,
+			twitterUser: {
+				select: {
+					id: true,
+					name: true,
+					screenName: true,
+					profileImageUrl: true,
+				},
+			},
+		},
+	});
+
+// check if an account exists for the provided userId and twitterUserId
+export const accountExists = async (userId: number, twitterUserId: bigint): Promise<boolean> => {
+	const result = await prisma.account.count({
+		where: {
+			userId: +userId,
+			twitterUserId: BigInt(twitterUserId),
+		},
+	});
+
+	return result > 0;
+};
+
+export const insertAccount = async (userId: number, twitterUserId: bigint): Promise<number | ServerError> => {
+	if (await accountExists(userId, twitterUserId)) {
+		return new ServerError(HttpStatus.CONFLICT, 'Account already exists.');
 	}
-	return twitterAccounts;
-};
 
-export const getAccount = (userId: string): TwitterAccount => {
-	twitterAccounts = getAccounts();
-	return twitterAccounts.find((account) => account.userId === userId);
-};
-
-export const accountExists = (userId: string): boolean => {
-	twitterAccounts = getAccounts();
-	return twitterAccounts.some((account) => account.userId === userId);
-};
-
-export const updateAccount = (): boolean => {
-	console.error('UPDATE NOT IMPLEMENTED');
-	return false;
-};
-
-export const insertAccount = (twitterAccount: TwitterAccount): boolean => {
-	twitterAccounts.push(twitterAccount);
 	try {
-		writeFileSync(pathToFile, JSON.stringify(twitterAccounts));
-		return true;
+		const result = await prisma.account.create({
+			data: {
+				userId,
+				twitterUserId,
+			},
+		});
+		return result.id;
 	} catch (e) {
-		console.log(e);
-		return false;
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
-};
-
-// eslint-disable-next-line
-export const insertOrUpdateAccount = (twitterAccount: TwitterAccount): boolean => {
-	return accountExists(twitterAccount.userId) ? updateAccount() : insertAccount(twitterAccount);
 };

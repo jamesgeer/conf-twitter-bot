@@ -31,16 +31,10 @@ export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 	const { username, password } = ctx.request.body;
 
-	const validLogin = await validUserLogin(username, password);
-	if (validLogin instanceof ServerError) {
-		ctx.status = validLogin.getStatusCode();
-		ctx.body = { message: validLogin.getMessage() };
-		return;
-	}
-
-	if (!validLogin) {
-		ctx.status = HttpStatus.UNAUTHORIZED;
-		ctx.body = { error: 'Incorrect password' };
+	const userId = await validUserLogin(username, password);
+	if (userId instanceof ServerError) {
+		ctx.status = userId.getStatusCode();
+		ctx.body = { message: userId.getMessage() };
 		return;
 	}
 
@@ -53,6 +47,7 @@ export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// save login session
 	ctx.session.isLoggedIn = true;
+	ctx.session.userId = +userId;
 	ctx.session.save();
 	ctx.session.manuallyCommit();
 
@@ -71,6 +66,8 @@ export const userLogout = async (ctx: ParameterizedContext): Promise<void> => {
 	// destroy session by resetting variables
 	ctx.session.isLoggedIn = false;
 	ctx.session.userId = undefined;
+	ctx.session.accountId = undefined;
+	ctx.session.twitterUserId = undefined;
 
 	// no content to respond with
 	ctx.status = HttpStatus.NO_CONTENT;
@@ -94,22 +91,17 @@ export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => 
 		return;
 	}
 
-	const { userId } = ctx.request.body;
-	const stringOnlyContainsNumbers = (str: string): boolean => /^\d+$/.test(str);
+	const { accountId, userId, twitterUserId } = ctx.request.body;
+	if (await accountExists(userId, twitterUserId)) {
+		// checks passed, store account details in session
+		ctx.session.userId = +userId;
+		ctx.session.accountId = +accountId;
+		ctx.session.twitterUserId = BigInt(twitterUserId);
 
-	if (!stringOnlyContainsNumbers(userId)) {
-		ctx.status = HttpStatus.UNAUTHORIZED;
-		ctx.body = { message: 'Invalid username.' };
+		ctx.status = HttpStatus.OK;
 		return;
 	}
 
-	if (!accountExists(userId)) {
-		ctx.status = HttpStatus.NOT_FOUND;
-		ctx.body = { message: 'Unable to locate user.' };
-		return;
-	}
-
-	// checks passed, set user to active
-	ctx.session.userId = userId;
-	ctx.status = HttpStatus.OK;
+	ctx.status = HttpStatus.NOT_FOUND;
+	ctx.body = { message: 'Account does not exist.' };
 };

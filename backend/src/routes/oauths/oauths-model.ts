@@ -1,18 +1,22 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import * as dotenv from 'dotenv';
-import { TwitterOAuthRequestToken, TwitterAccount, TwitterError } from './oauths';
+import HttpStatus from 'http-status';
+import { TwitterOAuthRequestToken, TwitterAccount } from './oauths';
+import { ServerError } from '../types';
+import prisma from '../../../lib/prisma';
 
 dotenv.config({ path: '../../.env' });
 
 const appKey = process.env.TWITTER_API_KEY;
 const appSecret = process.env.TWITTER_API_SECRET;
 
-export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | TwitterError> => {
+export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | ServerError> => {
 	const client = new TwitterApi({
 		appKey: <string>appKey,
 		appSecret: <string>appSecret,
 	});
 
+	// TODO: replace callbackUrl with an env variable
 	const callbackUrl = 'http://localhost:3000';
 	const authLink = await client.generateAuthLink(callbackUrl);
 
@@ -23,7 +27,7 @@ export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequest
 		};
 	}
 
-	return { error: true, message: 'Unable to generate request token.' };
+	return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to generate request token.');
 };
 
 // need a better place for this method
@@ -39,9 +43,9 @@ export const getTwitterAccountByRequestToken = async (
 	tempAuthDetails: TwitterOAuthRequestToken,
 	oauthVerifier: string,
 	oauthToken: string,
-): Promise<TwitterAccount | TwitterError> => {
+): Promise<TwitterAccount | ServerError> => {
 	if (oauthToken !== tempAuthDetails.oauthToken) {
-		return { error: true, message: 'oAuth Tokens do not match.' };
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'oAuth Tokens do not match.');
 	}
 
 	// set all credentials required to make oauth request
@@ -75,5 +79,24 @@ export const getTwitterAccountByRequestToken = async (
 		};
 	}
 
-	return { error: true, message: 'Unable to create access token.' };
+	return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create access token.');
+};
+
+export const insertTwitterOAuth = async (
+	accountId: number,
+	accessToken: string,
+	accessSecret: string,
+): Promise<number | ServerError> => {
+	try {
+		const result = await prisma.twitterOAuth.create({
+			data: {
+				accountId,
+				accessToken,
+				accessSecret,
+			},
+		});
+		return result.accountId;
+	} catch (e) {
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
+	}
 };
