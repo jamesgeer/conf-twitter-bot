@@ -66,6 +66,10 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
+	// remove oAuth credentials before sending user
+	twitterAccount.oauth = null;
+
 	// success
 	ctx.status = HttpStatus.CREATED;
+	ctx.body = twitterAccount;
 };
