@@ -2,33 +2,34 @@ import HttpStatus from 'http-status';
 import { ParameterizedContext } from 'koa';
 import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from './oauths-model';
 import { TwitterOAuthRequestToken } from './oauths';
+import { ServerError } from '../types';
 
 // need a better solution than to store temp auth in a variable
 let tempAuthDetails: TwitterOAuthRequestToken;
 
 export const requestToken = async (ctx: ParameterizedContext): Promise<void> => {
-	const oAuthRequestToken = await getTwitterOAuthRequestToken();
+	const result = await getTwitterOAuthRequestToken();
 
-	if ('error' in oAuthRequestToken) {
-		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-		ctx.body = { error: oAuthRequestToken.message };
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
 		return;
 	}
 
 	// store request token
-	tempAuthDetails = oAuthRequestToken;
+	tempAuthDetails = result;
 
 	ctx.status = HttpStatus.OK;
-	ctx.body = { oauthToken: oAuthRequestToken.oauthToken };
+	ctx.body = { oauthToken: result.oauthToken };
 };
 
 export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	const { oauth_verifier: oauthVerifier, oauth_token: oauthToken } = ctx.request.body;
-	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthVerifier, oauthToken);
+	const result = await getTwitterAccountByRequestToken(tempAuthDetails, oauthVerifier, oauthToken);
 
-	if ('error' in twitterAccount) {
-		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-		ctx.body = { error: twitterAccount.message };
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
 		return;
 	}
 

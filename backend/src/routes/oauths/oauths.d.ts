@@ -17,8 +17,3 @@ export interface TwitterAccount {
 }
 
 export type TwitterAccounts = Array<TwitterAccount>;
-
-export interface TwitterError {
-	error: boolean;
-	message: string;
-}
