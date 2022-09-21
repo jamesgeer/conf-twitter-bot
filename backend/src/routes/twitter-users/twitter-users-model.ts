@@ -11,10 +11,10 @@ export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser
 		},
 	});
 
-export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise<boolean | ServerError> => {
+export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise<bigint | ServerError> => {
 	const { userId, name, screenName, profileImageUrl } = twitterAccount;
 	try {
-		await prisma.twitterUser.create({
+		const result = await prisma.twitterUser.create({
 			data: {
 				id: BigInt(userId),
 				name,
@@ -22,9 +22,8 @@ export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise
 				profileImageUrl,
 			},
 		});
+		return result.id;
 	} catch (e) {
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
-
-	return true;
 };

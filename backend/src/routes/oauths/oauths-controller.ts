@@ -1,8 +1,10 @@
 import HttpStatus from 'http-status';
 import { ParameterizedContext } from 'koa';
-import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken } from './oauths-model';
+import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken, insertTwitterOAuth } from './oauths-model';
 import { TwitterOAuthRequestToken } from './oauths';
 import { ServerError } from '../types';
+import { insertAccount } from '../accounts/accounts-model';
+import { insertTwitterUser } from '../twitter-users/twitter-users-model';
 
 // need a better solution than to store temp auth in a variable
 let tempAuthDetails: TwitterOAuthRequestToken;
@@ -23,27 +25,47 @@ export const requestToken = async (ctx: ParameterizedContext): Promise<void> => 
 	ctx.body = { oauthToken: result.oauthToken };
 };
 
+// TODO: See if this error handle can be abstracted
 export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	const { oauth_verifier: oauthVerifier, oauth_token: oauthToken } = ctx.request.body;
-	const result = await getTwitterAccountByRequestToken(tempAuthDetails, oauthVerifier, oauthToken);
+	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthVerifier, oauthToken);
 
-	if (result instanceof ServerError) {
-		ctx.status = result.getStatusCode();
-		ctx.body = { message: result.getMessage() };
+	if (twitterAccount instanceof ServerError) {
+		ctx.status = twitterAccount.getStatusCode();
+		ctx.body = { message: twitterAccount.getMessage() };
 		return;
 	}
 
-	// save/update account to file and if successful return account details
-	// if (insertOrUpdateAccount(twitterAccount)) {
-	// 	ctx.status = HttpStatus.CREATED;
-	// 	ctx.body = {
-	// 		userId: twitterAccount.userId,
-	// 		screenName: twitterAccount.screenName,
-	// 		profileImageUrl: twitterAccount.profileImageUrl,
-	// 	};
-	// 	return;
-	// }
+	// 1. create account
+	const { userId } = ctx.session;
+	const twitterUserId = BigInt(twitterAccount.userId);
+	const accountId = await insertAccount(userId, twitterUserId);
 
-	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-	ctx.body = { error: 'Twitter account could not be stored.' };
+	if (accountId instanceof ServerError) {
+		ctx.status = accountId.getStatusCode();
+		ctx.body = { message: accountId.getMessage() };
+		return;
+	}
+
+	// 2. store oAuth credentials
+	const { accessToken: token, accessSecret: secret } = twitterAccount.oauth;
+	const insertOAuthResult = await insertTwitterOAuth(accountId, token, secret);
+
+	if (insertOAuthResult instanceof ServerError) {
+		ctx.status = insertOAuthResult.getStatusCode();
+		ctx.body = { message: insertOAuthResult.getMessage() };
+		return;
+	}
+
+	// 3. store Twitter user
+	const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
+
+	if (insertTwitterUserResult instanceof ServerError) {
+		ctx.status = insertTwitterUserResult.getStatusCode();
+		ctx.body = { message: insertTwitterUserResult.getMessage() };
+		return;
+	}
+
+	// success
+	ctx.status = HttpStatus.CREATED;
 };

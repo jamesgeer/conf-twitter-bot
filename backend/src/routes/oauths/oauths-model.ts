@@ -86,18 +86,17 @@ export const insertTwitterOAuth = async (
 	accountId: number,
 	accessToken: string,
 	accessSecret: string,
-): Promise<boolean | ServerError> => {
+): Promise<number | ServerError> => {
 	try {
-		await prisma.twitterOAuth.create({
+		const result = await prisma.twitterOAuth.create({
 			data: {
 				accountId,
 				accessToken,
 				accessSecret,
 			},
 		});
+		return result.accountId;
 	} catch (e) {
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
-
-	return true;
 };
