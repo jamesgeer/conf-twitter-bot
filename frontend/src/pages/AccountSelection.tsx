@@ -2,9 +2,7 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { AccountContextProps, Account, Accounts } from '../types';
 import { AccountContext } from '../context/AccountContext';
-import Button from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
-import TwitterLogin from './TwitterLogin';
 
 const AccountSelection = () => {
 	const [accounts, setAccounts] = useState<Accounts>([]);
@@ -57,10 +55,6 @@ const AccountSelection = () => {
 
 	const handleAddAccount = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
-		const windowFeatures = 'left=100,top=100,width=320,height=320';
-		const handle = window.open('https://www.mozilla.org/', '', windowFeatures);
-
-		return <TwitterLogin />;
 	};
 
 	return (
