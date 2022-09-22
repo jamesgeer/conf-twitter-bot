@@ -1,7 +1,5 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import queryString from 'query-string';
-import HttpStatus from 'http-status';
 
 interface TwitterAccount {
 	userId: string;
@@ -18,7 +16,15 @@ const TwitterLogin = () => {
 	const [screenName, setScreenName] = useState('');
 	const [profileImageUrl, setProfileImageUrl] = useState('');
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		console.log('hello there');
+		const windowFeatures = 'left=100,top=100,width=320,height=320';
+		const handle = window.open('https://www.mozilla.org/', '', windowFeatures);
+
+		setTimeout(() => {
+			if (handle) handle.close();
+		}, 5000);
+	}, []);
 
 	// OAuth Step 1: get request token from backend
 	const getOAuthRequestToken = async () => {
@@ -44,39 +50,39 @@ const TwitterLogin = () => {
 
 	// Oauth Step 3: parse access token from url and post to backend
 	// if successful the user details will be returned
-	const processAccessToken = async () => {
-		const { oauth_token, oauth_verifier } = queryString.parse(window.location.search);
-		if (oauth_token && oauth_verifier) {
-			try {
-				const config = { withCredentials: true };
-				const payload = { oauth_token, oauth_verifier };
-				const response = await axios.post('/api/oauths/twitter/access_token', payload, config);
-
-				if (response.status === HttpStatus.CREATED) {
-					const twitterAccount = response.data;
-					logUserIn(twitterAccount);
-					return;
-				}
-
-				setErrorMessage('Unable to log into Twitter account.');
-			} catch (error) {
-				console.error(error);
-			}
-		}
-
-		setErrorMessage('Failed to authenticate with Twitter, please try again.');
-	};
+	// const processAccessToken = async () => {
+	// 	const { oauth_token, oauth_verifier } = queryString.parse(window.location.search);
+	// 	if (oauth_token && oauth_verifier) {
+	// 		try {
+	// 			const config = { withCredentials: true };
+	// 			const payload = { oauth_token, oauth_verifier };
+	// 			const response = await axios.post('/api/oauths/twitter/access_token', payload, config);
+	//
+	// 			if (response.status === HttpStatus.CREATED) {
+	// 				const twitterAccount = response.data;
+	// 				logUserIn(twitterAccount);
+	// 				return;
+	// 			}
+	//
+	// 			setErrorMessage('Unable to log into Twitter account.');
+	// 		} catch (error) {
+	// 			console.error(error);
+	// 		}
+	// 	}
+	//
+	// 	setErrorMessage('Failed to authenticate with Twitter, please try again.');
+	// };
 
 	// User has been logged in, store account details from response
-	const logUserIn = (twitterAccount: TwitterAccount) => {
-		if (twitterAccount.userId.length > 0) {
-			setUserId(twitterAccount.userId);
-			setScreenName(twitterAccount.screenName);
-			setProfileImageUrl(twitterAccount.profileImageUrl);
-			setIsLoggedIn(true);
-		}
-		setErrorMessage('User details missing from response.');
-	};
+	// const logUserIn = (twitterAccount: TwitterAccount) => {
+	// 	if (twitterAccount.userId.length > 0) {
+	// 		setUserId(twitterAccount.userId);
+	// 		setScreenName(twitterAccount.screenName);
+	// 		setProfileImageUrl(twitterAccount.profileImageUrl);
+	// 		setIsLoggedIn(true);
+	// 	}
+	// 	setErrorMessage('User details missing from response.');
+	// };
 
 	const login = async () => {};
 
