@@ -1,22 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { getOAuthRequestToken } from '../api/getRequestToken';
 
 const LoginWindow = () => {
 	const [loginWindow, setLoginWindow] = useState(null);
+	const windowOpen = useRef(false);
 
 	useEffect(() => {
-		const windowFeatures = 'left=100,top=100,width=320,height=320';
-		const handle = window.open('https://www.mozilla.org/', '', windowFeatures);
-		if (handle) {
-			// @ts-ignore
-			setLoginWindow(handle);
+		// useRef to prevent window from opening twice in development mode
+		if (!windowOpen.current) {
+			const handleWindow = createNewLoginWindow();
+			if (handleWindow) {
+				// @ts-ignore
+				setLoginWindow(handleWindow);
+				windowOpen.current = true;
+			}
 		}
-
-		setTimeout(() => {
-			if (handle) handle.close();
-		}, 5000);
 	}, []);
 
-	return <>{loginWindow}</>;
+	const windowFeatures = (parentWindow: Window, w: number, h: number): string => {
+		// @ts-ignore
+		const y = parentWindow.top.outerHeight / 2 + parentWindow.top.screenY - h / 2;
+		// @ts-ignore
+		const x = parentWindow.top.outerWidth / 2 + parentWindow.top.screenX - w / 2;
+		return `toolbar=no, location=no, directories=no, status=no, menubar=no, copyhistory=no, width=${w}, height=${h}, top=${y}, left=${x}`;
+	};
+
+	const twitterLoginUrl = async (): Promise<string> => {
+		const oAuthToken = await getOAuthRequestToken();
+		return `https://api.twitter.com/oauth/authenticate?oauth_token=${oAuthToken}`;
+	};
+
+	const createNewLoginWindow = async (): Promise<Window | null> => {
+		const features = windowFeatures(window, 500, 250);
+		const url = await twitterLoginUrl();
+
+		return window.open(url, '', features);
+	};
+
+	return null;
 };
 
 export default LoginWindow;
