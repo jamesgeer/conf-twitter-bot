@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const getOAuthRequestToken = async (): Promise<string> => {
+export interface OAuthToken {
+	oAuthToken: string;
+}
+
+export const getOAuthRequestToken = async (): Promise<OAuthToken> => {
 	const response = await axios.get('/api/oauths/twitter/request_token');
 	const { oauthToken: oAuthToken } = response.data;
 	return oAuthToken;

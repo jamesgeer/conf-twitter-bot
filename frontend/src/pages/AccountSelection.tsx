@@ -3,9 +3,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AccountContextProps, Account, Accounts } from '../types';
 import { AccountContext } from '../context/AccountContext';
 import { useNavigate } from 'react-router-dom';
+import { getOAuthRequestToken } from '../features/oauths/api/getRequestToken';
 
 const AccountSelection = () => {
 	const [accounts, setAccounts] = useState<Accounts>([]);
+	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
 
@@ -53,8 +55,15 @@ const AccountSelection = () => {
 		);
 	});
 
-	const handleAddAccount = (e: React.MouseEvent<HTMLButtonElement>) => {
+	const handleAddAccount = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
+
+		setIsLoginWindowOpen(true);
+
+		const oAuthToken = await getOAuthRequestToken();
+		const twitterLoginUrl = `https://api.twitter.com/oauth/authenticate?oauth_token=${oAuthToken}`;
+		const windowFeatures = 'left=100,top=100,width=320,height=320';
+		window.open(twitterLoginUrl, '', windowFeatures);
 	};
 
 	return (
