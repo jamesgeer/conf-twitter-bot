@@ -6,16 +6,31 @@ const LoginWindow = () => {
 	const windowOpen = useRef(false);
 
 	useEffect(() => {
-		// useRef to prevent window from opening twice in development mode
-		if (!windowOpen.current) {
-			const handleWindow = createNewLoginWindow();
+		const newWindow = async () => {
+			const features = windowFeatures(window, 500, 250);
+			const url = await twitterLoginUrl();
+			const handleWindow = window.open(url, '', features);
+
 			if (handleWindow) {
+				console.log(handleWindow.closed);
 				// @ts-ignore
 				setLoginWindow(handleWindow);
 				windowOpen.current = true;
 			}
+		};
+
+		// useRef to prevent window from opening twice in development mode
+		if (!windowOpen.current) {
+			newWindow().then();
 		}
-	}, []);
+
+		// @ts-ignore
+		if (loginWindow && loginWindow.closed) {
+			console.log('window was closed');
+			setLoginWindow(null);
+			windowOpen.current = false;
+		}
+	}, [loginWindow]);
 
 	const windowFeatures = (parentWindow: Window, w: number, h: number): string => {
 		// @ts-ignore
@@ -30,12 +45,14 @@ const LoginWindow = () => {
 		return `https://api.twitter.com/oauth/authenticate?oauth_token=${oAuthToken}`;
 	};
 
-	const createNewLoginWindow = async (): Promise<Window | null> => {
-		const features = windowFeatures(window, 500, 250);
-		const url = await twitterLoginUrl();
+	// const createNewLoginWindow = async (): Promise<Window | null> => {
+	// 	const features = windowFeatures(window, 500, 250);
+	// 	const url = await twitterLoginUrl();
+	//
+	// 	return window.open(url, '', features);
+	// };
 
-		return window.open(url, '', features);
-	};
+	// @ts-ignore
 
 	return null;
 };
