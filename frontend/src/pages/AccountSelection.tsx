@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AccountContextProps, Account, Accounts } from '../types';
 import { AccountContext } from '../context/AccountContext';
 import { useNavigate } from 'react-router-dom';
-import { getOAuthRequestToken } from '../features/oauths/api/getRequestToken';
 import LoginWindow from '../features/oauths/components/LoginWindow';
 
 const AccountSelection = () => {
@@ -60,14 +59,6 @@ const AccountSelection = () => {
 		e.preventDefault();
 
 		setIsLoginWindowOpen(true);
-		//
-		// const oAuthToken = await getOAuthRequestToken();
-		// const twitterLoginUrl = `https://api.twitter.com/oauth/authenticate?oauth_token=${oAuthToken}`;
-		// const windowFeatures = 'left=100,top=100,width=320,height=320';
-		// const handle = window.open(twitterLoginUrl, '', windowFeatures);
-		// setTimeout(() => {
-		// 	if (handle) handle.stop();
-		// }, 1000);
 	};
 
 	return (
