@@ -41,8 +41,8 @@ export const getAdditionalUserFields = async (userId: string): Promise<UserV1> =
 
 export const getTwitterAccountByRequestToken = async (
 	tempAuthDetails: TwitterOAuthRequestToken,
-	oauthVerifier: string,
 	oauthToken: string,
+	oauthVerifier: string,
 ): Promise<TwitterAccount | ServerError> => {
 	if (oauthToken !== tempAuthDetails.oauthToken) {
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'oAuth Tokens do not match.');

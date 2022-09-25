@@ -27,8 +27,8 @@ export const requestToken = async (ctx: ParameterizedContext): Promise<void> => 
 
 // TODO: See if this error handle can be abstracted
 export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
-	const { oauth_verifier: oauthVerifier, oauth_token: oauthToken } = ctx.request.body;
-	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthVerifier, oauthToken);
+	const { token: oauthToken, verifier: oauthVerifier } = ctx.request.body;
+	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthToken, oauthVerifier);
 
 	if (twitterAccount instanceof ServerError) {
 		ctx.status = twitterAccount.getStatusCode();
