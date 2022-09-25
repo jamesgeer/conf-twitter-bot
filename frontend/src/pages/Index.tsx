@@ -9,6 +9,7 @@ import Dashboard from '../pages/Dashboard';
 import { AccountContext } from '../context/AccountContext';
 import { AccountContextProps } from '../types';
 import SignUp from './SignUp';
+import LoginSuccess from '../features/oauths/components/LoginSuccess';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
@@ -47,17 +48,13 @@ export default function Index() {
 
 	return (
 		<>
-			<Router>
-				<Routes>
-					<Route path="sign-up" element={<SignUp />} />
-					<Route path="login" element={<Login appLogin={setAppLoggedIn} />} />
-					<Route path="select-account" element={<AccountSelection />} />
-					<Route
-						path="/"
-						element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />}
-					/>
-				</Routes>
-			</Router>
+			<Routes>
+				<Route path="sign-up" element={<SignUp />} />
+				<Route path="login" element={<Login appLogin={setAppLoggedIn} />} />
+				<Route path="select-account" element={<AccountSelection />} />
+				<Route path="twitter-oauth-callback" element={<LoginSuccess />} />
+				<Route path="/" element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />} />
+			</Routes>
 		</>
 	);
 }

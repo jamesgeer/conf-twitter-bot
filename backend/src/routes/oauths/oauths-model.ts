@@ -17,7 +17,7 @@ export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequest
 	});
 
 	// TODO: replace callbackUrl with an env variable
-	const callbackUrl = 'http://localhost:3000';
+	const callbackUrl = 'http://localhost:3000/twitter-oauth-callback';
 	const authLink = await client.generateAuthLink(callbackUrl);
 
 	if (authLink && authLink.oauth_token.length > 0) {
@@ -41,8 +41,8 @@ export const getAdditionalUserFields = async (userId: string): Promise<UserV1> =
 
 export const getTwitterAccountByRequestToken = async (
 	tempAuthDetails: TwitterOAuthRequestToken,
-	oauthVerifier: string,
 	oauthToken: string,
+	oauthVerifier: string,
 ): Promise<TwitterAccount | ServerError> => {
 	if (oauthToken !== tempAuthDetails.oauthToken) {
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'oAuth Tokens do not match.');
@@ -97,6 +97,7 @@ export const insertTwitterOAuth = async (
 		});
 		return result.accountId;
 	} catch (e) {
+		console.log(e);
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
 };

@@ -2,11 +2,13 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { AccountContextProps, Account, Accounts } from '../types';
 import { AccountContext } from '../context/AccountContext';
-import Button from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
+import LoginWindow from '../features/oauths/components/LoginWindow';
+import Button from '../components/ui/Button';
 
 const AccountSelection = () => {
 	const [accounts, setAccounts] = useState<Accounts>([]);
+	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
 
@@ -54,6 +56,12 @@ const AccountSelection = () => {
 		);
 	});
 
+	const handleAddAccount = async (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+
+		setIsLoginWindowOpen(true);
+	};
+
 	return (
 		<div className="container mx-auto flex justify-center">
 			<div className="mt-8 w-full xl:w-2/5">
@@ -64,8 +72,9 @@ const AccountSelection = () => {
 					<p className="text-center mt-6">Click on "Add Account" to link your first Twitter account.</p>
 				)}
 				<div className="mt-6 flex justify-center">
-					<Button text={'+ Add Account'} />
+					<Button text={'+ Add Account'} onClick={(e) => handleAddAccount(e)} />
 				</div>
+				{isLoginWindowOpen && <LoginWindow />}
 			</div>
 		</div>
 	);

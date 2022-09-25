@@ -27,8 +27,8 @@ export const requestToken = async (ctx: ParameterizedContext): Promise<void> => 
 
 // TODO: See if this error handle can be abstracted
 export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
-	const { oauth_verifier: oauthVerifier, oauth_token: oauthToken } = ctx.request.body;
-	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthVerifier, oauthToken);
+	const { token: oauthToken, verifier: oauthVerifier } = ctx.request.body;
+	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthToken, oauthVerifier);
 
 	if (twitterAccount instanceof ServerError) {
 		ctx.status = twitterAccount.getStatusCode();
@@ -36,33 +36,36 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	// 1. create account
+	// 1. store Twitter user
+	const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
+
+	if (insertTwitterUserResult instanceof ServerError) {
+		console.log(insertTwitterUserResult.getMessage());
+		ctx.status = insertTwitterUserResult.getStatusCode();
+		ctx.body = { message: insertTwitterUserResult.getMessage() };
+		return;
+	}
+
+	// 2. create account
 	const { userId } = ctx.session;
 	const twitterUserId = BigInt(twitterAccount.userId);
 	const accountId = await insertAccount(userId, twitterUserId);
 
 	if (accountId instanceof ServerError) {
+		console.log(accountId.getMessage());
 		ctx.status = accountId.getStatusCode();
 		ctx.body = { message: accountId.getMessage() };
 		return;
 	}
 
-	// 2. store oAuth credentials
+	// 3. using account id, store oAuth credentials
 	const { accessToken: token, accessSecret: secret } = twitterAccount.oauth;
 	const insertOAuthResult = await insertTwitterOAuth(accountId, token, secret);
 
 	if (insertOAuthResult instanceof ServerError) {
+		console.log(insertOAuthResult.getMessage());
 		ctx.status = insertOAuthResult.getStatusCode();
 		ctx.body = { message: insertOAuthResult.getMessage() };
-		return;
-	}
-
-	// 3. store Twitter user
-	const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
-
-	if (insertTwitterUserResult instanceof ServerError) {
-		ctx.status = insertTwitterUserResult.getStatusCode();
-		ctx.body = { message: insertTwitterUserResult.getMessage() };
 		return;
 	}
 
