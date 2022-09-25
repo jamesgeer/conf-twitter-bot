@@ -70,6 +70,7 @@ export const insertAccount = async (userId: number, twitterUserId: bigint): Prom
 		});
 		return result.id;
 	} catch (e) {
+		console.log(e);
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
 };

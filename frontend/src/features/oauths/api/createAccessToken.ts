@@ -5,7 +5,10 @@ import { AccessToken } from '../types';
 
 export const createAccessToken = async (accessToken: AccessToken): Promise<TwitterUser | null> => {
 	const config = { withCredentials: true };
-	const payload = { accessToken };
+	const payload = {
+		token: accessToken.token,
+		verifier: accessToken.verifier,
+	};
 	const response = await axios.post('/api/oauths/twitter/access_token', payload, config);
 
 	if (response.status === HttpStatus.CREATED) {

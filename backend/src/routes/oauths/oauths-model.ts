@@ -17,7 +17,7 @@ export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequest
 	});
 
 	// TODO: replace callbackUrl with an env variable
-	const callbackUrl = 'http://localhost:3000';
+	const callbackUrl = 'http://localhost:3000/twitter-oauth-callback';
 	const authLink = await client.generateAuthLink(callbackUrl);
 
 	if (authLink && authLink.oauth_token.length > 0) {
