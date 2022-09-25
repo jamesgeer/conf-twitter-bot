@@ -97,6 +97,7 @@ export const insertTwitterOAuth = async (
 		});
 		return result.accountId;
 	} catch (e) {
+		console.log(e);
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
 };

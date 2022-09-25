@@ -36,16 +36,20 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	// 1. create account
+	// 1. store Twitter user
+	const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
+
+	if (insertTwitterUserResult instanceof ServerError) {
+		console.log(insertTwitterUserResult.getMessage());
+		ctx.status = insertTwitterUserResult.getStatusCode();
+		ctx.body = { message: insertTwitterUserResult.getMessage() };
+		return;
+	}
+
+	// 2. create account
 	const { userId } = ctx.session;
 	const twitterUserId = BigInt(twitterAccount.userId);
 	const accountId = await insertAccount(userId, twitterUserId);
-
-	console.log('-111-');
-	console.log(userId);
-	console.log(twitterUserId);
-	console.log(accountId);
-	console.log('-----');
 
 	if (accountId instanceof ServerError) {
 		console.log(accountId.getMessage());
@@ -54,33 +58,14 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	// 2. store oAuth credentials
+	// 3. using account id, store oAuth credentials
 	const { accessToken: token, accessSecret: secret } = twitterAccount.oauth;
 	const insertOAuthResult = await insertTwitterOAuth(accountId, token, secret);
-
-	console.log('-222-');
-	console.log(token);
-	console.log(secret);
-	console.log(insertOAuthResult);
-	console.log('-----');
 
 	if (insertOAuthResult instanceof ServerError) {
 		console.log(insertOAuthResult.getMessage());
 		ctx.status = insertOAuthResult.getStatusCode();
 		ctx.body = { message: insertOAuthResult.getMessage() };
-		return;
-	}
-
-	// 3. store Twitter user
-	console.log('-333-');
-	console.log(twitterAccount);
-	console.log('-----');
-	const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
-
-	if (insertTwitterUserResult instanceof ServerError) {
-		console.log(insertTwitterUserResult.getMessage());
-		ctx.status = insertTwitterUserResult.getStatusCode();
-		ctx.body = { message: insertTwitterUserResult.getMessage() };
 		return;
 	}
 

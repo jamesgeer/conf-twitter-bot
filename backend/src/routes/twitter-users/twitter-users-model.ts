@@ -24,6 +24,7 @@ export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise
 		});
 		return result.id;
 	} catch (e) {
+		console.log(e);
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
 };
