@@ -4,6 +4,7 @@ import { AccountContextProps, Account, Accounts } from '../types';
 import { AccountContext } from '../context/AccountContext';
 import { useNavigate } from 'react-router-dom';
 import LoginWindow from '../features/oauths/components/LoginWindow';
+import Button from '../components/ui/Button';
 
 const AccountSelection = () => {
 	const [accounts, setAccounts] = useState<Accounts>([]);
@@ -71,8 +72,7 @@ const AccountSelection = () => {
 					<p className="text-center mt-6">Click on "Add Account" to link your first Twitter account.</p>
 				)}
 				<div className="mt-6 flex justify-center">
-					{/*<Button text={'+ Add Account'} />*/}
-					<button onClick={(e) => handleAddAccount(e)}>Add Account</button>
+					<Button text={'+ Add Account'} onClick={(e) => handleAddAccount(e)} />
 				</div>
 				{isLoginWindowOpen && <LoginWindow />}
 			</div>
