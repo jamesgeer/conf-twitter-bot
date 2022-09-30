@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
-import DateTimeSelection from '../forms/DateTimeSelection';
+import { AccountContext } from '../../accounts/context/AccountContext';
+import { AccountContextProps } from '../../accounts/types';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import HttpStatus from 'http-status';
-import { AccountContextProps } from '../../features/accounts/types';
-import { AccountContext } from '../../features/accounts/context/AccountContext';
+import DateTimeSelection from '../../../components/forms/DateTimeSelection';
 
-const TweetBox = () => {
+const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
 	const [tweetText, setTweetText] = useState('');
 	const [dateTimeISO, setDateTimeISO] = useState('');
@@ -112,4 +112,4 @@ const TweetBox = () => {
 	);
 };
 
-export default TweetBox;
+export default CreateTweet;
