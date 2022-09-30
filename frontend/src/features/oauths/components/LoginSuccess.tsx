@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import queryString from 'query-string';
 import { createAccessToken } from '../api/createAccessToken';
 import { AccessToken } from '../types';
-import { TwitterUser } from '../../../types';
+import { TwitterUser } from '../../accounts/types';
 
 const LoginSuccess = () => {
 	const queryRan = useRef(false);

@@ -1,15 +1,15 @@
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Login from '../pages/Login';
-import AccountSelection from '../pages/AccountSelection';
+import SelectAccount from './SelectAccount';
 import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 import Dashboard from '../pages/Dashboard';
-import { AccountContext } from '../context/AccountContext';
-import { AccountContextProps } from '../types';
 import SignUp from './SignUp';
 import LoginSuccess from '../features/oauths/components/LoginSuccess';
+import { AccountContext } from '../features/accounts/context/AccountContext';
+import { AccountContextProps } from '../features/accounts/types';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
@@ -51,7 +51,7 @@ export default function Index() {
 			<Routes>
 				<Route path="sign-up" element={<SignUp />} />
 				<Route path="login" element={<Login appLogin={setAppLoggedIn} />} />
-				<Route path="select-account" element={<AccountSelection />} />
+				<Route path="select-account" element={<SelectAccount />} />
 				<Route path="twitter-oauth-callback" element={<LoginSuccess />} />
 				<Route path="/" element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />} />
 			</Routes>

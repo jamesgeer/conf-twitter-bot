@@ -1,9 +1,9 @@
 import UserCard from '../ui/UserCard';
 import React, { useContext } from 'react';
-import { AccountContext } from '../../context/AccountContext';
-import { AccountContextProps } from '../../types';
 import Button from '../ui/Button';
 import { useNavigate } from 'react-router-dom';
+import { AccountContextProps } from '../../features/accounts/types';
+import { AccountContext } from '../../features/accounts/context/AccountContext';
 
 const Header = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
