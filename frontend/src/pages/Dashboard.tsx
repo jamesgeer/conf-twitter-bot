@@ -1,5 +1,5 @@
-import Sidebar from './Sidebar';
-import Content from './Content';
+import Sidebar from '../features/dashboard/components/Sidebar';
+import Content from '../features/dashboard/components/Content';
 import { useState } from 'react';
 
 const initialState = {

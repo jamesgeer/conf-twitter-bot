@@ -3,7 +3,7 @@ import { Tweet, Tweets } from '../types';
 import { getTweets } from '../api/getTweets';
 import dayjs from 'dayjs';
 
-export const TweetsList = () => {
+const TweetsList = () => {
 	const [tweets, setTweets] = useState<Tweets>([]);
 
 	useEffect(() => {
@@ -22,3 +22,5 @@ export const TweetsList = () => {
 
 	return <>{tweets.length > 0 ? <div className="grid gap-4">{displayTweets}</div> : <p>No tweets to display.</p>}</>;
 };
+
+export default TweetsList;

@@ -1,5 +1,5 @@
 import TweetBox from '../../components/ui/TweetBox';
-import AllTweets from './tweets/AllTweets';
+import TweetsList from '../../tweets/components/TweetsList';
 import AllPapers from './papers/AllPapers';
 
 interface Props {
@@ -13,7 +13,7 @@ const Content = ({ active }: Props) => {
 			<TweetBox />
 			<hr className="my-8" />
 			<h2 className="text-xl font-bold mb-4">{active.title}</h2>
-			{active.title === 'Tweets' && <AllTweets />}
+			{active.title === 'Tweets' && <TweetsList />}
 			{active.title === 'Papers' && <AllPapers />}
 		</div>
 	);
