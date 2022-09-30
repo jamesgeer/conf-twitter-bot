@@ -2,9 +2,9 @@ import React, { useContext, useState } from 'react';
 import { AccountContext } from '../../accounts/context/AccountContext';
 import { AccountContextProps } from '../../accounts/types';
 import dayjs from 'dayjs';
-import axios from 'axios';
 import HttpStatus from 'http-status';
 import ScheduleTweet from './ScheduleTweet';
+import { createTweet } from '../api/createTweet';
 
 const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
@@ -50,28 +50,25 @@ const CreateTweet = () => {
 	};
 
 	const postTweet = async (): Promise<void> => {
-		try {
-			const payload = {
-				accountId: account.id,
-				twitterUserId: account.twitterUser.id,
-				scheduledTimeUTC: dateTimeISO,
-				content: tweetText,
-			};
-			const response = await axios.post('/api/tweets', payload);
-			if (response.status === HttpStatus.CREATED) {
+		const payload = {
+			accountId: account.id,
+			twitterUserId: account.twitterUser.id,
+			scheduledTimeUTC: dateTimeISO,
+			content: tweetText,
+		};
+		const result = await createTweet(payload);
+		switch (result) {
+			case HttpStatus.CREATED:
 				setTweetText('');
-			}
-		} catch (err) {
-			if (axios.isAxiosError(err)) {
-				if (err.response?.status === HttpStatus.UNAUTHORIZED) {
-					formError('You are not logged in.');
-					return;
-				}
-				if (err.response?.status === HttpStatus.INTERNAL_SERVER_ERROR) {
-					formError('Internal server error.');
-					return;
-				}
-			}
+				break;
+
+			case HttpStatus.UNAUTHORIZED:
+				formError('You are not logged in.');
+				break;
+
+			case HttpStatus.INTERNAL_SERVER_ERROR:
+				formError('Internal server error.');
+				break;
 		}
 	};
 
