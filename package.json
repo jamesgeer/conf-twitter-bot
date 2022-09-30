@@ -42,6 +42,7 @@
   },
   "scripts": {
     "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm start\"",
+    "install-packages": "npm install && concurrently \"cd backend && npm install\" \"cd frontend && npm install\"",
     "format": "prettier --config .prettierrc '{src,tests,resources}/**/*.{ts,js}' --write",
     "verify": "npm run lint",
     "lint": "npx eslint . --fix --ext .js,.jsx,.ts,.tsx",
