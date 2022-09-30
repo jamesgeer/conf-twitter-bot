@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { AccountContext } from '../../context/AccountContext';
-import { AccountContextProps } from '../../types';
 import DateTimeSelection from '../forms/DateTimeSelection';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import HttpStatus from 'http-status';
+import { AccountContextProps } from '../../features/accounts/types';
+import { AccountContext } from '../../features/accounts/context/AccountContext';
 
 const TweetBox = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;

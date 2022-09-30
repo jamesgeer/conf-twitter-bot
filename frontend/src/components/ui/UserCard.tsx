@@ -1,4 +1,4 @@
-import { TwitterUser } from '../../types';
+import { TwitterUser } from '../../features/accounts/types';
 
 interface Props {
 	twitterUser: TwitterUser;

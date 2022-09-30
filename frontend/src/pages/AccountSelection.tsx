@@ -1,10 +1,10 @@
-import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
-import { AccountContextProps, Account, Accounts } from '../types';
-import { AccountContext } from '../context/AccountContext';
 import { useNavigate } from 'react-router-dom';
 import LoginWindow from '../features/oauths/components/LoginWindow';
 import Button from '../components/ui/Button';
+import { getAccounts } from '../features/accounts/api/getAccounts';
+import { AccountContextProps, Account, Accounts } from '../features/accounts/types';
+import { AccountContext } from '../features/accounts/context/AccountContext';
 
 const AccountSelection = () => {
 	const [accounts, setAccounts] = useState<Accounts>([]);
@@ -13,17 +13,8 @@ const AccountSelection = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		getAccounts().then();
+		getAccounts().then((accounts) => setAccounts(accounts));
 	}, []);
-
-	const getAccounts = async () => {
-		try {
-			const response = await axios.get('/api/accounts');
-			setAccounts(response.data);
-		} catch (error) {
-			console.error(error);
-		}
-	};
 
 	const handleAccountSelection = (accountId: number) => {
 		// extract matching account from array of accounts with the selected userId

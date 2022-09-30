@@ -1,7 +1,7 @@
 import axios from 'axios';
 import HttpStatus from 'http-status';
-import { TwitterUser } from '../../../types';
 import { AccessToken } from '../types';
+import { TwitterUser } from '../../accounts/types';
 
 export const createAccessToken = async (accessToken: AccessToken): Promise<TwitterUser | null> => {
 	const config = { withCredentials: true };

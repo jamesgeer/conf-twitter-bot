@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Login from '../pages/Login';
 import AccountSelection from '../pages/AccountSelection';
@@ -6,10 +6,10 @@ import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 import Dashboard from '../pages/Dashboard';
-import { AccountContext } from '../context/AccountContext';
-import { AccountContextProps } from '../types';
 import SignUp from './SignUp';
 import LoginSuccess from '../features/oauths/components/LoginSuccess';
+import { AccountContext } from '../features/accounts/context/AccountContext';
+import { AccountContextProps } from '../features/accounts/types';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
