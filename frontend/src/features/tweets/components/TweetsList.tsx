@@ -1,23 +1,14 @@
-import axios from 'axios';
-import { Tweet, Tweets } from '../../../types';
 import { useEffect, useState } from 'react';
+import { Tweet, Tweets } from '../types';
+import { getTweets } from '../api/getTweets';
 import dayjs from 'dayjs';
 
-const AllTweets = () => {
+export const TweetsList = () => {
 	const [tweets, setTweets] = useState<Tweets>([]);
 
 	useEffect(() => {
-		getTweets().then();
+		getTweets().then((tweets) => setTweets(tweets));
 	}, []);
-
-	const getTweets = async () => {
-		try {
-			const response = await axios.get('/api/tweets');
-			setTweets(response.data);
-		} catch (error) {
-			console.error(error);
-		}
-	};
 
 	const displayTweets = tweets.map((tweet: Tweet, index) => {
 		const tweetDate = dayjs(tweet.scheduledTimeUTC).toDate().toLocaleString();
@@ -31,5 +22,3 @@ const AllTweets = () => {
 
 	return <>{tweets.length > 0 ? <div className="grid gap-4">{displayTweets}</div> : <p>No tweets to display.</p>}</>;
 };
-
-export default AllTweets;
