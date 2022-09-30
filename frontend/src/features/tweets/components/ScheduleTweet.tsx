@@ -5,7 +5,7 @@ interface Props {
 	setDateTimeISO: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const DateTimeSelection = ({ setDateTimeISO }: Props) => {
+const ScheduleTweet = ({ setDateTimeISO }: Props) => {
 	// new date time object containing temporal information for -> now <-
 	const currentDateTime = dayjs();
 	// three days from now
@@ -139,4 +139,4 @@ const DateTimeSelection = ({ setDateTimeISO }: Props) => {
 	);
 };
 
-export default DateTimeSelection;
+export default ScheduleTweet;

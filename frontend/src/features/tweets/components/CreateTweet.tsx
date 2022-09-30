@@ -4,7 +4,7 @@ import { AccountContextProps } from '../../accounts/types';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import HttpStatus from 'http-status';
-import DateTimeSelection from '../../../components/forms/DateTimeSelection';
+import ScheduleTweet from './ScheduleTweet';
 
 const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
@@ -98,7 +98,7 @@ const CreateTweet = () => {
 						onChange={(e) => setTweetText(e.target.value)}
 					></textarea>
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
-						<DateTimeSelection setDateTimeISO={setDateTimeISO} />
+						<ScheduleTweet setDateTimeISO={setDateTimeISO} />
 						<div className="absolute right-0">
 							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
 								Tweet
