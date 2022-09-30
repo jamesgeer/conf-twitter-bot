@@ -1,11 +1,7 @@
-# Conference Twitter Bot
-
-## Scheduling Tweets about Papers and Presentations with Ease
-
-The Conference Twitter Bot is a system to run Twitter accounts for
-academic conferences and workshops. The main aim is to support
-you in selecting and curating Tweets to advertise and promote the research
-presented at an event.
+<div align="center">
+    <h1>Conference Twitter Bot</h1>
+    <p>A tool to automate the promotion of research presented at academic conferences.</p>
+</div>
 
 ## Setup
 - Download or clone the source code
