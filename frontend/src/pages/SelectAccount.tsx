@@ -6,7 +6,7 @@ import { getAccounts } from '../features/accounts/api/getAccounts';
 import { AccountContextProps, Account, Accounts } from '../features/accounts/types';
 import { AccountContext } from '../features/accounts/context/AccountContext';
 
-const AccountSelection = () => {
+const SelectAccount = () => {
 	const [accounts, setAccounts] = useState<Accounts>([]);
 	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
@@ -71,4 +71,4 @@ const AccountSelection = () => {
 	);
 };
 
-export default AccountSelection;
+export default SelectAccount;
