@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
-import DateTimeSelection from '../forms/DateTimeSelection';
+import { AccountContext } from '../../accounts/context/AccountContext';
+import { AccountContextProps } from '../../accounts/types';
 import dayjs from 'dayjs';
-import axios from 'axios';
 import HttpStatus from 'http-status';
-import { AccountContextProps } from '../../features/accounts/types';
-import { AccountContext } from '../../features/accounts/context/AccountContext';
+import ScheduleTweet from './ScheduleTweet';
+import { createTweet } from '../api/createTweet';
 
-const TweetBox = () => {
+const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
 	const [tweetText, setTweetText] = useState('');
 	const [dateTimeISO, setDateTimeISO] = useState('');
@@ -50,28 +50,25 @@ const TweetBox = () => {
 	};
 
 	const postTweet = async (): Promise<void> => {
-		try {
-			const payload = {
-				accountId: account.id,
-				twitterUserId: account.twitterUser.id,
-				scheduledTimeUTC: dateTimeISO,
-				content: tweetText,
-			};
-			const response = await axios.post('/api/tweets', payload);
-			if (response.status === HttpStatus.CREATED) {
+		const payload = {
+			accountId: account.id,
+			twitterUserId: account.twitterUser.id,
+			scheduledTimeUTC: dateTimeISO,
+			content: tweetText,
+		};
+		const result = await createTweet(payload);
+		switch (result) {
+			case HttpStatus.CREATED:
 				setTweetText('');
-			}
-		} catch (err) {
-			if (axios.isAxiosError(err)) {
-				if (err.response?.status === HttpStatus.UNAUTHORIZED) {
-					formError('You are not logged in.');
-					return;
-				}
-				if (err.response?.status === HttpStatus.INTERNAL_SERVER_ERROR) {
-					formError('Internal server error.');
-					return;
-				}
-			}
+				break;
+
+			case HttpStatus.UNAUTHORIZED:
+				formError('You are not logged in.');
+				break;
+
+			case HttpStatus.INTERNAL_SERVER_ERROR:
+				formError('Internal server error.');
+				break;
 		}
 	};
 
@@ -98,7 +95,7 @@ const TweetBox = () => {
 						onChange={(e) => setTweetText(e.target.value)}
 					></textarea>
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
-						<DateTimeSelection setDateTimeISO={setDateTimeISO} />
+						<ScheduleTweet setDateTimeISO={setDateTimeISO} />
 						<div className="absolute right-0">
 							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
 								Tweet
@@ -112,4 +109,4 @@ const TweetBox = () => {
 	);
 };
 
-export default TweetBox;
+export default CreateTweet;

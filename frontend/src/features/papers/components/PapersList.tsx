@@ -1,24 +1,15 @@
-import axios from 'axios';
-import { Paper, Papers } from '../../../types';
 import { useEffect, useState } from 'react';
+import { Paper, Papers } from '../types';
+import { getPapers } from '../api/getPapers';
 
-const AllPapers = () => {
+const PapersList = () => {
 	const [papers, setPapers] = useState<Papers>([]);
 
 	useEffect(() => {
 		if (papers.length === 0) {
-			getPapers().then();
+			getPapers().then((papers) => setPapers(papers));
 		}
 	}, [papers]);
-
-	const getPapers = async () => {
-		try {
-			const response = await axios.get('/api/papers');
-			setPapers(response.data);
-		} catch (error) {
-			console.error(error);
-		}
-	};
 
 	const displayPapers = papers.map((paper: Paper, index) => {
 		return (
@@ -37,4 +28,4 @@ const AllPapers = () => {
 	return <div className="grid gap-4">{displayPapers}</div>;
 };
 
-export default AllPapers;
+export default PapersList;
