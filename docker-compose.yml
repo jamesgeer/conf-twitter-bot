@@ -33,6 +33,7 @@ services:
             context: ./backend
         environment:
             - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ConfTwitterBot
+            - WATCHPACK_POLLING=true
         volumes:
             - /app/node_modules
             - ./backend:/app
@@ -44,6 +45,7 @@ services:
         stdin_open: true
         environment:
             - WDS_SOCKET_PORT=0
+            - WATCHPACK_POLLING=true
         build:
             dockerfile: Dockerfile.dev
             context: ./frontend
