@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Login from '../pages/Login';
+import PageNotFound from '../pages/PageNotFound';
 import SelectAccount from './SelectAccount';
 import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
@@ -54,6 +55,7 @@ export default function Index() {
 				<Route path="select-account" element={<SelectAccount />} />
 				<Route path="twitter-oauth-callback" element={<LoginSuccess />} />
 				<Route path="/" element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />} />
+				<Route path="*" element={<PageNotFound />} />
 			</Routes>
 		</>
 	);
