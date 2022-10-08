@@ -14,7 +14,7 @@ const CreateTweet = () => {
 	const [error, setError] = useState(false);
 	const [errorText, setErrorText] = useState('');
 
-	const mutation = useCreateTweet();
+	const createTweetMutation = useCreateTweet();
 
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
@@ -61,7 +61,7 @@ const CreateTweet = () => {
 		};
 
 		try {
-			await mutation.mutateAsync(payload).then(() => setTweetText(''));
+			await createTweetMutation.mutateAsync(payload).then(() => setTweetText(''));
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
 				switch (e.response?.status) {

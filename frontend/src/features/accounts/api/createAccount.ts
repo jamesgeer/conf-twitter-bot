@@ -20,8 +20,8 @@ export const useCreateAccount = () => {
 		mutationFn: createAccount,
 
 		onError: async (_, __, context: any) => {
-			if (context?.previousTweets) {
-				await queryClient.setQueryData(['accounts'], context.previousTweets);
+			if (context?.previousAccounts) {
+				await queryClient.setQueryData(['accounts'], context.previousAccounts);
 			}
 		},
 
