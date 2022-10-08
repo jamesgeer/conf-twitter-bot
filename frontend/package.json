@@ -4,6 +4,9 @@
   "description": "CS Conference Twitter Bot Client",
   "license": "MIT",
   "dependencies": {
+    "@chakra-ui/react": "^2.3.5",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
     "@tanstack/react-query": "^4.10.3",
     "@tanstack/react-query-devtools": "^4.10.3",
     "@testing-library/jest-dom": "^5.16.4",
@@ -15,6 +18,7 @@
     "@types/react-dom": "^18.0.6",
     "axios": "^0.27.2",
     "dayjs": "^1.11.4",
+    "framer-motion": "^7.5.3",
     "http-status": "^1.5.2",
     "query-string": "^7.1.1",
     "react": "^18.2.0",

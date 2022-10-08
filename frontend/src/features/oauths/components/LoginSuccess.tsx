@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import queryString from 'query-string';
 import { AccessToken } from '../types';
 import { useCreateAccount } from '../../accounts/api/createAccount';
