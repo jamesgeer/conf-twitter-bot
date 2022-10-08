@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import HttpStatus from 'http-status';
 import ScheduleTweet from './ScheduleTweet';
 import { useCreateTweet } from '../api/createTweet';
+import axios from 'axios';
 
 const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
@@ -59,19 +60,21 @@ const CreateTweet = () => {
 			content: tweetText,
 		};
 
-		const result = await mutation.mutateAsync(payload);
-		switch (result) {
-			case HttpStatus.CREATED:
-				setTweetText('');
-				break;
+		try {
+			await mutation.mutateAsync(payload).then(() => setTweetText(''));
+		} catch (e) {
+			if (axios.isAxiosError(e)) {
+				switch (e.response?.status) {
+					case HttpStatus.UNAUTHORIZED:
+						console.log('log log');
+						formError('You are not logged in.');
+						break;
 
-			case HttpStatus.UNAUTHORIZED:
-				formError('You are not logged in.');
-				break;
-
-			case HttpStatus.INTERNAL_SERVER_ERROR:
-				formError('Internal server error.');
-				break;
+					case HttpStatus.INTERNAL_SERVER_ERROR:
+						formError('Internal server error.');
+						break;
+				}
+			}
 		}
 	};
 
