@@ -4,7 +4,7 @@ import { AccountContextProps } from '../../accounts/types';
 import dayjs from 'dayjs';
 import HttpStatus from 'http-status';
 import ScheduleTweet from './ScheduleTweet';
-import { createTweet } from '../api/createTweet';
+import { useCreateTweet } from '../api/createTweet';
 
 const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
@@ -12,6 +12,8 @@ const CreateTweet = () => {
 	const [dateTimeISO, setDateTimeISO] = useState('');
 	const [error, setError] = useState(false);
 	const [errorText, setErrorText] = useState('');
+
+	const mutation = useCreateTweet();
 
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
@@ -56,7 +58,8 @@ const CreateTweet = () => {
 			scheduledTimeUTC: dateTimeISO,
 			content: tweetText,
 		};
-		const result = await createTweet(payload);
+
+		const result = await mutation.mutateAsync(payload);
 		switch (result) {
 			case HttpStatus.CREATED:
 				setTweetText('');
