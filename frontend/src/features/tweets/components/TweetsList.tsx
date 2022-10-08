@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
-import { Tweet, Tweets } from '../types';
-import { getTweets } from '../api/getTweets';
+import { Tweet } from '../types';
+import { useTweets } from '../api/getTweets';
 import dayjs from 'dayjs';
 
 const TweetsList = () => {
-	const [tweets, setTweets] = useState<Tweets>([]);
+	const { isLoading, error, data: tweets } = useTweets();
 
-	useEffect(() => {
-		getTweets().then((tweets) => setTweets(tweets));
-	}, []);
+	if (isLoading) {
+		return <div>Loading Tweets...</div>;
+	}
+
+	if (error) {
+		return <div>An error occurred: {error.message}</div>;
+	}
 
 	const displayTweets = tweets.map((tweet: Tweet, index) => {
 		const tweetDate = dayjs(tweet.scheduledTimeUTC).toDate().toLocaleString();
