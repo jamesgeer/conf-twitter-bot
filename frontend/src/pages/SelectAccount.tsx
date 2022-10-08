@@ -1,20 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginWindow from '../features/oauths/components/LoginWindow';
 import Button from '../components/ui/Button';
-import { getAccounts } from '../features/accounts/api/getAccounts';
-import { AccountContextProps, Account, Accounts } from '../features/accounts/types';
+import { useAccounts } from '../features/accounts/api/getAccounts';
+import { AccountContextProps, Account } from '../features/accounts/types';
 import { AccountContext } from '../features/accounts/context/AccountContext';
 
 const SelectAccount = () => {
-	const [accounts, setAccounts] = useState<Accounts>([]);
 	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		getAccounts().then((accounts) => setAccounts(accounts));
-	}, []);
+	const { isLoading, error, data: accounts } = useAccounts();
+
+	if (isLoading) {
+		return <div>Loading Accounts...</div>;
+	}
+
+	if (error) {
+		return <div>An error occurred: {error.message}</div>;
+	}
 
 	const handleAccountSelection = (accountId: number) => {
 		// extract matching account from array of accounts with the selected userId
