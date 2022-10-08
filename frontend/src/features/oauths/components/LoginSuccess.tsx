@@ -3,9 +3,11 @@ import queryString from 'query-string';
 import { createAccessToken } from '../api/createAccessToken';
 import { AccessToken } from '../types';
 import { TwitterUser } from '../../accounts/types';
+import { useCreateAccount } from '../../accounts/api/createAccount';
 
 const LoginSuccess = () => {
 	const queryRan = useRef(false);
+	const mutation = useCreateAccount();
 
 	useEffect(() => {
 		if (!queryRan.current) {
@@ -22,6 +24,7 @@ const LoginSuccess = () => {
 		if (token && verifier) {
 			// @ts-ignore typescript does not want to believe that this is a string
 			const accessToken: AccessToken = { token, verifier };
+
 			const result = await createAccessToken(accessToken);
 			console.log(result);
 			return result;
