@@ -4,7 +4,7 @@ import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken, insertTwi
 import { TwitterOAuthRequestToken } from './oauths';
 import { ServerError } from '../types';
 import { insertAccount } from '../accounts/accounts-model';
-import { insertTwitterUser } from '../twitter-users/twitter-users-model';
+import { getTwitterUser, insertTwitterUser } from '../twitter-users/twitter-users-model';
 
 // need a better solution than to store temp auth in a variable
 let tempAuthDetails: TwitterOAuthRequestToken;
@@ -37,13 +37,17 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	// 1. store Twitter user
-	const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
+	const twitterUserExists = await getTwitterUser(twitterAccount.userId);
 
-	if (insertTwitterUserResult instanceof ServerError) {
-		console.log(insertTwitterUserResult.getMessage());
-		ctx.status = insertTwitterUserResult.getStatusCode();
-		ctx.body = { message: insertTwitterUserResult.getMessage() };
-		return;
+	if (!twitterUserExists) {
+		const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
+
+		if (insertTwitterUserResult instanceof ServerError) {
+			console.log(insertTwitterUserResult.getMessage());
+			ctx.status = insertTwitterUserResult.getStatusCode();
+			ctx.body = { message: insertTwitterUserResult.getMessage() };
+			return;
+		}
 	}
 
 	// 2. create account
