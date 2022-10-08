@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Paper, Papers } from '../types';
-import { getPapers } from '../api/getPapers';
+import { Paper } from '../types';
+import { usePapers } from '../api/getPapers';
 
 const PapersList = () => {
-	const [papers, setPapers] = useState<Papers>([]);
+	const { isLoading, error, data: papers } = usePapers();
 
-	useEffect(() => {
-		if (papers.length === 0) {
-			getPapers().then((papers) => setPapers(papers));
-		}
-	}, [papers]);
+	if (isLoading) {
+		return <div>Loading Papers...</div>;
+	}
+
+	if (error) {
+		return <div>An error occurred: {error.message}</div>;
+	}
 
 	const displayPapers = papers.map((paper: Paper, index) => {
 		return (
