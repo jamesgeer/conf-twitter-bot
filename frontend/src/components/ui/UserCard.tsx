@@ -1,25 +1,33 @@
 import { TwitterUser } from '../../features/accounts/types';
-import { Avatar, Button, Menu, MenuButton, MenuList, MenuItem, Icon } from '@chakra-ui/react';
-import { IconSwitchHorizontal, IconLogout } from '@tabler/icons';
+import { Avatar, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Center, Flex } from '@chakra-ui/react';
+import { IconSwitchHorizontal, IconLogout, IconChevronDown } from '@tabler/icons';
+import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
 
 interface Props {
 	twitterUser: TwitterUser;
+	handleLogout: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const UserCard = ({ twitterUser }: Props) => {
+const UserCard = ({ twitterUser, handleLogout }: Props) => {
 	return (
 		<Menu>
-			<MenuButton as={Button} colorScheme="pink">
-				<Avatar src={twitterUser.profileImageUrl} mr="8px" size="sm" />
-				{twitterUser.name}
+			<MenuButton as={Button} size="md" rightIcon={<IconChevronDown />}>
+				<Flex>
+					<Center>
+						<Avatar src={twitterUser.profileImageUrl} mr="8px" size="sm" />
+						{twitterUser.name}
+					</Center>
+				</Flex>
 			</MenuButton>
+
 			<MenuList>
-				<MenuItem>
-					<Icon as={IconSwitchHorizontal} />
+				<MenuItem as={Link} to={'select-account'}>
+					<Icon as={IconSwitchHorizontal} mr="8px" />
 					Switch Account
 				</MenuItem>
-				<MenuItem>
-					<Icon as={IconLogout} />
+				<MenuItem onClick={(e) => handleLogout(e)}>
+					<Icon as={IconLogout} mr="8px" />
 					Logout
 				</MenuItem>
 			</MenuList>
@@ -28,8 +36,3 @@ const UserCard = ({ twitterUser }: Props) => {
 };
 
 export default UserCard;
-
-// <button className="flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-// 	<Avatar src={twitterUser.profileImageUrl} mr="8px" size="sm" />
-// 	{twitterUser.name}
-// </button>
