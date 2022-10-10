@@ -2,13 +2,9 @@ import Koa from 'koa';
 import Logger from 'koa-logger';
 import cors from '@koa/cors';
 import koaSession from 'koa-session';
-import * as dotenv from 'dotenv';
 import router from './routes';
+import { PORT } from './keys';
 // import cronJobs from './jobs';
-
-dotenv.config({ path: '../.env' });
-
-const PORT = process.env.PORT || 4000;
 
 const SESSION_CONFIG = {
 	key: 'ConfTwBot',
