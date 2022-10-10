@@ -1,19 +1,14 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
-import * as dotenv from 'dotenv';
 import HttpStatus from 'http-status';
 import { TwitterOAuthRequestToken, TwitterAccount } from './oauths';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
-
-dotenv.config({ path: '../../.env' });
-
-const appKey = process.env.TWITTER_API_KEY;
-const appSecret = process.env.TWITTER_API_SECRET;
+import { TWITTER_API_KEY, TWITTER_API_SECRET } from '../../keys';
 
 export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | ServerError> => {
 	const client = new TwitterApi({
-		appKey: <string>appKey,
-		appSecret: <string>appSecret,
+		appKey: <string>TWITTER_API_KEY,
+		appSecret: <string>TWITTER_API_SECRET,
 	});
 
 	// TODO: replace callbackUrl with an env variable
@@ -33,8 +28,8 @@ export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequest
 // need a better place for this method
 export const getAdditionalUserFields = async (userId: string): Promise<UserV1> => {
 	const client = new TwitterApi({
-		appKey: <string>appKey,
-		appSecret: <string>appSecret,
+		appKey: <string>TWITTER_API_KEY,
+		appSecret: <string>TWITTER_API_SECRET,
 	});
 	return client.v1.user({ user_id: userId });
 };
@@ -50,8 +45,8 @@ export const getTwitterAccountByRequestToken = async (
 
 	// set all credentials required to make oauth request
 	const client = new TwitterApi({
-		appKey: <string>appKey,
-		appSecret: <string>appSecret,
+		appKey: <string>TWITTER_API_KEY,
+		appSecret: <string>TWITTER_API_SECRET,
 		accessToken: tempAuthDetails?.oauthToken,
 		accessSecret: tempAuthDetails?.oauthTokenSecret,
 	});
