@@ -7,12 +7,13 @@ import { AccountContextProps, Account } from '../features/accounts/types';
 import { AccountContext } from '../features/accounts/context/AccountContext';
 import { IconDotsVertical } from '@tabler/icons';
 import { Menu, MenuButton, MenuList, MenuItem, Button as Btn } from '@chakra-ui/react';
+import MyMenu from './MyMenu';
 
 const SelectAccount = () => {
 	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
-	const [isOpen, setIsOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(0);
 
 	const { isLoading, error, data: accounts } = useAccounts();
 
@@ -38,6 +39,11 @@ const SelectAccount = () => {
 		}
 	};
 
+	const handleButtonClick = (e: any, accountId: number) => {
+		e.stopPropagation();
+		setIsOpen(accountId);
+	};
+
 	const displayAccounts = accounts.map((account: Account) => {
 		return (
 			<li
@@ -51,16 +57,7 @@ const SelectAccount = () => {
 					alt="Profile icon"
 				/>
 				<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
-				<Menu>
-					<MenuButton
-						onClick={(e) => e.stopPropagation()}
-						as={Btn}
-						rightIcon={<IconDotsVertical />}
-					></MenuButton>
-					<MenuList onClick={(e) => e.stopPropagation()}>
-						<MenuItem onClick={() => console.log('DELETE ME')}>Delete Account</MenuItem>
-					</MenuList>
-				</Menu>
+				<MyMenu isActive={isOpen === account.id} handleButtonClick={handleButtonClick} accountId={account.id} />
 			</li>
 		);
 	});
