@@ -5,11 +5,14 @@ import Button from '../components/ui/Button';
 import { useAccounts } from '../features/accounts/api/getAccounts';
 import { AccountContextProps, Account } from '../features/accounts/types';
 import { AccountContext } from '../features/accounts/context/AccountContext';
+import { IconDotsVertical } from '@tabler/icons';
+import { Menu, MenuButton, MenuList, MenuItem, Button as Btn } from '@chakra-ui/react';
 
 const SelectAccount = () => {
 	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
+	const [isOpen, setIsOpen] = useState(false);
 
 	const { isLoading, error, data: accounts } = useAccounts();
 
@@ -48,6 +51,16 @@ const SelectAccount = () => {
 					alt="Profile icon"
 				/>
 				<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
+				<Menu>
+					<MenuButton
+						onClick={(e) => e.stopPropagation()}
+						as={Btn}
+						rightIcon={<IconDotsVertical />}
+					></MenuButton>
+					<MenuList onClick={(e) => e.stopPropagation()}>
+						<MenuItem onClick={() => console.log('DELETE ME')}>Delete Account</MenuItem>
+					</MenuList>
+				</Menu>
 			</li>
 		);
 	});
