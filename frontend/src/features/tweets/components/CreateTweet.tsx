@@ -4,7 +4,8 @@ import { AccountContextProps } from '../../accounts/types';
 import dayjs from 'dayjs';
 import HttpStatus from 'http-status';
 import ScheduleTweet from './ScheduleTweet';
-import { createTweet } from '../api/createTweet';
+import { useCreateTweet } from '../api/createTweet';
+import axios from 'axios';
 
 const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
@@ -12,6 +13,8 @@ const CreateTweet = () => {
 	const [dateTimeISO, setDateTimeISO] = useState('');
 	const [error, setError] = useState(false);
 	const [errorText, setErrorText] = useState('');
+
+	const createTweetMutation = useCreateTweet();
 
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
@@ -56,19 +59,22 @@ const CreateTweet = () => {
 			scheduledTimeUTC: dateTimeISO,
 			content: tweetText,
 		};
-		const result = await createTweet(payload);
-		switch (result) {
-			case HttpStatus.CREATED:
-				setTweetText('');
-				break;
 
-			case HttpStatus.UNAUTHORIZED:
-				formError('You are not logged in.');
-				break;
+		try {
+			await createTweetMutation.mutateAsync(payload).then(() => setTweetText(''));
+		} catch (e) {
+			if (axios.isAxiosError(e)) {
+				switch (e.response?.status) {
+					case HttpStatus.UNAUTHORIZED:
+						console.log('log log');
+						formError('You are not logged in.');
+						break;
 
-			case HttpStatus.INTERNAL_SERVER_ERROR:
-				formError('Internal server error.');
-				break;
+					case HttpStatus.INTERNAL_SERVER_ERROR:
+						formError('Internal server error.');
+						break;
+				}
+			}
 		}
 	};
 

@@ -1,11 +1,8 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import * as dotenv from 'dotenv';
 import { validSessionCookie, validUserLogin } from './sessions-model';
 import { accountExists } from '../accounts/accounts-model';
 import { ServerError } from '../types';
-
-dotenv.config({ path: '../../.env' });
 
 export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 	// if no session exists or isLoggedIn is false then user not logged in

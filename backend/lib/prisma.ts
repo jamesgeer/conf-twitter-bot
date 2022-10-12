@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { DEV } from '../src/keys';
 
 /**
  * PrismaClient is attached to the `global` object in development to prevent
@@ -13,7 +14,7 @@ declare const global: PrismaGlobal;
 
 const prisma = global.prisma || new PrismaClient();
 
-if (process.env.DEV) {
+if (DEV) {
 	global.prisma = prisma;
 }
 
