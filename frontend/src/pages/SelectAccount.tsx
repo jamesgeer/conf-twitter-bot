@@ -5,11 +5,13 @@ import Button from '../components/ui/Button';
 import { useAccounts } from '../features/accounts/api/getAccounts';
 import { AccountContextProps, Account } from '../features/accounts/types';
 import { AccountContext } from '../features/accounts/context/AccountContext';
+import SelectAccountMenu from '../features/accounts/components/SelectAccountMenu';
 
 const SelectAccount = () => {
 	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
+	const [isOpen, setIsOpen] = useState(0);
 
 	const { isLoading, error, data: accounts } = useAccounts();
 
@@ -35,19 +37,31 @@ const SelectAccount = () => {
 		}
 	};
 
+	const handleButtonClick = (e: any, accountId: number) => {
+		e.stopPropagation();
+		setIsOpen(accountId);
+	};
+
 	const displayAccounts = accounts.map((account: Account) => {
 		return (
 			<li
-				className="flex items-center rounded-full py-3 px-4 bg-slate-100 cursor-pointer hover:bg-red-100"
+				className="flex items-center justify-between rounded-full py-3 px-4 bg-slate-100 cursor-pointer hover:bg-red-100"
 				onClick={() => handleAccountSelection(account.id)}
 				key={account.id}
 			>
-				<img
-					className="rounded-full border-2 border-white"
-					src={account.twitterUser.profileImageUrl}
-					alt="Profile icon"
+				<div className="flex items-center">
+					<img
+						className="rounded-full border-2 border-white"
+						src={account.twitterUser.profileImageUrl}
+						alt="Profile icon"
+					/>
+					<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
+				</div>
+				<SelectAccountMenu
+					isActive={isOpen === account.id}
+					handleButtonClick={handleButtonClick}
+					accountId={account.id}
 				/>
-				<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
 			</li>
 		);
 	});
