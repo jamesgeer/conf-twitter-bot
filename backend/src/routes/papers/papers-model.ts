@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { Paper, Papers } from './papers';
+import { logToFile } from '../../logging/logging';
 
 let papers: Papers;
 const pathToFile = path.relative(process.cwd(), 'data/papers.json');
@@ -11,6 +12,7 @@ export const getPapers = (): Papers => {
 		papers = <Papers>JSON.parse(fileContent);
 	} catch (e) {
 		console.error(e);
+		console.log(logToFile(e));
 		papers = [];
 	}
 	return papers;

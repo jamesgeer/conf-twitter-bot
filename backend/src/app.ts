@@ -1,10 +1,10 @@
 import Koa from 'koa';
 import Logger from 'koa-logger';
-import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import router from './routes';
 import { PORT } from './keys';
+import { logToFile } from './logging/logging';
 // import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
@@ -38,13 +38,13 @@ app.use(async (ctx, next) => {
 		console.log(`${ctx.method} ${ctx.url} RESPONSE: ${ctx.response.status}`);
 	} catch (error) {
 		console.error(error);
+		console.log(logToFile(error));
 	}
 });
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(Logger());
 
-app.use(bodyParser());
 app.use(router.routes());
 app.use(router.allowedMethods());
 

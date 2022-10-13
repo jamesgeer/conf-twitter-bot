@@ -3,6 +3,7 @@ import { TwitterUser } from '../accounts/accounts';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { TwitterAccount } from '../oauths/oauths';
+import { logToFile } from '../../logging/logging';
 
 export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser> =>
 	prisma.twitterUser.findUnique({
@@ -25,6 +26,7 @@ export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise
 		return result.id;
 	} catch (e) {
 		console.log(e);
+		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
 };

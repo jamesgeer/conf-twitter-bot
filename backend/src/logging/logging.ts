@@ -1,12 +1,14 @@
 import * as fs from 'fs';
 
 // Function that writes logs to files
-export const logToFile = function (): void {
+export const logToFile = (errorLog: any): string => {
 	const logDateObject = new Date();
+	// construct file name (yyyy-mm-dd.txt is the format)
 	const logDate = `${logDateObject.getFullYear()}_${logDateObject.getMonth()}_${logDateObject.getDate()}`;
 
-	fs.writeFile(`logging/app_logs/${logDate}.txt`, 'test text', { flag: 'a+' }, (err) => {
-		if (err) throw err;
-		console.log(`Logged action to file ${logDate}.txt`);
+	// eslint-disable-next-line consistent-return
+	fs.writeFile(`logging/app_logs/${logDate}.txt`, errorLog, { flag: 'a+' }, (err) => {
+		if (err) return err;
 	});
+	return `Logged action to file ${logDate}.txt`;
 };
