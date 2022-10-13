@@ -5,9 +5,7 @@ import Button from '../components/ui/Button';
 import { useAccounts } from '../features/accounts/api/getAccounts';
 import { AccountContextProps, Account } from '../features/accounts/types';
 import { AccountContext } from '../features/accounts/context/AccountContext';
-import { IconDotsVertical } from '@tabler/icons';
-import { Menu, MenuButton, MenuList, MenuItem, Button as Btn } from '@chakra-ui/react';
-import MyMenu from './MyMenu';
+import SelectAccountMenu from '../features/accounts/components/SelectAccountMenu';
 
 const SelectAccount = () => {
 	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
@@ -59,7 +57,11 @@ const SelectAccount = () => {
 					/>
 					<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
 				</div>
-				<MyMenu isActive={isOpen === account.id} handleButtonClick={handleButtonClick} accountId={account.id} />
+				<SelectAccountMenu
+					isActive={isOpen === account.id}
+					handleButtonClick={handleButtonClick}
+					accountId={account.id}
+				/>
 			</li>
 		);
 	});

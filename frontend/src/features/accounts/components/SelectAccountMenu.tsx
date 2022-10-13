@@ -1,6 +1,6 @@
 import { IconDotsVertical, IconAlertTriangle } from '@tabler/icons';
 import { Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react';
-import axios from 'axios';
+import { useDeleteAccount } from '../api/deleteAccount';
 
 interface Props {
 	isActive: boolean;
@@ -8,14 +8,12 @@ interface Props {
 	accountId: number;
 }
 
-const MyMenu = ({ isActive, handleButtonClick, accountId }: Props) => {
+const SelectAccountMenu = ({ isActive, handleButtonClick, accountId }: Props) => {
+	const mutation = useDeleteAccount();
+
 	const handleDelete = async (e: any) => {
 		e.preventDefault();
-		try {
-			await axios.delete('/api/accounts/' + accountId);
-		} catch (error) {
-			console.log(error);
-		}
+		await mutation.mutateAsync(accountId);
 	};
 
 	return (
@@ -45,4 +43,4 @@ const MyMenu = ({ isActive, handleButtonClick, accountId }: Props) => {
 	);
 };
 
-export default MyMenu;
+export default SelectAccountMenu;
