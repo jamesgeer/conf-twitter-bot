@@ -47,16 +47,18 @@ const SelectAccount = () => {
 	const displayAccounts = accounts.map((account: Account) => {
 		return (
 			<li
-				className="flex items-center rounded-full py-3 px-4 bg-slate-100 cursor-pointer hover:bg-red-100"
+				className="flex items-center justify-between rounded-full py-3 px-4 bg-slate-100 cursor-pointer hover:bg-red-100"
 				onClick={() => handleAccountSelection(account.id)}
 				key={account.id}
 			>
-				<img
-					className="rounded-full border-2 border-white"
-					src={account.twitterUser.profileImageUrl}
-					alt="Profile icon"
-				/>
-				<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
+				<div className="flex items-center">
+					<img
+						className="rounded-full border-2 border-white"
+						src={account.twitterUser.profileImageUrl}
+						alt="Profile icon"
+					/>
+					<p className="pl-3 text-2xl">{account.twitterUser.name}</p>
+				</div>
 				<MyMenu isActive={isOpen === account.id} handleButtonClick={handleButtonClick} accountId={account.id} />
 			</li>
 		);
