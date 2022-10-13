@@ -74,3 +74,31 @@ export const insertAccount = async (userId: number, twitterUserId: bigint): Prom
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
 };
+
+export const deleteAccount = async (accountId: string): Promise<boolean | ServerError> => {
+	try {
+		const deleteTwitterAccount = prisma.account.delete({
+			where: {
+				id: +accountId,
+			},
+		});
+
+		const deleteTweets = prisma.tweet.deleteMany({
+			where: {
+				accountId: +accountId,
+			},
+		});
+
+		const deleteTwitterOAuth = prisma.twitterOAuth.deleteMany({
+			where: {
+				accountId: +accountId,
+			},
+		});
+
+		await prisma.$transaction([deleteTwitterOAuth, deleteTweets, deleteTwitterAccount]);
+		return true;
+	} catch (e) {
+		console.log(e);
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete account due to server problem.');
+	}
+};

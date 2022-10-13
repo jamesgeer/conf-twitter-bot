@@ -1,6 +1,7 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getAccount, getAccounts } from './accounts-model';
+import { getAccount, getAccounts, deleteAccount } from './accounts-model';
+import { ServerError } from '../types';
 
 export const account = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id: accountId } = ctx.params;
@@ -21,4 +22,19 @@ export const accounts = async (ctx: ParameterizedContext): Promise<void> => {
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = userAccounts;
+};
+
+export const removeAccount = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id } = ctx.params;
+	if (id.length === 0) {
+		ctx.status = HttpStatus.UNAUTHORIZED;
+		return;
+	}
+	const result = deleteAccount(id);
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
+		return;
+	}
+	ctx.status = HttpStatus.OK;
 };
