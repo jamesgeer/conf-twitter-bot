@@ -4,6 +4,7 @@ import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import router from './routes';
 import { PORT } from './keys';
+import { logToFile } from './logging/logging';
 // import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
@@ -37,6 +38,7 @@ app.use(async (ctx, next) => {
 		console.log(`${ctx.method} ${ctx.url} RESPONSE: ${ctx.response.status}`);
 	} catch (error) {
 		console.error(error);
+		console.log(logToFile(error));
 	}
 });
 

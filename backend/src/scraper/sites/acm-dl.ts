@@ -12,6 +12,7 @@ import UserAgent from 'user-agents';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 // import { minify } from 'html-minifier-terser';
 import { Paper } from '../../routes/papers/papers';
+import { logToFile } from '../../logging/logging';
 
 export function isAcmUrl(url: string): boolean {
 	return url.includes('/dl.acm.org/');
@@ -110,6 +111,7 @@ const fetchHTML = async (url: string): Promise<string> => {
 		writeFileSync('output.html', html);
 	} catch (err) {
 		console.error(err);
+		console.log(logToFile(err));
 	}
 
 	return html;
@@ -146,6 +148,7 @@ export async function fetchListOfPapersACM(url: string): Promise<Paper[]> {
 			);
 		} catch (e) {
 			// ignore entry
+			console.log(logToFile(e));
 		}
 	}
 

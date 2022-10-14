@@ -5,6 +5,7 @@ import HttpStatus from 'http-status';
 import { HTTPTweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
+import { logToFile } from '../../logging/logging';
 
 export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 	prisma.tweet.findMany({
@@ -40,6 +41,7 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | Serve
 			},
 		});
 	} catch (e) {
+		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
 

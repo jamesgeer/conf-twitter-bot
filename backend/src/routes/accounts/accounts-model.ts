@@ -5,6 +5,7 @@ import HttpStatus from 'http-status';
 import prisma from '../../../lib/prisma';
 import { Account, Accounts } from './accounts';
 import { ServerError } from '../types';
+import { logToFile } from '../../logging/logging';
 
 export const getAccounts = async (userId: number): Promise<Accounts> =>
 	prisma.account.findMany({
@@ -71,6 +72,7 @@ export const insertAccount = async (userId: number, twitterUserId: bigint): Prom
 		return result.id;
 	} catch (e) {
 		console.log(e);
+		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
 };

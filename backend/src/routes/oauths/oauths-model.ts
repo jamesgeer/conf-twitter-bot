@@ -4,6 +4,7 @@ import { TwitterOAuthRequestToken, TwitterAccount } from './oauths';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 import { TWITTER_API_KEY, TWITTER_API_SECRET } from '../../keys';
+import { logToFile } from '../../logging/logging';
 
 export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | ServerError> => {
 	const client = new TwitterApi({
@@ -93,6 +94,7 @@ export const insertTwitterOAuth = async (
 		return result.accountId;
 	} catch (e) {
 		console.log(e);
+		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
 };

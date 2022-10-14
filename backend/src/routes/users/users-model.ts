@@ -2,6 +2,7 @@ import HttpStatus from 'http-status';
 import bcrypt from 'bcryptjs';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
+import { logToFile } from '../../logging/logging';
 
 export const getUser = (userId: string): void => {
 	console.log('NOT IMPLEMENTED', userId);
@@ -35,6 +36,7 @@ export const insertUser = async (username: string, plainTextPassword: string): P
 			},
 		});
 	} catch (e) {
+		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
 
