@@ -7,7 +7,7 @@ data.json
 .idea
 
 backend/src/data
-app_logs/*
+app_logs/
 
 # CMake
 cmake-build-*/
