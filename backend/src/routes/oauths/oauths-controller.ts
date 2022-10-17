@@ -51,6 +51,11 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	// 2. create account
+	if (!ctx.session) {
+		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+		ctx.body = { message: 'Failed to retrieve user id.' };
+		return;
+	}
 	const { userId } = ctx.session;
 	const twitterUserId = BigInt(twitterAccount.userId);
 	const accountId = await insertAccount(userId, twitterUserId);
@@ -64,19 +69,23 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// 3. using account id, store oAuth credentials
 	const { accessToken: token, accessSecret: secret } = twitterAccount.oauth;
-	const insertOAuthResult = await insertTwitterOAuth(accountId, token, secret);
+	if (token && secret) {
+		const insertOAuthResult = await insertTwitterOAuth(accountId, token, secret);
 
-	if (insertOAuthResult instanceof ServerError) {
-		console.log(insertOAuthResult.getMessage());
-		ctx.status = insertOAuthResult.getStatusCode();
-		ctx.body = { message: insertOAuthResult.getMessage() };
-		return;
+		if (insertOAuthResult instanceof ServerError) {
+			console.log(insertOAuthResult.getMessage());
+			ctx.status = insertOAuthResult.getStatusCode();
+			ctx.body = { message: insertOAuthResult.getMessage() };
+			return;
+		}
+
+		// remove oAuth credentials before sending user
+		twitterAccount.oauth = {};
+
+		// success
+		ctx.status = HttpStatus.CREATED;
+		ctx.body = twitterAccount;
 	}
 
-	// remove oAuth credentials before sending user
-	twitterAccount.oauth = null;
-
-	// success
-	ctx.status = HttpStatus.CREATED;
-	ctx.body = twitterAccount;
+	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 };

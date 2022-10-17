@@ -15,7 +15,7 @@ export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 	// check if user has a valid session cookie
 	const requestCookie = ctx.request.header.cookie;
 	const sessionCookie = ctx.cookies.get('ConfTwBot');
-	if (!validSessionCookie(requestCookie, sessionCookie)) {
+	if (requestCookie && sessionCookie && !validSessionCookie(requestCookie, sessionCookie)) {
 		ctx.status = HttpStatus.UNAUTHORIZED;
 		ctx.body = { message: 'Invalid session cookie.' };
 		return;
@@ -55,23 +55,25 @@ export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 
 export const userLogout = async (ctx: ParameterizedContext): Promise<void> => {
 	// attempting to log out when not logged in, unauthorised
-	if (!ctx.session.isLoggedIn) {
+	if (ctx.session && !ctx.session.isLoggedIn) {
 		ctx.status = HttpStatus.UNAUTHORIZED;
 		return;
 	}
 
 	// destroy session by resetting variables
-	ctx.session.isLoggedIn = false;
-	ctx.session.userId = undefined;
-	ctx.session.accountId = undefined;
-	ctx.session.twitterUserId = undefined;
+	if (ctx.session) {
+		ctx.session.isLoggedIn = false;
+		ctx.session.userId = undefined;
+		ctx.session.accountId = undefined;
+		ctx.session.twitterUserId = undefined;
+	}
 
 	// no content to respond with
 	ctx.status = HttpStatus.NO_CONTENT;
 };
 
 export const accountSession = async (ctx: ParameterizedContext): Promise<void> => {
-	if (ctx.session.isLoggedIn && ctx.session.userId) {
+	if (ctx.session && ctx.session.isLoggedIn && ctx.session.userId) {
 		ctx.status = HttpStatus.OK;
 		ctx.body = ctx.session.userId;
 		return;
@@ -82,7 +84,7 @@ export const accountSession = async (ctx: ParameterizedContext): Promise<void> =
 };
 
 export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => {
-	if (!ctx.session.isLoggedIn) {
+	if (ctx.session && !ctx.session.isLoggedIn) {
 		ctx.status = HttpStatus.UNAUTHORIZED;
 		ctx.body = { message: 'You must be logged in.' };
 		return;
@@ -91,9 +93,11 @@ export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => 
 	const { accountId, userId, twitterUserId } = ctx.request.body;
 	if (await accountExists(userId, twitterUserId)) {
 		// checks passed, store account details in session
-		ctx.session.userId = +userId;
-		ctx.session.accountId = +accountId;
-		ctx.session.twitterUserId = BigInt(twitterUserId);
+		if (ctx.session) {
+			ctx.session.userId = +userId;
+			ctx.session.accountId = +accountId;
+			ctx.session.twitterUserId = BigInt(twitterUserId);
+		}
 
 		ctx.status = HttpStatus.OK;
 		return;

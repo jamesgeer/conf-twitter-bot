@@ -5,6 +5,10 @@ import { ServerError } from '../types';
 import { HTTPTweet } from './tweets';
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
+	if (!ctx.session) {
+		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+		return;
+	}
 	const tweets = await getTweets(ctx.session.twitterUserId);
 
 	ctx.status = HttpStatus.OK;

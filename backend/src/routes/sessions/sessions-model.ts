@@ -7,6 +7,8 @@ import prisma from '../../../lib/prisma';
 export const validSessionCookie = (requestCookie: string, sessionCookie: string): boolean => {
 	if (requestCookie && requestCookie.length > 0) {
 		// extract the ConfTwBot cookie (request may contain many cookies)
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const confTwBotCookie = requestCookie.split('; ConfTwBot=').pop().split(';')[0];
 		// if the confTwBot cookie is missing, then the variable will contain an empty string
 		if (confTwBotCookie.length > 0) {
@@ -38,6 +40,10 @@ export const validUserLogin = async (username: string, plainTextPassword: string
 	});
 
 	// extract password from result and rename to hash
+	if (result === null) {
+		return new ServerError(HttpStatus.UNAUTHORIZED, 'Account does not exist.');
+	}
+
 	const { id: userId, password: hash } = result;
 
 	// returns comparison result of provided password and stored hash
