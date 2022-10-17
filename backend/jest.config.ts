@@ -8,4 +8,9 @@ module.exports = {
 	collectCoverage: true,
 	clearMocks: true,
 	coverageDirectory: 'coverage',
+	globals: {
+		'ts-jest': {
+			diagnostics: false,
+		},
+	},
 };
