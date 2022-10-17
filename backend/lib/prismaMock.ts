@@ -6,7 +6,7 @@ import prisma from './prisma';
 
 export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
 
-jest.mock('./client', () => ({
+jest.mock('./prisma', () => ({
 	__esModule: true,
 	default: mockDeep<PrismaClient>(),
 }));

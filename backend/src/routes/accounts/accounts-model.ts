@@ -26,7 +26,7 @@ export const getAccounts = async (userId: number): Promise<Accounts> =>
 		},
 	});
 
-export const getAccount = async (accountId: string): Promise<Account> =>
+export const getAccount = async (accountId: string): Promise<Account | null> =>
 	prisma.account.findUnique({
 		where: {
 			id: +accountId,

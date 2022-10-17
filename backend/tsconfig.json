@@ -3,6 +3,7 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "outDir": "dist",
+    "strictNullChecks": true
   },
   "include": ["/**/*.ts"],
   "exclude": ["node_modules"]
