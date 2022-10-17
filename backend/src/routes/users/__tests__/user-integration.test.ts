@@ -1,11 +1,10 @@
-// eslint-disable-next-line node/no-unpublished-import
 import supertest from 'supertest';
 import http from 'http';
 import HttpStatus from 'http-status';
 import { faker } from '@faker-js/faker';
 import { app } from '../../../app';
 import prisma from '../../../../lib/prisma';
-import { insertUser } from '../../users/users-model';
+import { insertUser } from '../users-model';
 
 const apptest = supertest(http.createServer(app.callback()));
 

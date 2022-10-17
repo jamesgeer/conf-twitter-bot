@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-// eslint-disable-next-line import/no-extraneous-dependencies,node/no-unpublished-import
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended';
 
 import prisma from './prisma';

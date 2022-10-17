@@ -51,6 +51,7 @@ module.exports = {
 		'node/no-missing-import': 'off',
 		'implicit-arrow-linebreak': 'off',
 		'import/prefer-default-export': 'off',
+		'node/no-unpublished-import': 'off',
 		'node/no-unsupported-features/es-syntax': 'off',
 		'node/no-unsupported-features/node-builtins': 'off',
 		'max-len': ['error', { 'code': 120 }],
