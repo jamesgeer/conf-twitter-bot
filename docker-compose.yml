@@ -1,7 +1,7 @@
 version: "3"
 services:
     postgres:
-        image: "postgres:12"
+        image: postgres:12
         container_name: postgres
         restart: unless-stopped
         hostname: postgres
@@ -13,6 +13,17 @@ services:
             POSTGRES_DB: ConfTwitterBot
         volumes:
             - postgres-data:/var/lib/postgresql/data
+
+    postgres-test:
+        image: postgres:12
+        restart: always
+        container_name: integration-tests-prisma
+        ports:
+            - '5433:5432'
+        environment:
+            POSTGRES_USER: prisma
+            POSTGRES_PASSWORD: prisma
+            POSTGRES_DB: tests
 
     nginx:
         container_name: nginx

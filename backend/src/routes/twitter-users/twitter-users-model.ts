@@ -5,7 +5,7 @@ import { ServerError } from '../types';
 import { TwitterAccount } from '../oauths/oauths';
 import { logToFile } from '../../logging/logging';
 
-export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser> =>
+export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser | null> =>
 	prisma.twitterUser.findUnique({
 		where: {
 			id: BigInt(twitterUserId),

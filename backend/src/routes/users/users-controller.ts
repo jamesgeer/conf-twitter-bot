@@ -1,15 +1,21 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { insertUser } from './users-model';
+import { getUser, insertUser } from './users-model';
 import { ServerError } from '../types';
 import { userLogin } from '../sessions/sessions-controller';
 
 export const user = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
-	console.log(userId);
+	const result = await getUser(userId);
 
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Account not found.' };
+	if (result) {
+		ctx.status = HttpStatus.OK;
+		ctx.body = result;
+		return;
+	}
+
+	ctx.status = HttpStatus.NOT_FOUND;
+	ctx.body = { message: 'No user with that ID exists.' };
 };
 
 export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
@@ -27,4 +33,5 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// account successfully created and logged in
 	ctx.status = HttpStatus.CREATED;
+	ctx.body = result; // userId
 };

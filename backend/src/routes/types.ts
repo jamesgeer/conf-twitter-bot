@@ -17,3 +17,8 @@ export class ServerError extends Error {
 		return this.httpStatus;
 	}
 }
+
+export interface User {
+	id: number;
+	username: string;
+}

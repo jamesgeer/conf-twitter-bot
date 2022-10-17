@@ -18,6 +18,10 @@ export const account = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const accounts = async (ctx: ParameterizedContext): Promise<void> => {
+	if (!ctx.session) {
+		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+		return;
+	}
 	const userAccounts = await getAccounts(ctx.session.userId);
 
 	ctx.status = HttpStatus.OK;

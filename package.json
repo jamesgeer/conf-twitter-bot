@@ -22,7 +22,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react": "^7.30.1",
-    "jest": "27.4.5",
     "nodemon": "2.0.15",
     "prettier": "2.5.1",
     "prettier-plugin-prisma": "^4.2.0",

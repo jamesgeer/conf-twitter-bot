@@ -1,12 +1,19 @@
 import HttpStatus from 'http-status';
 import bcrypt from 'bcryptjs';
 import prisma from '../../../lib/prisma';
-import { ServerError } from '../types';
+import { ServerError, User } from '../types';
 import { logToFile } from '../../logging/logging';
 
-export const getUser = (userId: string): void => {
-	console.log('NOT IMPLEMENTED', userId);
-};
+export const getUser = (userId: string): Promise<User | null> =>
+	prisma.user.findUnique({
+		where: {
+			id: +userId,
+		},
+		select: {
+			id: true,
+			username: true,
+		},
+	});
 
 // counts users with username, 0 === no users exist
 export const userExists = async (username: string): Promise<boolean> => {
@@ -19,8 +26,10 @@ export const userExists = async (username: string): Promise<boolean> => {
 	return result > 0;
 };
 
+type UserId = number;
+
 // attempts to insert user, fails if username taken
-export const insertUser = async (username: string, plainTextPassword: string): Promise<boolean | ServerError> => {
+export const insertUser = async (username: string, plainTextPassword: string): Promise<UserId | ServerError> => {
 	if (await userExists(username)) {
 		return new ServerError(HttpStatus.CONFLICT, 'Username already in use.');
 	}
@@ -29,17 +38,15 @@ export const insertUser = async (username: string, plainTextPassword: string): P
 	const password = bcrypt.hashSync(plainTextPassword, 10);
 
 	try {
-		await prisma.user.create({
+		const result = await prisma.user.create({
 			data: {
 				username,
 				password,
 			},
 		});
+		return result.id;
 	} catch (e) {
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
-
-	// successfully inserted
-	return true;
 };

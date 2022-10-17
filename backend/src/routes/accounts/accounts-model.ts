@@ -26,7 +26,7 @@ export const getAccounts = async (userId: number): Promise<Accounts> =>
 		},
 	});
 
-export const getAccount = async (accountId: string): Promise<Account> =>
+export const getAccount = async (accountId: string): Promise<Account | null> =>
 	prisma.account.findUnique({
 		where: {
 			id: +accountId,
@@ -77,7 +77,12 @@ export const insertAccount = async (userId: number, twitterUserId: bigint): Prom
 	}
 };
 
+// due to foreign key constraints, before removing an account, the relations must first be deleted
 export const deleteAccount = async (accountId: string): Promise<boolean | ServerError> => {
+	const account = await getAccount(accountId);
+	if (account === null) {
+		return new ServerError(HttpStatus.NOT_FOUND, 'Account does not exist.');
+	}
 	try {
 		const deleteTwitterAccount = prisma.account.delete({
 			where: {

@@ -24,6 +24,10 @@ export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | ServerError> => {
 	const { accountId, twitterUserId, scheduledTimeUTC, content } = httpTweet;
 
+	if (!accountId || !twitterUserId || !scheduledTimeUTC || !content) {
+		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');
+	}
+
 	// temp, need a better check
 	if (accountId.length === 0 || twitterUserId.length === 0 || scheduledTimeUTC.length === 0 || content.length === 0) {
 		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');

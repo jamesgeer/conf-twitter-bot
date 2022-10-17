@@ -20,5 +20,7 @@ export const getPapers = (): Papers => {
 
 export const getPaper = (paperId: number): Paper => {
 	papers = getPapers();
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	return papers.find((paper) => paper.id === paperId);
 };
