@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { AccountContextProps } from '../../features/accounts/types';
 import { AccountContext } from '../../features/accounts/context/AccountContext';
+import DarkModeButton from '../ui/DarkModeButton';
 import axios from 'axios';
 
 const Header = () => {
@@ -34,6 +35,7 @@ const Header = () => {
 				) : (
 					<Button text={'Sign In'} onClick={(e) => handleClick(e)} />
 				)}
+				<DarkModeButton />
 			</nav>
 		</header>
 	);
