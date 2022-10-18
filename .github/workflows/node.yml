@@ -7,18 +7,31 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
 
+    services:
+        postgres:
+            image: postgres:12
+            env:
+                POSTGRES_USER: prisma
+                POSTGRES_PASSWORD: prisma
+                POSTGRES_DB: tests
+            options: >-
+                --health-cmd pg_isready
+                --health-interval 10s
+                --health-timeout 5s
+                --health-retries 5
+            ports:
+                - 5433:5432
+
     steps:
       - uses: actions/checkout@v2
-      - name: Install Lint Packages
-        run: npm install
+      - name: Install Packages
+        run: npm run install-packages
 
-      - name: Install Backend Packages
-        working-directory: ./backend
-        run: npm install
-
-      - name: Install Frontend Packages
-        working-directory: ./frontend
-        run: npm install
-
-      - name: Lint Source Files
+      - name: Linter Tests
         run: npx eslint . --ext .js,.jsx,.ts,.tsx
+
+      - name: Code Tests
+        working-directory: ./backend
+      - run: npm run ci:test
+        env:
+          DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
