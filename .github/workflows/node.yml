@@ -3,22 +3,30 @@ name: CI - Node.js
 on: pull_request
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
+    tests:
+        name: Tests
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Lint Packages
-        run: npm install
+        services:
+            postgres:
+                image: postgres:12
+                env:
+                    POSTGRES_USER: prisma
+                    POSTGRES_PASSWORD: prisma
+                    POSTGRES_DB: tests
+                ports:
+                    - 5433:5432
 
-      - name: Install Backend Packages
-        working-directory: ./backend
-        run: npm install
+        steps:
+            -   uses: actions/checkout@v2
+            -   name: Install Packages
+                run: npm run install-packages
 
-      - name: Install Frontend Packages
-        working-directory: ./frontend
-        run: npm install
+            -   name: Linter Tests
+                run: npx eslint . --ext .js,.jsx,.ts,.tsx
 
-      - name: Lint Source Files
-        run: npx eslint . --ext .js,.jsx,.ts,.tsx
+            -   name: Code Tests
+                working-directory: ./backend
+                run: npm run github-actions-test
+                env:
+                    DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
