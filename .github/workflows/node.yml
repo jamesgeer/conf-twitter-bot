@@ -6,7 +6,6 @@ jobs:
     install-packages:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
             - name: Install Project Packages
               run: npm run install-packages
 
