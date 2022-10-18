@@ -28,6 +28,7 @@ jobs:
         needs: install-packages
         steps:
             - name: Linter Tests
+            - uses: actions/checkout@v2
             - run: npx eslint . --ext .js,.jsx,.ts,.tsx
 
     backend-tests:
@@ -36,6 +37,7 @@ jobs:
         working-directory: ./backend
         steps:
             - name: Code Tests
+            - uses: actions/checkout@v2
             - run: npm run github-actions-test
         env:
             DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
