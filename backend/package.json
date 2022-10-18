@@ -67,6 +67,7 @@
   "scripts": {
     "start": "cd src && nodemon app.ts",
     "build": "npx tsc",
-    "test": "npx prisma migrate deploy && jest -i"
+    "github-actions-test": "npx prisma migrate deploy && jest --forceExit --detectOpenHandles",
+    "test": "jest"
   }
 }
