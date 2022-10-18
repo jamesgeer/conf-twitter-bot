@@ -36,10 +36,10 @@ jobs:
     backend-tests:
         runs-on: ubuntu-latest
         needs: [install-packages, postgres-db]
-        working-directory: ./backend
         steps:
             - name: Code Tests
               uses: actions/checkout@v2
+              working-directory: ./backend
             - run: npm run github-actions-test
         env:
             DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
