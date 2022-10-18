@@ -21,6 +21,9 @@ jobs:
                     POSTGRES_DB: tests
                 ports:
                     - 5433:5432
+        steps:
+            - name: Postgres
+              uses: actions/checkout@v2
 
     lint:
         runs-on: ubuntu-latest
