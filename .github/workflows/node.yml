@@ -3,42 +3,30 @@ name: CI - Node.js
 on: pull_request
 
 jobs:
-    install-packages:
+    tests:
+        name: Tests
         runs-on: ubuntu-latest
-        steps:
-            - name: Install Project Packages
-              run: npm run install-packages
 
-#    postgres-db:
-#        runs-on: ubuntu-latest
-#        services:
-#            postgres:
-#                image: postgres:12
-#                env:
-#                    POSTGRES_USER: prisma
-#                    POSTGRES_PASSWORD: prisma
-#                    POSTGRES_DB: tests
-#                ports:
-#                    - 5433:5432
-#        steps:
-#            - uses: actions/checkout@v2
-#            - name: Postgres
+        services:
+            postgres:
+                image: postgres:12
+                env:
+                    POSTGRES_USER: prisma
+                    POSTGRES_PASSWORD: prisma
+                    POSTGRES_DB: tests
+                ports:
+                    - 5433:5432
 
-    lint:
-        runs-on: ubuntu-latest
-        needs: install-packages
         steps:
-            - uses: actions/checkout@v2
-            - name: Linter Tests
-              run: npx eslint . --ext .js,.jsx,.ts,.tsx
+            -   uses: actions/checkout@v2
+            -   name: Install Packages
+                run: npm run install-packages
 
-    backend-tests:
-        runs-on: ubuntu-latest
-        needs: install-packages
-        steps:
-            - uses: actions/checkout@v2
-            - name: Code Tests
-              working-directory: ./backend
-              run: npm run github-actions-test
-        env:
-            DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
+            -   name: Linter Tests
+                run: npx eslint . --ext .js,.jsx,.ts,.tsx
+
+            -   name: Code Tests
+                working-directory: ./backend
+                run: npm run github-actions-test
+                env:
+                    DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
