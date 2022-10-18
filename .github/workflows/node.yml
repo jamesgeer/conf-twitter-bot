@@ -32,6 +32,6 @@ jobs:
 
       - name: Code Tests
         working-directory: ./backend
-      - run: npm run ci:test
+        run: npm run ci:test
         env:
           DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
