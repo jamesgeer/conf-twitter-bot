@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Install Project Packages
-            - uses: actions/checkout@v2
+              uses: actions/checkout@v2
             - run: npm run install-packages
 
     postgres-db:
@@ -28,7 +28,7 @@ jobs:
         needs: install-packages
         steps:
             - name: Linter Tests
-            - uses: actions/checkout@v2
+              uses: actions/checkout@v2
             - run: npx eslint . --ext .js,.jsx,.ts,.tsx
 
     backend-tests:
@@ -37,7 +37,7 @@ jobs:
         working-directory: ./backend
         steps:
             - name: Code Tests
-            - uses: actions/checkout@v2
+              uses: actions/checkout@v2
             - run: npm run github-actions-test
         env:
             DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
