@@ -14,11 +14,6 @@ jobs:
                 POSTGRES_USER: prisma
                 POSTGRES_PASSWORD: prisma
                 POSTGRES_DB: tests
-            options: >-
-                --health-cmd pg_isready
-                --health-interval 10s
-                --health-timeout 5s
-                --health-retries 5
             ports:
                 - 5433:5432
 
@@ -27,11 +22,11 @@ jobs:
       - name: Install Packages
         run: npm run install-packages
 
-      - name: Linter Tests
-        run: npx eslint . --ext .js,.jsx,.ts,.tsx
+#      - name: Linter Tests
+#        run: npx eslint . --ext .js,.jsx,.ts,.tsx
 
       - name: Code Tests
         working-directory: ./backend
-        run: npm run ci:test
+        run: npm run test
         env:
           DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
