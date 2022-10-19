@@ -14,17 +14,6 @@ services:
         volumes:
             - postgres-data:/var/lib/postgresql/data
 
-    postgres-test:
-        image: postgres:12
-        restart: always
-        container_name: integration-tests-prisma
-        ports:
-            - '5433:5432'
-        environment:
-            POSTGRES_USER: prisma
-            POSTGRES_PASSWORD: prisma
-            POSTGRES_DB: tests
-
     nginx:
         container_name: nginx
         restart: unless-stopped

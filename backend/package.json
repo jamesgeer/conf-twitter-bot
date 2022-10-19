@@ -68,6 +68,8 @@
     "start": "cd src && nodemon app.ts",
     "build": "npx tsc",
     "github-actions-test": "npx prisma migrate deploy && jest --forceExit --detectOpenHandles",
-    "test": "jest"
+    "docker:up": "docker-compose -f docker-compose.test.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.test.yml down",
+    "test": "npm run docker:up && npx dotenv -e .env.test prisma migrate deploy && npx dotenv -e .env.test jest -i && npm run docker:down"
   }
 }
