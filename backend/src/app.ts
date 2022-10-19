@@ -4,7 +4,7 @@ import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import router from './routes';
 import { PORT } from './keys';
-import { logToFile } from './logging/logging';
+import { logToFile, initLogToFile } from './logging/logging';
 // import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
@@ -31,6 +31,8 @@ app.use(koaSession(SESSION_CONFIG, app));
 (BigInt.prototype as any).toJSON = function () {
 	return this.toString();
 };
+
+initLogToFile(); // initiate logging to file
 
 app.use(async (ctx, next) => {
 	try {
