@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: '../.env.development' });
+dotenv.config({ path: '../.env' });
 
 // import values from .env file, if value is missing for whatever reason then use fallback value
 // https://wesbos.com/destructuring-default-values

@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("DATABASE_URL") // "postgresql://postgres:postgres@localhost:5400/ConfTwitterBot"
+    url      = env("DATABASE_URL")
 }
 
 model User {
