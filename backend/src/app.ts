@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import Logger from 'koa-logger';
+import Logger from 'koa-pino-logger';
 import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import router from './routes';
@@ -45,7 +45,16 @@ app.use(async (ctx, next) => {
 });
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-app.use(Logger());
+app.use(
+	Logger({
+		transport: {
+			target: 'pino-pretty',
+			options: {
+				colorize: true,
+			},
+		},
+	}),
+);
 
 app.use(router.routes());
 app.use(router.allowedMethods());
