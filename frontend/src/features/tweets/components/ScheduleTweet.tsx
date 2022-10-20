@@ -95,7 +95,7 @@ const ScheduleTweet = ({ setDateTimeISO }: Props) => {
 						<select
 							name="days"
 							id="days"
-							className="dark:text-white dark:bg-slate-700"
+							className="dark:text-white dark:bg-slate-700 rounded"
 							value={day}
 							onChange={(e) => setDay(e.target.value)}
 						>
@@ -109,7 +109,7 @@ const ScheduleTweet = ({ setDateTimeISO }: Props) => {
 						<select
 							name="months"
 							id="months"
-							className="dark:text-white dark:bg-slate-700"
+							className="dark:text-white dark:bg-slate-700 rounded"
 							value={month}
 							onChange={(e) => setMonth(e.target.value)}
 						>
@@ -123,7 +123,7 @@ const ScheduleTweet = ({ setDateTimeISO }: Props) => {
 						<select
 							name="years"
 							id="years"
-							className="dark:text-white dark:bg-slate-700"
+							className="dark:text-white dark:bg-slate-700 rounded"
 							value={year}
 							onChange={(e) => setYear(e.target.value)}
 						>
@@ -142,7 +142,7 @@ const ScheduleTweet = ({ setDateTimeISO }: Props) => {
 						<select
 							name="hours"
 							id="hours"
-							className="dark:bg-transparent dark:text-white"
+							className="bg-slate-100 dark:text-white dark:bg-slate-700 rounded"
 							value={hour}
 							onChange={(e) => setHour(e.target.value)}
 						>
@@ -156,7 +156,7 @@ const ScheduleTweet = ({ setDateTimeISO }: Props) => {
 						<select
 							name="minutes"
 							id="minutes"
-							className="dark:bg-transparent dark:text-white"
+							className="bg-slate-100 dark:text-white dark:bg-slate-700 rounded"
 							value={minute}
 							onChange={(e) => setMinute(e.target.value)}
 						>
