@@ -45,7 +45,7 @@ const SelectAccount = () => {
 	const displayAccounts = accounts.map((account: Account) => {
 		return (
 			<li
-				className="flex items-center justify-between rounded-full py-3 px-4 bg-slate-100 cursor-pointer hover:bg-red-100"
+				className="flex items-center justify-between rounded-full py-3 px-4 bg-slate-100 dark:bg-transparent dark:border dark:border-white dark:hover:bg-slate-700 cursor-pointer hover:bg-red-100"
 				onClick={() => handleAccountSelection(account.id)}
 				key={account.id}
 			>

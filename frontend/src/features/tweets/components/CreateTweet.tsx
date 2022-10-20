@@ -95,7 +95,7 @@ const CreateTweet = () => {
 				</div>
 				<div className="text-xl mt-2 w-full">
 					<textarea
-						className="w-full resize-none outline-none placeholder:text-sgray placeholder:text-opacity-75 overflow-hidden"
+						className="w-full resize-none outline-none placeholder:text-sgray placeholder:text-opacity-75 overflow-hidden dark:bg-transparent dark:text-white"
 						placeholder="What's on your mind?"
 						value={tweetText}
 						onChange={(e) => setTweetText(e.target.value)}

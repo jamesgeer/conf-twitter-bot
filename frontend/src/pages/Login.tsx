@@ -83,13 +83,16 @@ const Login = ({ appLogin }: Props) => {
 	return (
 		<div className="container mx-auto flex justify-center">
 			<div className="w-full max-w-xs">
-				<form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+				<form className="bg-white dark:bg-transparent dark:border shadow-md rounded px-8 pt-6 pb-8 mb-4">
 					<div className="mb-6">
-						<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+						<label
+							className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2"
+							htmlFor="username"
+						>
 							Username
 						</label>
 						<input
-							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
 								validationError ? 'border-red-500' : ''
 							}`}
 							id="username"
@@ -104,11 +107,14 @@ const Login = ({ appLogin }: Props) => {
 						</p>
 					</div>
 					<div className="mb-6">
-						<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+						<label
+							className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2"
+							htmlFor="password"
+						>
 							Password
 						</label>
 						<input
-							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
 								validationError ? 'border-red-500' : ''
 							}`}
 							id="password"

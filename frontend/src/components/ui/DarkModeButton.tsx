@@ -1,22 +1,32 @@
-import { useColorMode } from '@chakra-ui/react';
+import { Button, useColorMode } from '@chakra-ui/react';
 import { IconMoon, IconSun } from '@tabler/icons';
+import React, { useEffect, useState } from 'react';
 
 const DarkModeButton = () => {
 	const { colorMode, toggleColorMode } = useColorMode();
+	const [icon, setIcon] = useState(<IconSun />);
 
-	const handleHtmlClass = (): any => {
+	useEffect(() => {
 		if (colorMode === 'light') {
 			document.documentElement.classList.remove('dark');
-			return <IconMoon />;
+			setIcon(<IconMoon />);
 		} else {
 			document.documentElement.classList.add('dark');
-			return <IconSun />;
+			setIcon(<IconSun />);
 		}
+		console.log('useEffect: ' + colorMode);
+	}, [colorMode]);
+
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		toggleColorMode();
 	};
 
 	return (
 		<div>
-			<button onClick={toggleColorMode}>{colorMode === 'light' ? handleHtmlClass() : handleHtmlClass()}</button>
+			<Button variant="ghost" onClick={(e) => handleClick(e)}>
+				{icon}
+			</Button>
 		</div>
 	);
 };
