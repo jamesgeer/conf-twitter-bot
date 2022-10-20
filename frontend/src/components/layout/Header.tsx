@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { AccountContextProps } from '../../features/accounts/types';
 import { AccountContext } from '../../features/accounts/context/AccountContext';
+import DarkModeButton from '../ui/DarkModeButton';
 import axios from 'axios';
 
 const Header = () => {
@@ -29,11 +30,14 @@ const Header = () => {
 		<header className="mb-5">
 			<nav className="navbar container mx-auto py-4 flex justify-between items-center">
 				<h2 className="text-xl font-bold">ConfTwBot</h2>
-				{account.twitterUser.id > 0 ? (
-					<UserCard twitterUser={account.twitterUser} handleLogout={handleLogout} />
-				) : (
-					<Button text={'Sign In'} onClick={(e) => handleClick(e)} />
-				)}
+				<div className="flex items-center gap-3">
+					<DarkModeButton />
+					{account.twitterUser.id > 0 ? (
+						<UserCard twitterUser={account.twitterUser} handleLogout={handleLogout} />
+					) : (
+						<Button text={'Sign In'} onClick={(e) => handleClick(e)} />
+					)}
+				</div>
 			</nav>
 		</header>
 	);
