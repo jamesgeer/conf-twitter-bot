@@ -10,7 +10,7 @@ const Sidebar = ({ handleClick }: Props) => {
 		return (
 			<li key={index}>
 				<button
-					className="bg-transparent hover:bg-slate-100 text-left text-xl font-bold py-2 px-4 rounded-full"
+					className="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-700 text-left text-xl font-bold py-2 px-4 rounded-full"
 					onClick={() => handleClick(index, item)}
 				>
 					{item}

@@ -155,15 +155,18 @@ const SignUp = () => {
 	return (
 		<div className="container mx-auto flex justify-center">
 			<div className="w-full max-w-sm">
-				<form className="bg-white shadow-md px-8 pt-6 pb-8 mb-4 rounded">
+				<form className="bg-white dark:bg-transparent dark:border shadow-md px-8 pt-6 pb-8 mb-4 rounded">
 					<h2 className="font-medium text-3xl text-center pb-5">Sign Up</h2>
 					<div className="mb-6 grid grid-cols-1 gap-4">
 						<div>
-							<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+							<label
+								className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2"
+								htmlFor="username"
+							>
 								Username
 							</label>
 							<input
-								className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline ${
+								className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white dark:bg-slate-700 mb-1 leading-tight focus:outline-none focus:shadow-outline ${
 									inputError.username.error ? 'border-red-500' : ''
 								}`}
 								id="username"
@@ -182,11 +185,14 @@ const SignUp = () => {
 							</p>
 						</div>
 						<div>
-							<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+							<label
+								className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2"
+								htmlFor="password"
+							>
 								Password
 							</label>
 							<input
-								className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline ${
+								className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white dark:bg-slate-700 mb-1 leading-tight focus:outline-none focus:shadow-outline ${
 									inputError.password.error ? 'border-red-500' : ''
 								}`}
 								id="password"
