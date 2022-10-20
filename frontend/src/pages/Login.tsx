@@ -92,7 +92,7 @@ const Login = ({ appLogin }: Props) => {
 							Username
 						</label>
 						<input
-							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white dark:bg-slate-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
 								validationError ? 'border-red-500' : ''
 							}`}
 							id="username"
@@ -114,7 +114,7 @@ const Login = ({ appLogin }: Props) => {
 							Password
 						</label>
 						<input
-							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+							className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white dark:bg-slate-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
 								validationError ? 'border-red-500' : ''
 							}`}
 							id="password"
