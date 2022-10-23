@@ -1,6 +1,5 @@
 import HttpStatus from 'http-status';
 import bcrypt from 'bcryptjs';
-import { userExists } from '../users/users-model';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 
