@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status';
 import { prismaMock } from '../../../../lib/prismaMock';
-import { insertTweet } from '../tweets-model';
-import { HTTPTweet } from '../tweets';
+import { deleteTweet, insertTweet, updateTweet } from '../tweets-model';
+import { HTTPTweet, Tweet } from '../tweets';
 import { ServerError } from '../../types';
 
 const tweet = {
@@ -11,13 +11,10 @@ const tweet = {
 	scheduledTimeUTC: new Date().toUTCString(),
 	content: 'My test tweet',
 	sent: false,
-	createdAt: new Date(),
-	updatedAt: null,
 };
 
 test('should insert new tweet', async () => {
 	// prisma keeps saying "date" is a string, must be a bug as I'm clearly doing "new Date():
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	prismaMock.tweet.create.mockResolvedValue(tweet);
 
@@ -33,7 +30,6 @@ test('should insert new tweet', async () => {
 
 test('insert tweet should return unauthorised error', async () => {
 	// prisma keeps saying "date" is a string, must be a bug as I'm clearly doing "new Date():
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	prismaMock.tweet.create.mockResolvedValue(tweet);
 
@@ -47,4 +43,26 @@ test('insert tweet should return unauthorised error', async () => {
 	await expect(insertTweet(newTweet)).resolves.toEqual(
 		new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.'),
 	);
+});
+
+test('update tweet should return newly updated tweet', async () => {
+	const updatedTweet: Tweet = {
+		id: 1,
+		twitterUserId: BigInt(1),
+		scheduledTimeUTC: new Date().toUTCString(),
+		content: 'Blah blah blah',
+		sent: false,
+	};
+
+	// @ts-ignore
+	prismaMock.tweet.update.mockResolvedValue(updatedTweet);
+
+	await expect(updateTweet(updatedTweet)).resolves.toEqual(updatedTweet);
+});
+
+test('delete tweet should return true', async () => {
+	// @ts-ignore
+	prismaMock.tweet.delete.mockResolvedValue(true);
+
+	await expect(deleteTweet(1)).resolves.toEqual(true);
 });

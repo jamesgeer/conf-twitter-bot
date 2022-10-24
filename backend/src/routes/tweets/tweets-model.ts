@@ -2,7 +2,7 @@
  * Model for creating/reading/updating/deleting stored tweets
  */
 import HttpStatus from 'http-status';
-import { HTTPTweet, Tweets } from './tweets';
+import { HTTPTweet, Tweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { logToFile } from '../../logging/logging';
@@ -51,4 +51,35 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | Serve
 
 	// successfully inserted
 	return true;
+};
+
+export const updateTweet = async (tweet: Tweet): Promise<Tweet | ServerError> => {
+	try {
+		return await prisma.tweet.update({
+			where: {
+				id: tweet.id,
+			},
+			data: {
+				scheduledTimeUTC: tweet.scheduledTimeUTC,
+				content: tweet.content,
+			},
+		});
+	} catch (e) {
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
+	}
+};
+
+export const deleteTweet = async (tweetId: number): Promise<boolean | ServerError> => {
+	try {
+		prisma.tweet.delete({
+			where: {
+				id: tweetId,
+			},
+		});
+		return true;
+	} catch (e) {
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete tweet due to server problem.');
+	}
 };
