@@ -1,12 +1,13 @@
+/*
 import { JSDOM } from 'jsdom';
-import { fetchHtmlOrUsedCached } from '../common';
 import { Paper } from '../../routes/papers/papers';
+// import { fetchHtmlOrUsedCached } from '../index';
 
 const orgTypes = ['Day opening', 'Meeting', 'Day closing', 'Coffee break', 'Lunch', 'Dinner'];
 
-export default async function fetchListOfPapersResearch(url: string): Promise<Paper[]> {
-	const html = await fetchHtmlOrUsedCached(url);
-	// const html = '';
+export default async function fetchListOfPapersResearchr(url: string): Promise<Paper[]> {
+	// const html = await fetchHtmlOrUsedCached(url);
+	const html = '';
 
 	const dom = new JSDOM(html);
 	const { document } = dom.window;
@@ -73,3 +74,4 @@ export default async function fetchListOfPapersResearch(url: string): Promise<Pa
 
 	return papers;
 }
+ */
