@@ -1,6 +1,5 @@
 import { Button, Stack } from '@chakra-ui/react';
 import { IconList, IconLayoutGrid } from '@tabler/icons';
-import React, { useEffect, useState } from 'react';
 
 interface Props {
 	handleClick: (e: React.MouseEvent<HTMLButtonElement>, name: string) => void;
