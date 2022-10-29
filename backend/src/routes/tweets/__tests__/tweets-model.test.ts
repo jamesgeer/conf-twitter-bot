@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
 import { prismaMock } from '../../../../lib/prismaMock';
-import { deleteTweet, insertTweet, updateTweet } from '../tweets-model';
+import { deleteTweet, insertTweet, updateTweetContent, updateTweetScheduledTime } from '../tweets-model';
 import { HTTPTweet, Tweet } from '../tweets';
 import { ServerError } from '../../types';
 
@@ -9,6 +9,18 @@ const newTweet: HTTPTweet = {
 	twitterUserId: BigInt(1).toString(),
 	scheduledTimeUTC: new Date().toISOString(),
 	content: 'My test tweet',
+};
+
+const tweet: Tweet = {
+	id: 1,
+	accountId: +newTweet.accountId,
+	twitterUserId: BigInt(newTweet.twitterUserId),
+	createdAt: new Date(),
+	updatedAt: null,
+	// @ts-ignore
+	scheduledTimeUTC: newTweet.scheduledTimeUTC,
+	content: 'Some new content',
+	sent: false,
 };
 
 test('should insert new tweet', async () => {
@@ -43,23 +55,20 @@ test('insert tweet should return unauthorised error', async () => {
 	);
 });
 
-test('update tweet should return newly updated tweet', async () => {
-	const updatedTweet: Tweet = {
-		id: 1,
-		accountId: +newTweet.accountId,
-		twitterUserId: BigInt(newTweet.twitterUserId),
-		createdAt: new Date(),
-		updatedAt: null,
-		// @ts-ignore
-		scheduledTimeUTC: newTweet.scheduledTimeUTC,
-		content: 'Some new content',
-		sent: false,
-	};
+test('should update tweet content', async () => {
+	// @ts-ignore
+	prismaMock.tweet.update.mockResolvedValue(tweet);
+
+	await expect(updateTweetContent(tweet.id, tweet.content)).resolves.toEqual(tweet);
+});
+
+test('should update tweet scheduled datetime', async () => {
+	tweet.scheduledTimeUTC = '2022-10-29T21:48:54.738Z';
 
 	// @ts-ignore
-	prismaMock.tweet.update.mockResolvedValue(updatedTweet);
+	prismaMock.tweet.update.mockResolvedValue(tweet);
 
-	await expect(updateTweet(updatedTweet)).resolves.toEqual(updatedTweet);
+	await expect(updateTweetScheduledTime(tweet.id, tweet.scheduledTimeUTC)).resolves.toEqual(tweet);
 });
 
 test('delete tweet should return true', async () => {

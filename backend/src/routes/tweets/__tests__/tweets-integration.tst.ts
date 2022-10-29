@@ -4,7 +4,13 @@ import { insertUser } from '../../users/users-model';
 import { insertTwitterUser } from '../../twitter-users/twitter-users-model';
 import { TwitterAccount } from '../../oauths/oauths';
 import { Account, TwitterUser } from '../../accounts/accounts';
-import { insertTweet } from '../tweets-model';
+import {
+	deleteTweet,
+	insertTweet,
+	updateTweetContent,
+	updateTweetScheduledTime,
+	updateTweetSent,
+} from '../tweets-model';
 import { insertAccount } from '../../accounts/accounts-model';
 import { Tweet } from '../tweets';
 
@@ -35,6 +41,8 @@ const account: Account = {
 	twitterUser,
 };
 
+let tweet: Tweet;
+
 // before any tests are run
 beforeAll(async () => {
 	user.id = <number>await insertUser(user.username, user.password);
@@ -59,9 +67,9 @@ it('should create 1 new tweet', async () => {
 		content: 'My test tweet',
 	};
 
-	const result = await insertTweet(httpTweet);
+	tweet = <Tweet>await insertTweet(httpTweet);
 
-	expect(result).toEqual(
+	expect(tweet).toEqual(
 		// tweet without createdDate as createdDate is set by the database
 		// so will always be slightly off and so will never pass a test
 		expect.objectContaining({
@@ -74,4 +82,52 @@ it('should create 1 new tweet', async () => {
 			sent: false,
 		}),
 	);
+});
+
+it('should update tweet content', async () => {
+	const content = 'Meow meow meow';
+	const result = await updateTweetContent(tweet.id, content);
+
+	expect(result).toEqual(
+		expect.objectContaining({
+			...tweet,
+			content,
+		}),
+	);
+
+	tweet.content = content;
+});
+
+it('should update tweet scheduled date time', async () => {
+	const scheduledTimeUTC = new Date('2022-10-29T21:48:54.738Z');
+	const result = await updateTweetScheduledTime(tweet.id, scheduledTimeUTC);
+
+	expect(result).toEqual(
+		expect.objectContaining({
+			...tweet,
+			scheduledTimeUTC,
+		}),
+	);
+
+	tweet.scheduledTimeUTC = scheduledTimeUTC;
+});
+
+it('should update tweet sent to true', async () => {
+	const sent = true;
+	const result = await updateTweetSent(tweet.id, sent);
+
+	expect(result).toEqual(
+		expect.objectContaining({
+			...tweet,
+			sent,
+		}),
+	);
+
+	tweet.sent = sent;
+});
+
+it('should delete tweet', async () => {
+	const result = await deleteTweet(tweet.id);
+
+	expect(result).toEqual(true);
 });

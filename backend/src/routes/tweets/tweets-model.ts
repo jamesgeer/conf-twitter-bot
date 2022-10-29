@@ -43,22 +43,38 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerE
 	}
 };
 
-export const updateTweet = async (tweet: Tweet): Promise<Tweet | ServerError> => {
-	try {
-		return await prisma.tweet.update({
-			where: {
-				id: tweet.id,
-			},
-			data: {
-				scheduledTimeUTC: tweet.scheduledTimeUTC,
-				content: tweet.content,
-			},
-		});
-	} catch (e) {
-		console.log(logToFile(e));
-		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
-	}
-};
+export const updateTweetContent = async (tweetId: number, content: string): Promise<Tweet | ServerError> =>
+	prisma.tweet.update({
+		where: {
+			id: tweetId,
+		},
+		data: {
+			content,
+		},
+	});
+
+export const updateTweetScheduledTime = async (
+	tweetId: number,
+	scheduledTimeUTC: Date | string,
+): Promise<Tweet | ServerError> =>
+	prisma.tweet.update({
+		where: {
+			id: tweetId,
+		},
+		data: {
+			scheduledTimeUTC,
+		},
+	});
+
+export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<Tweet | ServerError> =>
+	prisma.tweet.update({
+		where: {
+			id: tweetId,
+		},
+		data: {
+			sent,
+		},
+	});
 
 export const deleteTweet = async (tweetId: number): Promise<boolean | ServerError> => {
 	try {
