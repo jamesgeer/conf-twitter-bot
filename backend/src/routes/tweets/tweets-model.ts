@@ -12,16 +12,9 @@ export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 		where: {
 			twitterUserId: BigInt(twitterUserId),
 		},
-		select: {
-			id: true,
-			twitterUserId: true,
-			scheduledTimeUTC: true,
-			content: true,
-			sent: true,
-		},
 	});
 
-export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | ServerError> => {
+export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerError> => {
 	const { accountId, twitterUserId, scheduledTimeUTC, content } = httpTweet;
 
 	if (!accountId || !twitterUserId || !scheduledTimeUTC || !content) {
@@ -36,7 +29,7 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | Serve
 	const isoDate = new Date(scheduledTimeUTC);
 
 	try {
-		await prisma.tweet.create({
+		return await prisma.tweet.create({
 			data: {
 				accountId: +accountId,
 				twitterUserId: BigInt(twitterUserId),
@@ -48,9 +41,6 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | Serve
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
-
-	// successfully inserted
-	return true;
 };
 
 export const updateTweet = async (tweet: Tweet): Promise<Tweet | ServerError> => {

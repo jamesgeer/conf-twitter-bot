@@ -6,6 +6,7 @@ import { TwitterAccount } from '../../oauths/oauths';
 import { Account, TwitterUser } from '../../accounts/accounts';
 import { insertTweet } from '../tweets-model';
 import { insertAccount } from '../../accounts/accounts-model';
+import { Tweet } from '../tweets';
 
 const user = {
 	id: 0,
@@ -54,11 +55,23 @@ it('should create 1 new tweet', async () => {
 	const httpTweet = {
 		accountId: account.id.toString(),
 		twitterUserId: twitterUser.id.toString(),
-		scheduledTimeUTC: new Date().toUTCString(),
+		scheduledTimeUTC: new Date().toString(),
 		content: 'My test tweet',
 	};
 
 	const result = await insertTweet(httpTweet);
 
-	expect(result).toEqual(true);
+	expect(result).toEqual(
+		// tweet without createdDate as createdDate is set by the database
+		// so will always be slightly off and so will never pass a test
+		expect.objectContaining({
+			id: 1,
+			accountId: +httpTweet.accountId,
+			twitterUserId: BigInt(httpTweet.twitterUserId),
+			updatedAt: null,
+			scheduledTimeUTC: new Date(httpTweet.scheduledTimeUTC),
+			content: httpTweet.content,
+			sent: false,
+		}),
+	);
 });

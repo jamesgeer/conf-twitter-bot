@@ -4,35 +4,33 @@ import { deleteTweet, insertTweet, updateTweet } from '../tweets-model';
 import { HTTPTweet, Tweet } from '../tweets';
 import { ServerError } from '../../types';
 
-const tweet = {
-	id: 1,
-	accountId: 1,
-	twitterUserId: BigInt(1),
-	scheduledTimeUTC: new Date().toUTCString(),
+const newTweet: HTTPTweet = {
+	accountId: '1',
+	twitterUserId: BigInt(1).toString(),
+	scheduledTimeUTC: new Date().toISOString(),
 	content: 'My test tweet',
-	sent: false,
 };
 
 test('should insert new tweet', async () => {
-	// prisma keeps saying "date" is a string, must be a bug as I'm clearly doing "new Date():
-	// @ts-ignore
-	prismaMock.tweet.create.mockResolvedValue(tweet);
-
-	const newTweet: HTTPTweet = {
-		accountId: '1',
-		twitterUserId: tweet.twitterUserId.toString(),
-		scheduledTimeUTC: tweet.scheduledTimeUTC.toString(),
-		content: tweet.content,
+	const expectedTweet: Tweet = {
+		id: 1,
+		accountId: +newTweet.accountId,
+		twitterUserId: BigInt(newTweet.twitterUserId),
+		createdAt: new Date(),
+		updatedAt: null,
+		// @ts-ignore
+		scheduledTimeUTC: newTweet.scheduledTimeUTC,
+		content: newTweet.content,
+		sent: false,
 	};
 
-	await expect(insertTweet(newTweet)).resolves.toEqual(true);
+	// prisma keeps saying "date" is a string, must be a bug as I'm clearly doing "new Date():
+	// @ts-ignore
+	prismaMock.tweet.create.mockResolvedValue(expectedTweet);
+	await expect(insertTweet(newTweet)).resolves.toEqual(expectedTweet);
 });
 
 test('insert tweet should return unauthorised error', async () => {
-	// prisma keeps saying "date" is a string, must be a bug as I'm clearly doing "new Date():
-	// @ts-ignore
-	prismaMock.tweet.create.mockResolvedValue(tweet);
-
 	const newTweet: HTTPTweet = {
 		accountId: '',
 		twitterUserId: '',
@@ -48,9 +46,13 @@ test('insert tweet should return unauthorised error', async () => {
 test('update tweet should return newly updated tweet', async () => {
 	const updatedTweet: Tweet = {
 		id: 1,
-		twitterUserId: BigInt(1),
-		scheduledTimeUTC: new Date().toUTCString(),
-		content: 'Blah blah blah',
+		accountId: +newTweet.accountId,
+		twitterUserId: BigInt(newTweet.twitterUserId),
+		createdAt: new Date(),
+		updatedAt: null,
+		// @ts-ignore
+		scheduledTimeUTC: newTweet.scheduledTimeUTC,
+		content: 'Some new content',
 		sent: false,
 	};
 

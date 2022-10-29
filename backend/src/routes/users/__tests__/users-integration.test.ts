@@ -14,11 +14,6 @@ const newUser = {
 	password: faker.internet.password(),
 };
 
-// before any tests are run
-beforeAll(async () => {
-	await prisma.user.deleteMany({});
-});
-
 // after all tests complete
 afterAll(async () => {
 	await prisma.user.deleteMany({});
