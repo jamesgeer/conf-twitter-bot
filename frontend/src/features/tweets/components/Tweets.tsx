@@ -2,7 +2,11 @@ import { Tweet } from '../types';
 import { useTweets } from '../api/getTweets';
 import dayjs from 'dayjs';
 
-const TweetsList = () => {
+interface Props {
+	isList: { activeLayout: string };
+}
+
+const Tweets = ({ isList }: Props) => {
 	const { isLoading, error, data: tweets } = useTweets();
 
 	if (isLoading) {
@@ -23,7 +27,21 @@ const TweetsList = () => {
 		);
 	});
 
-	return <>{tweets.length > 0 ? <div className="grid gap-4">{displayTweets}</div> : <p>No tweets to display.</p>}</>;
+	return (
+		<>
+			{tweets.length > 0 ? (
+				<div
+					className={
+						isList.activeLayout === 'list' ? 'grid gap-4' : 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'
+					}
+				>
+					{displayTweets}
+				</div>
+			) : (
+				<p>No tweets to display.</p>
+			)}
+		</>
+	);
 };
 
-export default TweetsList;
+export default Tweets;

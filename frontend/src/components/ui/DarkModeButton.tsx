@@ -14,7 +14,6 @@ const DarkModeButton = () => {
 			document.documentElement.classList.add('dark');
 			setIcon(<IconSun />);
 		}
-		console.log('useEffect: ' + colorMode);
 	}, [colorMode]);
 
 	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
