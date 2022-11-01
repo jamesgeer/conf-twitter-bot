@@ -27,11 +27,11 @@ const Content = ({ active }: Props) => {
 			<h2 className="text-xl font-bold mb-8">Dashboard</h2>
 			<CreateTweet />
 			<hr className="my-8" />
-			<div className="flex items-center gap-6">
+			<div className="flex items-center justify-between gap-6">
 				<h2 className="text-xl font-bold mb-4">{active.title}</h2>
 				{active.title !== '' && (
 					<div className="pb-3">
-						<ToggleListGrid handleClick={handleClick} />
+						<ToggleListGrid isList={isList} handleClick={handleClick} />
 					</div>
 				)}
 			</div>
