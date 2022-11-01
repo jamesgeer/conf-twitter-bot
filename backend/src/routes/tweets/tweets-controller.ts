@@ -1,6 +1,6 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getTweets, insertTweet } from './tweets-model';
+import { getTweets, insertTweet, deleteTweet } from './tweets-model';
 import { ServerError } from '../types';
 import { HTTPTweet } from './tweets';
 
@@ -37,4 +37,21 @@ export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// success
 	ctx.status = HttpStatus.CREATED;
+};
+
+export const removeTweet = async (ctx: ParameterizedContext): Promise<void> => {
+	if (!ctx.session) {
+		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+		return;
+	}
+
+	const { id } = ctx.params;
+	const result = await deleteTweet(id);
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
 };
