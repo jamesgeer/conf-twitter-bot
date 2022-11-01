@@ -1,6 +1,6 @@
 import CreateTweet from '../../tweets/components/CreateTweet';
 import Tweets from '../../tweets/components/Tweets';
-import PapersList from '../../papers/components/PapersList';
+import Papers from '../../papers/components/Papers';
 import ToggleListGrid from './toggleListGrid';
 import { useState } from 'react';
 
@@ -36,7 +36,7 @@ const Content = ({ active }: Props) => {
 				)}
 			</div>
 			{active.title === 'Tweets' && <Tweets isList={isList} />}
-			{active.title === 'Papers' && <PapersList />}
+			{active.title === 'Papers' && <Papers isList={isList} />}
 		</div>
 	);
 };
