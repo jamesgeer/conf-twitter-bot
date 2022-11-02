@@ -1,79 +1,133 @@
-import HttpStatus from 'http-status';
-import { prismaMock } from '../../../../lib/prismaMock';
-import { deleteTweet, insertTweet, updateTweetContent, updateTweetScheduledTime } from '../tweets-model';
-import { HTTPTweet, Tweet } from '../tweets';
-import { ServerError } from '../../types';
+import { faker } from '@faker-js/faker';
+import prisma from '../../../../lib/prisma';
+import { insertUser } from '../../users/users-model';
+import { insertTwitterUser } from '../../twitter-users/twitter-users-model';
+import { TwitterAccount } from '../../oauths/oauths';
+import { Account, TwitterUser } from '../../accounts/accounts';
+import {
+	deleteTweet,
+	insertTweet,
+	updateTweetContent,
+	updateTweetScheduledTime,
+	updateTweetSent,
+} from '../tweets-model';
+import { insertAccount } from '../../accounts/accounts-model';
+import { Tweet } from '../tweets';
 
-const newTweet: HTTPTweet = {
-	accountId: '1',
-	twitterUserId: BigInt(1).toString(),
-	scheduledTimeUTC: new Date().toISOString(),
-	content: 'My test tweet',
+const user = {
+	id: 0,
+	username: faker.internet.userName(),
+	password: faker.internet.password(),
 };
 
-const tweet: Tweet = {
-	id: 1,
-	accountId: +newTweet.accountId,
-	twitterUserId: BigInt(newTweet.twitterUserId),
-	createdAt: new Date(),
-	updatedAt: null,
-	// @ts-ignore
-	scheduledTimeUTC: newTweet.scheduledTimeUTC,
-	content: 'Some new content',
-	sent: false,
+const twitterAccount: TwitterAccount = {
+	userId: '1',
+	name: 'Test Twitter User',
+	screenName: 'test_twitter_user',
+	profileImageUrl: 'image.png',
+	oauth: {},
 };
 
-test('should insert new tweet', async () => {
-	const expectedTweet: Tweet = {
-		id: 1,
-		accountId: +newTweet.accountId,
-		twitterUserId: BigInt(newTweet.twitterUserId),
-		createdAt: new Date(),
-		updatedAt: null,
-		// @ts-ignore
-		scheduledTimeUTC: newTweet.scheduledTimeUTC,
-		content: newTweet.content,
-		sent: false,
-	};
+const twitterUser: TwitterUser = {
+	id: BigInt(0),
+	name: twitterAccount.name,
+	screenName: twitterAccount.screenName,
+	profileImageUrl: twitterAccount.profileImageUrl,
+};
 
-	// prisma keeps saying "date" is a string, must be a bug as I'm clearly doing "new Date():
-	// @ts-ignore
-	prismaMock.tweet.create.mockResolvedValue(expectedTweet);
-	await expect(insertTweet(newTweet)).resolves.toEqual(expectedTweet);
+const account: Account = {
+	id: 0,
+	userId: user.id,
+	twitterUser,
+};
+
+let tweet: Tweet;
+
+// before any tests are run
+beforeAll(async () => {
+	user.id = <number>await insertUser(user.username, user.password);
+	twitterUser.id = <bigint>await insertTwitterUser(twitterAccount);
+	account.id = <number>await insertAccount(user.id, twitterUser.id);
 });
 
-test('insert tweet should return unauthorised error', async () => {
-	const newTweet: HTTPTweet = {
-		accountId: '',
-		twitterUserId: '',
-		scheduledTimeUTC: '',
-		content: '',
+// after all tests complete
+afterAll(async () => {
+	await prisma.tweet.deleteMany({});
+	await prisma.account.deleteMany({});
+	await prisma.twitterUser.deleteMany({});
+	await prisma.user.deleteMany({});
+	await prisma.$disconnect();
+});
+
+it('should create 1 new tweet', async () => {
+	const httpTweet = {
+		accountId: account.id.toString(),
+		twitterUserId: twitterUser.id.toString(),
+		scheduledTimeUTC: new Date().toString(),
+		content: 'My test tweet',
 	};
 
-	await expect(insertTweet(newTweet)).resolves.toEqual(
-		new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.'),
+	tweet = <Tweet>await insertTweet(httpTweet);
+
+	expect(tweet).toEqual(
+		// tweet without createdDate as createdDate is set by the database
+		// so will always be slightly off and so will never pass a test
+		expect.objectContaining({
+			id: 1,
+			accountId: +httpTweet.accountId,
+			twitterUserId: BigInt(httpTweet.twitterUserId),
+			updatedAt: null,
+			scheduledTimeUTC: new Date(httpTweet.scheduledTimeUTC),
+			content: httpTweet.content,
+			sent: false,
+		}),
 	);
 });
 
-test('should update tweet content', async () => {
-	// @ts-ignore
-	prismaMock.tweet.update.mockResolvedValue(tweet);
+it('should update tweet content', async () => {
+	const content = 'Meow meow meow';
+	const result = await updateTweetContent(tweet.id, content);
 
-	await expect(updateTweetContent(tweet.id, tweet.content)).resolves.toEqual(tweet);
+	expect(result).toEqual(
+		expect.objectContaining({
+			...tweet,
+			content,
+		}),
+	);
+
+	tweet.content = content;
 });
 
-test('should update tweet scheduled datetime', async () => {
-	tweet.scheduledTimeUTC = '2022-10-29T21:48:54.738Z';
+it('should update tweet scheduled date time', async () => {
+	const scheduledTimeUTC = new Date('2022-10-29T21:48:54.738Z');
+	const result = await updateTweetScheduledTime(tweet.id, scheduledTimeUTC);
 
-	// @ts-ignore
-	prismaMock.tweet.update.mockResolvedValue(tweet);
+	expect(result).toEqual(
+		expect.objectContaining({
+			...tweet,
+			scheduledTimeUTC,
+		}),
+	);
 
-	await expect(updateTweetScheduledTime(tweet.id, tweet.scheduledTimeUTC)).resolves.toEqual(tweet);
+	tweet.scheduledTimeUTC = scheduledTimeUTC;
 });
 
-test('delete tweet should return true', async () => {
-	// @ts-ignore
-	prismaMock.tweet.delete.mockResolvedValue(true);
+it('should update tweet sent to true', async () => {
+	const sent = true;
+	const result = await updateTweetSent(tweet.id, sent);
 
-	await expect(deleteTweet(1)).resolves.toEqual(true);
+	expect(result).toEqual(
+		expect.objectContaining({
+			...tweet,
+			sent,
+		}),
+	);
+
+	tweet.sent = sent;
+});
+
+it('should delete tweet', async () => {
+	const result = await deleteTweet(tweet.id);
+
+	expect(result).toEqual(true);
 });

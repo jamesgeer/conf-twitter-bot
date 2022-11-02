@@ -70,12 +70,14 @@ export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	if (scheduledTimeUTC) {
 		const result = await updateTweetScheduledTime(id, scheduledTimeUTC);
+		// eslint-disable-next-line consistent-return
 		if (result instanceof ServerError) return handleServerError(ctx, result);
 		updatedTweet = result;
 	}
 
 	if (content) {
 		const result = await updateTweetContent(id, content);
+		// eslint-disable-next-line consistent-return
 		if (result instanceof ServerError) return handleServerError(ctx, result);
 		updatedTweet = result;
 	}
