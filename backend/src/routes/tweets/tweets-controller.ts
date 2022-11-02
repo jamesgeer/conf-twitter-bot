@@ -15,12 +15,13 @@ import { handleServerError } from '../util';
 export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
 	const tweet = await getTweet(id);
-	if (!tweet) {
-		ctx.status = HttpStatus.NOT_FOUND;
+	if (tweet) {
+		ctx.status = HttpStatus.OK;
+		ctx.body = tweet;
+		return;
 	}
 
-	ctx.status = HttpStatus.OK;
-	ctx.body = tweet;
+	ctx.status = HttpStatus.NOT_FOUND;
 };
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
@@ -59,28 +60,11 @@ export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.body = result.id;
 };
 
-export const removeTweet = async (ctx: ParameterizedContext): Promise<void> => {
-	if (!ctx.session) {
-		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-		return;
-	}
-
-	const { id } = ctx.params;
-	const result = await deleteTweet(id);
-	if (result instanceof ServerError) {
-		ctx.status = result.getStatusCode();
-		ctx.body = { message: result.getMessage() };
-		return;
-	}
-
-	ctx.status = HttpStatus.OK;
-};
-
 export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
 	const { scheduledTimeUTC, content } = ctx.request.body;
 
-	if (!scheduledTimeUTC || !content) {
+	if (!scheduledTimeUTC && !content) {
 		ctx.status = HttpStatus.BAD_REQUEST;
 		return;
 	}
@@ -103,4 +87,16 @@ export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = updatedTweet;
+};
+
+export const removeTweet = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id } = ctx.params;
+	const result = await deleteTweet(id);
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
 };

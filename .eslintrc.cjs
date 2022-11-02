@@ -60,6 +60,7 @@ module.exports = {
 		'@typescript-eslint/no-shadow': 'off',
 		'@typescript-eslint/ban-ts-comment': 'off',
 		'@typescript-eslint/no-explicit-any': 'off',
+		'@typescript-eslint/keyword-spacing': 'off',
 		'@typescript-eslint/indent': ['error', 'tab'],
 		'@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
 		'@typescript-eslint/no-use-before-define': ['error', {"functions": false, "classes": false}],
