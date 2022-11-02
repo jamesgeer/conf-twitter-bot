@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { tweets, scheduledTweets, sentTweets, createTweet, removeTweet } from './tweets-controller';
+import { tweets, scheduledTweets, sentTweets, createTweet, removeTweet, updateTweet } from './tweets-controller';
 
 const tweetsRouter = new Router({ prefix: '/tweets' });
 
@@ -18,5 +18,8 @@ tweetsRouter.post('/', koaBody(), createTweet);
 
 // DELETE: /api/tweets/:id
 tweetsRouter.delete('/:id', removeTweet);
+
+// PATCH: /api/tweets/:id
+tweetsRouter.patch('/:id', koaBody(), updateTweet);
 
 export default tweetsRouter;
