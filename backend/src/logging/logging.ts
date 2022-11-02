@@ -13,8 +13,13 @@ export const logToFile = (errorLog: any): string => {
 	// construct file name (yyyy-mm-dd.txt is the format)
 	const logDate = `${logDateObject.getFullYear()}_${logDateObject.getMonth()}_${logDateObject.getDate()}`;
 
-	fs.writeFile(`logging/app_logs/${logDate}.txt`, errorLog, { flag: 'a+' }, (err) => {
-		if (err) console.log(err);
-	});
+	fs.writeFile(
+		`logging/app_logs/${logDate}.txt`,
+		`${logDateObject.toLocaleTimeString()}: ${errorLog.toString()} ${errorLog.stack}\n`,
+		{ flag: 'a+' },
+		(err) => {
+			if (err) console.log(err);
+		},
+	);
 	return `Logged action to file ${logDate}.txt`;
 };
