@@ -1,10 +1,13 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { tweets, scheduledTweets, sentTweets, createTweet, removeTweet, updateTweet } from './tweets-controller';
+import { tweet, tweets, scheduledTweets, sentTweets, createTweet, removeTweet, updateTweet } from './tweets-controller';
 
 const tweetsRouter = new Router({ prefix: '/tweets' });
 
 // GET: /api/tweets
+tweetsRouter.get('/:id', tweet);
+
+// GET: /api/tweets/:id
 tweetsRouter.get('/', tweets);
 
 // GET: /api/tweets/scheduled

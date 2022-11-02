@@ -45,7 +45,11 @@ let tweet: Tweet;
 
 // before any tests are run
 beforeAll(async () => {
-	user.id = <number>await insertUser(user.username, user.password);
+	const userId = <number>await insertUser(user.username, user.password);
+
+	user.id = userId;
+	twitterAccount.userId = userId.toString();
+
 	twitterUser.id = <bigint>await insertTwitterUser(twitterAccount);
 	account.id = <number>await insertAccount(user.id, twitterUser.id);
 });
@@ -69,11 +73,11 @@ it('should create 1 new tweet', async () => {
 
 	tweet = <Tweet>await insertTweet(httpTweet);
 
+	expect(tweet.id).toBeGreaterThan(0);
 	expect(tweet).toEqual(
 		// tweet without createdDate as createdDate is set by the database
 		// so will always be slightly off and so will never pass a test
 		expect.objectContaining({
-			id: 1,
 			accountId: +httpTweet.accountId,
 			twitterUserId: BigInt(httpTweet.twitterUserId),
 			updatedAt: null,
@@ -86,7 +90,7 @@ it('should create 1 new tweet', async () => {
 
 it('should update tweet content', async () => {
 	const content = 'Meow meow meow';
-	const result = await updateTweetContent(tweet.id, content);
+	const result = await updateTweetContent(tweet.id.toString(), content);
 
 	expect(result).toEqual(
 		expect.objectContaining({
@@ -100,7 +104,7 @@ it('should update tweet content', async () => {
 
 it('should update tweet scheduled date time', async () => {
 	const scheduledTimeUTC = new Date('2022-10-29T21:48:54.738Z');
-	const result = await updateTweetScheduledTime(tweet.id, scheduledTimeUTC);
+	const result = await updateTweetScheduledTime(tweet.id.toString(), scheduledTimeUTC);
 
 	expect(result).toEqual(
 		expect.objectContaining({
@@ -127,7 +131,7 @@ it('should update tweet sent to true', async () => {
 });
 
 it('should delete tweet', async () => {
-	const result = await deleteTweet(tweet.id);
+	const result = await deleteTweet(tweet.id.toString());
 
 	expect(result).toEqual(true);
 });

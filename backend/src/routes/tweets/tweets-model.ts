@@ -7,6 +7,13 @@ import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { logToFile } from '../../logging/logging';
 
+export const getTweet = async (tweetId: string): Promise<Tweet | null> =>
+	prisma.tweet.findUnique({
+		where: {
+			id: +tweetId,
+		},
+	});
+
 export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 	prisma.tweet.findMany({
 		where: {
@@ -43,10 +50,10 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerE
 	}
 };
 
-export const updateTweetContent = async (tweetId: number, content: string): Promise<Tweet | ServerError> =>
+export const updateTweetContent = async (tweetId: string, content: string): Promise<Tweet | ServerError> =>
 	prisma.tweet.update({
 		where: {
-			id: tweetId,
+			id: +tweetId,
 		},
 		data: {
 			content,
@@ -54,12 +61,12 @@ export const updateTweetContent = async (tweetId: number, content: string): Prom
 	});
 
 export const updateTweetScheduledTime = async (
-	tweetId: number,
+	tweetId: string,
 	scheduledTimeUTC: Date | string,
 ): Promise<Tweet | ServerError> =>
 	prisma.tweet.update({
 		where: {
-			id: tweetId,
+			id: +tweetId,
 		},
 		data: {
 			scheduledTimeUTC,
@@ -76,11 +83,11 @@ export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<T
 		},
 	});
 
-export const deleteTweet = async (tweetId: number): Promise<boolean | ServerError> => {
+export const deleteTweet = async (tweetId: string): Promise<boolean | ServerError> => {
 	try {
 		prisma.tweet.delete({
 			where: {
-				id: tweetId,
+				id: +tweetId,
 			},
 		});
 		return true;

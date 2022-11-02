@@ -1,9 +1,27 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getTweets, insertTweet, deleteTweet, updateTweetScheduledTime, updateTweetContent } from './tweets-model';
+import {
+	getTweets,
+	insertTweet,
+	deleteTweet,
+	updateTweetScheduledTime,
+	updateTweetContent,
+	getTweet,
+} from './tweets-model';
 import { ServerError } from '../types';
 import { HTTPTweet, Tweet } from './tweets';
 import { handleServerError } from '../util';
+
+export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id } = ctx.params;
+	const tweet = await getTweet(id);
+	if (!tweet) {
+		ctx.status = HttpStatus.NOT_FOUND;
+	}
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = tweet;
+};
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 	if (!ctx.session) {
@@ -38,6 +56,7 @@ export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// success
 	ctx.status = HttpStatus.CREATED;
+	ctx.body = result.id;
 };
 
 export const removeTweet = async (ctx: ParameterizedContext): Promise<void> => {
