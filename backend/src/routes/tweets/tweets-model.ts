@@ -2,26 +2,26 @@
  * Model for creating/reading/updating/deleting stored tweets
  */
 import HttpStatus from 'http-status';
-import { HTTPTweet, Tweets } from './tweets';
+import { HTTPTweet, Tweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { logToFile } from '../../logging/logging';
+
+export const getTweet = async (tweetId: string): Promise<Tweet | null> =>
+	prisma.tweet.findUnique({
+		where: {
+			id: +tweetId,
+		},
+	});
 
 export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 	prisma.tweet.findMany({
 		where: {
 			twitterUserId: BigInt(twitterUserId),
 		},
-		select: {
-			id: true,
-			twitterUserId: true,
-			scheduledTimeUTC: true,
-			content: true,
-			sent: true,
-		},
 	});
 
-export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | ServerError> => {
+export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerError> => {
 	const { accountId, twitterUserId, scheduledTimeUTC, content } = httpTweet;
 
 	if (!accountId || !twitterUserId || !scheduledTimeUTC || !content) {
@@ -36,7 +36,7 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | Serve
 	const isoDate = new Date(scheduledTimeUTC);
 
 	try {
-		await prisma.tweet.create({
+		return await prisma.tweet.create({
 			data: {
 				accountId: +accountId,
 				twitterUserId: BigInt(twitterUserId),
@@ -48,7 +48,51 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<boolean | Serve
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}
+};
 
-	// successfully inserted
-	return true;
+export const updateTweetContent = async (tweetId: string, content: string): Promise<Tweet | ServerError> =>
+	prisma.tweet.update({
+		where: {
+			id: +tweetId,
+		},
+		data: {
+			content,
+		},
+	});
+
+export const updateTweetScheduledTime = async (
+	tweetId: string,
+	scheduledTimeUTC: Date | string,
+): Promise<Tweet | ServerError> =>
+	prisma.tweet.update({
+		where: {
+			id: +tweetId,
+		},
+		data: {
+			scheduledTimeUTC,
+		},
+	});
+
+export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<Tweet | ServerError> =>
+	prisma.tweet.update({
+		where: {
+			id: tweetId,
+		},
+		data: {
+			sent,
+		},
+	});
+
+export const deleteTweet = async (tweetId: string): Promise<boolean | ServerError> => {
+	try {
+		prisma.tweet.delete({
+			where: {
+				id: +tweetId,
+			},
+		});
+		return true;
+	} catch (e) {
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete tweet due to server problem.');
+	}
 };
