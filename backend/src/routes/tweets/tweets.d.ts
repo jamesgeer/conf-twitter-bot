@@ -1,7 +1,10 @@
 // Single Tweet
 export interface Tweet {
 	id: number;
+	accountId: number;
 	twitterUserId: bigint;
+	createdAt: Date | string;
+	updatedAt: Date | string | null;
 	scheduledTimeUTC: Date | string;
 	content: string;
 	sent: boolean;

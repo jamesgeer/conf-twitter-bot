@@ -3,7 +3,6 @@ import Logger from 'koa-pino-logger';
 import cors from '@koa/cors';
 import koaSession from 'koa-session';
 import router from './routes';
-import { PORT } from './keys';
 import { logToFile, initLogToFile } from './logging/logging';
 // import cronJobs from './jobs';
 
@@ -58,10 +57,6 @@ app.use(
 
 app.use(router.routes());
 app.use(router.allowedMethods());
-
-app.listen(PORT, () => {
-	console.log('==> 🌎  Listening on port %s. Visit http://localhost:%s/', PORT, PORT);
-});
 
 // run cron jobs
 // cronJobs();
