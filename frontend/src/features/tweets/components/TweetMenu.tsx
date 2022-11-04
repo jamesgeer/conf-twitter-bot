@@ -17,7 +17,7 @@ const TweetMenu = ({ isActive, handleButtonClick, tweetId }: Props) => {
 	};
 
 	return (
-		<Menu>
+		<Menu isLazy>
 			<MenuButton
 				onClick={(e) => handleButtonClick(e, tweetId)}
 				as={Button}
