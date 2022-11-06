@@ -8,13 +8,14 @@ import { Account, TwitterUser } from '../../accounts/accounts';
 import {
 	deleteTweet,
 	getTweet,
+	getTweets,
 	insertTweet,
 	updateTweetContent,
 	updateTweetScheduledTime,
 	updateTweetSent,
 } from '../tweets-model';
 import { insertAccount } from '../../accounts/accounts-model';
-import { Tweet } from '../tweets';
+import { Tweet, Tweets } from '../tweets';
 import { ServerError } from '../../types';
 
 const user = {
@@ -100,8 +101,23 @@ it('insert tweet should create one new tweet', async () => {
 
 it('get tweet should return inserted tweet', async () => {
 	const result = <Tweet>await getTweet(tweet.id.toString());
+
 	expect(result.id).toEqual(tweet.id);
 	expect(result.content).toEqual(tweet.content);
+});
+
+it('get tweets should return an array with one tweet', async () => {
+	const result = <Tweets>await getTweets(twitterUser.id.toString());
+
+	expect(result.length).toEqual(1);
+	result.map((result: Tweet) => expect(result.id).toEqual(tweet.id));
+});
+
+it('get tweets should return error', async () => {
+	const result = <ServerError>await getTweets('738');
+
+	expect(result).toBeInstanceOf(ServerError);
+	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
 });
 
 it('update tweet should update content', async () => {
