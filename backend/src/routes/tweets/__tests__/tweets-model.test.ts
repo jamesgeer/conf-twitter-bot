@@ -118,6 +118,29 @@ it('update tweet should update content', async () => {
 	tweet.content = content;
 });
 
+describe('update non-existent tweet content should return not found', () => {
+	it('content', async () => {
+		const result = <ServerError>await updateTweetContent('101', 'I should error');
+
+		expect(result).toBeInstanceOf(ServerError);
+		expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
+	});
+
+	it('dateTime', async () => {
+		const result = <ServerError>await updateTweetScheduledTime('101', new Date());
+
+		expect(result).toBeInstanceOf(ServerError);
+		expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
+	});
+
+	it('sent', async () => {
+		const result = <ServerError>await updateTweetSent('101', true);
+
+		expect(result).toBeInstanceOf(ServerError);
+		expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
+	});
+});
+
 it('get tweet should return tweet with updated content', async () => {
 	const result = <Tweet>await getTweet(tweet.id.toString());
 	expect(result.id).toEqual(tweet.id);
@@ -146,7 +169,7 @@ it('get tweet should return tweet with updated scheduled datetime', async () => 
 
 it('update tweet should change sent to true', async () => {
 	const sent = true;
-	const result = await updateTweetSent(tweet.id, sent);
+	const result = await updateTweetSent(tweet.id.toString(), sent);
 
 	expect(result).toEqual(
 		expect.objectContaining({

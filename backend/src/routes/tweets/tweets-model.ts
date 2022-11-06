@@ -61,38 +61,65 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerE
 	}
 };
 
-export const updateTweetContent = async (tweetId: string, content: string): Promise<Tweet | ServerError> =>
-	prisma.tweet.update({
-		where: {
-			id: +tweetId,
-		},
-		data: {
-			content,
-		},
-	});
+export const updateTweetContent = async (tweetId: string, content: string): Promise<Tweet | ServerError> => {
+	try {
+		return await prisma.tweet.update({
+			where: {
+				id: +tweetId,
+			},
+			data: {
+				content,
+			},
+		});
+	} catch (e) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
+		}
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
+	}
+};
 
 export const updateTweetScheduledTime = async (
 	tweetId: string,
 	scheduledTimeUTC: Date | string,
-): Promise<Tweet | ServerError> =>
-	prisma.tweet.update({
-		where: {
-			id: +tweetId,
-		},
-		data: {
-			scheduledTimeUTC,
-		},
-	});
+): Promise<Tweet | ServerError> => {
+	try {
+		return await prisma.tweet.update({
+			where: {
+				id: +tweetId,
+			},
+			data: {
+				scheduledTimeUTC,
+			},
+		});
+	} catch (e) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
+		}
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
+	}
+};
 
-export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<Tweet | ServerError> =>
-	prisma.tweet.update({
-		where: {
-			id: tweetId,
-		},
-		data: {
-			sent,
-		},
-	});
+export const updateTweetSent = async (tweetId: string, sent: boolean): Promise<Tweet | ServerError> => {
+	try {
+		return await prisma.tweet.update({
+			where: {
+				id: +tweetId,
+			},
+			data: {
+				sent,
+			},
+		});
+	} catch (e) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
+		}
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
+	}
+};
 
 export const deleteTweet = async (tweetId: string): Promise<Tweet | ServerError> => {
 	try {
