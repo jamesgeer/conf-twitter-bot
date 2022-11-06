@@ -2,17 +2,28 @@
  * Model for creating/reading/updating/deleting stored tweets
  */
 import HttpStatus from 'http-status';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { HTTPTweet, Tweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { logToFile } from '../../logging/logging';
 
-export const getTweet = async (tweetId: string): Promise<Tweet | null> =>
-	prisma.tweet.findUnique({
-		where: {
-			id: +tweetId,
-		},
-	});
+export const getTweet = async (tweetId: string): Promise<Tweet | ServerError> => {
+	try {
+		const result = await prisma.tweet.findUnique({
+			where: {
+				id: +tweetId,
+			},
+		});
+		if (result) {
+			return result;
+		}
+		return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
+	} catch (e) {
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get tweet due to server problem.');
+	}
+};
 
 export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 	prisma.tweet.findMany({
@@ -83,15 +94,20 @@ export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<T
 		},
 	});
 
-export const deleteTweet = async (tweetId: string): Promise<boolean | ServerError> => {
+export const deleteTweet = async (tweetId: string): Promise<Tweet | ServerError> => {
 	try {
-		prisma.tweet.delete({
+		return await prisma.tweet.delete({
 			where: {
 				id: +tweetId,
 			},
 		});
-		return true;
 	} catch (e) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			return new ServerError(
+				HttpStatus.NOT_FOUND,
+				`Tweet with ID ${tweetId} not found: either already deleted or received incorrect/invalid ID.`,
+			);
+		}
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete tweet due to server problem.');
 	}

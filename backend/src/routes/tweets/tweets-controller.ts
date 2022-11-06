@@ -14,14 +14,13 @@ import { handleServerError } from '../util';
 
 export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
-	const tweet = await getTweet(id);
-	if (tweet) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = tweet;
-		return;
+	const result = await getTweet(id);
+	if (result instanceof ServerError) {
+		return handleServerError(ctx, result);
 	}
 
-	ctx.status = HttpStatus.NOT_FOUND;
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
 };
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {

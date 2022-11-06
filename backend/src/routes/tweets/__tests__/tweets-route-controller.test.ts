@@ -63,6 +63,12 @@ afterAll(async () => {
 	await prisma.$disconnect();
 });
 
+it('GET tweet should return not found status', async () => {
+	const response = await request.get(`${tweetsEndpoint}/1`);
+
+	expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+});
+
 it('POST tweet should create new tweet and return id', async () => {
 	const httpTweet = {
 		accountId: account.id.toString(),
@@ -80,12 +86,14 @@ it('POST tweet should create new tweet and return id', async () => {
 
 it('GET tweet should return tweet for provided id', async () => {
 	const response = await request.get(`${tweetsEndpoint}/${tweetId}`);
+
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body.id).toEqual(tweetId);
 });
 
 it('GET non-existent tweet should return not found', async () => {
 	const response = await request.get(`${tweetsEndpoint}/101`);
+
 	expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 });
 
@@ -93,6 +101,14 @@ it('PATCH tweet should update content and return tweet', async () => {
 	const response = await request.patch(`${tweetsEndpoint}/${tweetId}`).send({
 		content: 'patched content',
 	});
+
+	expect(response.status).toEqual(HttpStatus.OK);
+	expect(response.body.id).toEqual(tweetId);
+	expect(response.body.content).toEqual('patched content');
+});
+
+it('GET tweet should return with updated content', async () => {
+	const response = await request.get(`${tweetsEndpoint}/${tweetId}`);
 
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body.id).toEqual(tweetId);
@@ -124,4 +140,16 @@ it('DELETE tweet should delete tweet', async () => {
 	const response = await request.delete(`${tweetsEndpoint}/${tweetId}`);
 
 	expect(response.status).toEqual(HttpStatus.OK);
+});
+
+it('GET deleted tweet should return not found status', async () => {
+	const response = await request.get(`${tweetsEndpoint}/${tweetId}`);
+
+	expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+});
+
+it('DELETE non-existent tweet should return error', async () => {
+	const response = await request.delete(`${tweetsEndpoint}/101`);
+
+	expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 });
