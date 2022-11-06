@@ -62,6 +62,7 @@ module.exports = {
 		'@typescript-eslint/no-explicit-any': 'off',
 		'@typescript-eslint/keyword-spacing': 'off',
 		'@typescript-eslint/indent': ['error', 'tab'],
+		'@typescript-eslint/lines-between-class-members': 'off',
 		'@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
 		'@typescript-eslint/no-use-before-define': ['error', {"functions": false, "classes": false}],
 		'@typescript-eslint/explicit-module-boundary-types': [

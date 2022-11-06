@@ -1,44 +1,13 @@
 import supertest from 'supertest';
 import HttpStatus from 'http-status';
 import http from 'http';
-import { faker } from '@faker-js/faker';
 import { app } from '../../../app';
-import { TwitterAccount } from '../../oauths/oauths';
-import { Account, TwitterUser } from '../../accounts/accounts';
-import { insertUser } from '../../users/users-model';
-import { insertTwitterUser } from '../../twitter-users/twitter-users-model';
-import { insertAccount } from '../../accounts/accounts-model';
 import prisma from '../../../../lib/prisma';
-import { Tweet } from '../tweets';
+import { RoutesTestHarness } from '../../RoutesTestHarness';
 
 const request = supertest(http.createServer(app.callback()));
 
-const user = {
-	id: 0,
-	username: faker.internet.userName(),
-	password: faker.internet.password(),
-};
-
-const twitterAccount: TwitterAccount = {
-	userId: user.id.toString(),
-	name: faker.internet.userName().replace('_', ' '),
-	screenName: faker.internet.userName(),
-	profileImageUrl: faker.internet.avatar(),
-	oauth: {},
-};
-
-const twitterUser: TwitterUser = {
-	id: BigInt(0),
-	name: twitterAccount.name,
-	screenName: twitterAccount.screenName,
-	profileImageUrl: twitterAccount.profileImageUrl,
-};
-
-const account: Account = {
-	id: 0,
-	userId: user.id,
-	twitterUser,
-};
+const harness = new RoutesTestHarness();
 
 const tweetsEndpoint = '/api/tweets';
 
@@ -46,13 +15,7 @@ let tweetId;
 
 // before any tests are run
 beforeAll(async () => {
-	const userId = <number>await insertUser(user.username, user.password);
-
-	user.id = userId;
-	twitterAccount.userId = userId.toString();
-
-	twitterUser.id = <bigint>await insertTwitterUser(twitterAccount);
-	account.id = <number>await insertAccount(user.id, twitterUser.id);
+	await harness.createStandard();
 });
 
 // after all tests complete
@@ -71,12 +34,7 @@ it('GET tweet should return not found status', async () => {
 });
 
 it('POST tweet should create new tweet and return id', async () => {
-	const httpTweet = {
-		accountId: account.id.toString(),
-		twitterUserId: twitterUser.id.toString(),
-		scheduledTimeUTC: new Date().toString(),
-		content: 'My test tweet',
-	};
+	const httpTweet = harness.createHttpTweet();
 
 	const response = await request.post(tweetsEndpoint).send(httpTweet);
 	expect(response.status).toEqual(HttpStatus.CREATED);
