@@ -9,6 +9,7 @@ import { insertUser } from '../../users/users-model';
 import { insertTwitterUser } from '../../twitter-users/twitter-users-model';
 import { insertAccount } from '../../accounts/accounts-model';
 import prisma from '../../../../lib/prisma';
+import { Tweet } from '../tweets';
 
 const request = supertest(http.createServer(app.callback()));
 

@@ -28,10 +28,15 @@ export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 		return;
 	}
-	const tweets = await getTweets(ctx.session.twitterUserId);
+
+	const result = await getTweets(ctx.session.twitterUserId);
+	if (result instanceof ServerError) {
+		// eslint-disable-next-line consistent-return
+		return handleServerError(ctx, result);
+	}
 
 	ctx.status = HttpStatus.OK;
-	ctx.body = tweets;
+	ctx.body = result;
 };
 
 export const scheduledTweets = async (ctx: ParameterizedContext): Promise<void> => {

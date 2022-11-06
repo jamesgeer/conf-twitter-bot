@@ -27,8 +27,9 @@ export const getTweet = async (tweetId: string): Promise<Tweet | ServerError> =>
 };
 
 export const getTweets = async (twitterUserId: string): Promise<Tweets | ServerError> => {
-	if (!(await getTwitterUser(twitterUserId))) {
-		return new ServerError(HttpStatus.NOT_FOUND, 'Twitter user does not exist.');
+	const twitterUserExists = await getTwitterUser(twitterUserId);
+	if (twitterUserExists instanceof ServerError) {
+		return twitterUserExists;
 	}
 
 	try {
