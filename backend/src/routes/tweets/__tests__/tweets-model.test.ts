@@ -1,10 +1,5 @@
-import { faker } from '@faker-js/faker';
 import HttpStatus from 'http-status';
 import prisma from '../../../../lib/prisma';
-import { insertUser } from '../../users/users-model';
-import { insertTwitterUser } from '../../twitter-users/twitter-users-model';
-import { TwitterAccount } from '../../oauths/oauths';
-import { Account, TwitterUser } from '../../accounts/accounts';
 import {
 	deleteTweet,
 	getTweet,
@@ -14,48 +9,17 @@ import {
 	updateTweetScheduledTime,
 	updateTweetSent,
 } from '../tweets-model';
-import { insertAccount } from '../../accounts/accounts-model';
 import { Tweet, Tweets } from '../tweets';
 import { ServerError } from '../../types';
+import { RoutesTestHarness } from '../../RoutesTestHarness';
 
-const user = {
-	id: 0,
-	username: faker.internet.userName(),
-	password: faker.internet.password(),
-};
-
-const twitterAccount: TwitterAccount = {
-	userId: '1',
-	name: 'Test Twitter User',
-	screenName: 'test_twitter_user',
-	profileImageUrl: 'image.png',
-	oauth: {},
-};
-
-const twitterUser: TwitterUser = {
-	id: BigInt(0),
-	name: twitterAccount.name,
-	screenName: twitterAccount.screenName,
-	profileImageUrl: twitterAccount.profileImageUrl,
-};
-
-const account: Account = {
-	id: 0,
-	userId: user.id,
-	twitterUser,
-};
+const harness = new RoutesTestHarness();
 
 let tweet: Tweet;
 
 // before any tests are run
 beforeAll(async () => {
-	const userId = <number>await insertUser(user.username, user.password);
-
-	user.id = userId;
-	twitterAccount.userId = userId.toString();
-
-	twitterUser.id = <bigint>await insertTwitterUser(twitterAccount);
-	account.id = <number>await insertAccount(user.id, twitterUser.id);
+	await harness.createStandard();
 });
 
 // after all tests complete
@@ -75,23 +39,17 @@ it('get tweet should return status of not found', async () => {
 });
 
 it('insert tweet should create one new tweet', async () => {
-	const httpTweet = {
-		accountId: account.id.toString(),
-		twitterUserId: twitterUser.id.toString(),
-		scheduledTimeUTC: new Date().toString(),
-		content: 'My test tweet',
-	};
+	const httpTweet = harness.createHttpTweet();
 
 	tweet = <Tweet>await insertTweet(httpTweet);
 
 	expect(tweet.id).toBeGreaterThan(0);
 	expect(tweet).toEqual(
-		// tweet without createdDate as createdDate is set by the database
-		// so will always be slightly off and so will never pass a test
 		expect.objectContaining({
 			accountId: +httpTweet.accountId,
 			twitterUserId: BigInt(httpTweet.twitterUserId),
 			updatedAt: null,
+			// @ts-ignore
 			scheduledTimeUTC: new Date(httpTweet.scheduledTimeUTC),
 			content: httpTweet.content,
 			sent: false,
@@ -107,7 +65,7 @@ it('get tweet should return inserted tweet', async () => {
 });
 
 it('get tweets should return an array with one tweet', async () => {
-	const result = <Tweets>await getTweets(twitterUser.id.toString());
+	const result = <Tweets>await getTweets(harness.getTwitterUser().id.toString());
 
 	expect(result.length).toEqual(1);
 	result.map((result: Tweet) => expect(result.id).toEqual(tweet.id));
@@ -159,6 +117,7 @@ describe('update non-existent tweet content should return not found', () => {
 
 it('get tweet should return tweet with updated content', async () => {
 	const result = <Tweet>await getTweet(tweet.id.toString());
+
 	expect(result.id).toEqual(tweet.id);
 	expect(result.content).toEqual(tweet.content);
 });
@@ -179,6 +138,7 @@ it('update tweet should update scheduled datetime', async () => {
 
 it('get tweet should return tweet with updated scheduled datetime', async () => {
 	const result = <Tweet>await getTweet(tweet.id.toString());
+
 	expect(result.id).toEqual(tweet.id);
 	expect(result.scheduledTimeUTC).toEqual(tweet.scheduledTimeUTC);
 });
@@ -199,6 +159,7 @@ it('update tweet should change sent to true', async () => {
 
 it('get tweet should return tweet with sent true', async () => {
 	const result = <Tweet>await getTweet(tweet.id.toString());
+
 	expect(result.id).toEqual(tweet.id);
 	expect(result.sent).toEqual(tweet.sent);
 });
