@@ -3,45 +3,33 @@ import { Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react';
 import { useDeleteTweet } from '../api/deleteTweet';
 
 interface Props {
-	isActive: boolean;
-	handleButtonClick: (e: any, a: number) => void;
-	tweetId: number;
+	handleClick: (menuItem: string) => void;
 }
 
-const TweetMenu = ({ isActive, handleButtonClick, tweetId }: Props) => {
-	const mutation = useDeleteTweet();
-
-	const handleDelete = async (e: any) => {
-		e.preventDefault();
-		await mutation.mutateAsync(tweetId);
-	};
-
+const TweetMenu = ({ handleClick }: Props) => {
 	return (
 		<Menu isLazy>
 			<MenuButton
-				onClick={(e) => handleButtonClick(e, tweetId)}
 				as={Button}
 				rightIcon={<IconDotsVertical />}
 				bg="none"
 				_hover={{ bg: 'none' }}
 				_active={{ bg: 'none' }}
 			></MenuButton>
-			{isActive && (
-				<MenuList onClick={(e) => e.stopPropagation()}>
-					<MenuItem bg="white" icon={<IconPencil />}>
-						Edit
-					</MenuItem>
-					<MenuItem
-						color="red.500"
-						bg="white"
-						_hover={{ bg: 'red.100' }}
-						icon={<IconAlertTriangle />}
-						onClick={(e) => handleDelete(e)}
-					>
-						Delete
-					</MenuItem>
-				</MenuList>
-			)}
+			<MenuList onClick={(e) => e.stopPropagation()}>
+				<MenuItem bg="white" icon={<IconPencil />}>
+					Edit
+				</MenuItem>
+				<MenuItem
+					color="red.500"
+					bg="white"
+					_hover={{ bg: 'red.100' }}
+					icon={<IconAlertTriangle />}
+					onClick={() => handleClick('delete')}
+				>
+					Delete
+				</MenuItem>
+			</MenuList>
 		</Menu>
 	);
 };
