@@ -1,5 +1,6 @@
 import ScheduleTweet from './ScheduleTweet';
-import React from 'react';
+import React, { FormEvent } from 'react';
+import { Button } from '@chakra-ui/react';
 
 interface Props {
 	handleSubmission: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -10,6 +11,8 @@ interface Props {
 	setDateTime: React.Dispatch<React.SetStateAction<string>>;
 	isError: boolean;
 	errorMessage: string;
+	isEdit: boolean;
+	setIsEdit: React.Dispatch<React.SetStateAction<boolean>> | null;
 }
 
 const TweetForm = ({
@@ -21,9 +24,23 @@ const TweetForm = ({
 	setDateTime,
 	isError,
 	errorMessage,
+	isEdit,
+	setIsEdit,
 }: Props) => {
+	const handleClick = (e: FormEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		setIsEdit !== null && setIsEdit(false);
+	};
+
 	return (
-		<form className="px-7 mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
+		<form className="mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
+			{isEdit && (
+				<div className="flex justify-end">
+					<Button colorScheme="gray" onClick={(e) => handleClick(e)}>
+						Cancel
+					</Button>
+				</div>
+			)}
 			<div className="flex gap-x-4 relative">
 				<div>
 					<img className="w-[48px] h-auto rounded-full" src={profileImgSrc} alt="profile" />
@@ -39,7 +56,7 @@ const TweetForm = ({
 						<ScheduleTweet dateTime={dateTime} setDateTime={setDateTime} />
 						<div className="absolute right-0">
 							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-								Tweet
+								{isEdit ? 'Update' : 'Tweet'}
 							</button>
 						</div>
 					</div>

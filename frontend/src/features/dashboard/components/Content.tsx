@@ -25,7 +25,7 @@ const Content = ({ active }: Props) => {
 	return (
 		<div className="col-span-8">
 			<h2 className="text-xl font-bold mb-8">Dashboard</h2>
-			<CreateEditTweet isEdit={false} editContent="" editDateTime="" />
+			<CreateEditTweet isEdit={false} setIsEdit={null} editContent="" editDateTime="" />
 			<hr className="my-8" />
 			<div className="flex items-center justify-between gap-6">
 				<h2 className="text-xl font-bold mb-4">{active.title}</h2>

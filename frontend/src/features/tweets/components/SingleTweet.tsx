@@ -27,7 +27,10 @@ const SingleTweet = ({ tweet }: Props) => {
 		await mutation.mutateAsync(tweet.id);
 	};
 
-	const handleEdit = () => setIsEdit(!isEdit);
+	const handleEdit = () => {
+		console.log(isEdit);
+		setIsEdit(!isEdit);
+	};
 
 	const tweetDate = dayjs(tweet.scheduledTimeUTC).toDate().toLocaleString();
 
@@ -46,7 +49,12 @@ const SingleTweet = ({ tweet }: Props) => {
 	};
 
 	return isEdit ? (
-		<CreateEditTweet isEdit={true} editContent={tweet.content} editDateTime={tweet.scheduledTimeUTC.toString()} />
+		<CreateEditTweet
+			isEdit={true}
+			setIsEdit={setIsEdit}
+			editContent={tweet.content}
+			editDateTime={tweet.scheduledTimeUTC.toString()}
+		/>
 	) : (
 		myTweet()
 	);

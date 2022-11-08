@@ -11,11 +11,12 @@ import content from '../../dashboard/components/Content';
 
 interface Props {
 	isEdit: boolean;
+	setIsEdit: React.Dispatch<React.SetStateAction<boolean>> | null;
 	editContent: string;
 	editDateTime: string;
 }
 
-const CreateEditTweet = ({ isEdit, editContent, editDateTime }: Props) => {
+const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime }: Props) => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
 	const [content, setContent] = useState(editContent);
 	const [dateTime, setDateTime] = useState(editDateTime);
@@ -101,6 +102,8 @@ const CreateEditTweet = ({ isEdit, editContent, editDateTime }: Props) => {
 			setDateTime={setDateTime}
 			isError={isError}
 			errorMessage={errorMessage}
+			isEdit={isEdit}
+			setIsEdit={setIsEdit}
 		/>
 	);
 };
