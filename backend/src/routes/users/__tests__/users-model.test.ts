@@ -20,7 +20,7 @@ afterAll(async () => {
 	await prisma.$disconnect();
 });
 
-it('should create 1 new user', async () => {
+it('should create one new user', async () => {
 	const result = await insertUser(newUser.username, newUser.password);
 	expect(result).toBeGreaterThan(0);
 	// @ts-ignore

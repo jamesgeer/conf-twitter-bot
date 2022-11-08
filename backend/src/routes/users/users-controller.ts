@@ -33,5 +33,5 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// account successfully created and logged in
 	ctx.status = HttpStatus.CREATED;
-	ctx.body = result; // userId
+	ctx.body = result.id; // userId
 };
