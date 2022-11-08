@@ -11,10 +11,10 @@ import content from '../../dashboard/components/Content';
 
 const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
-	const [tweetText, setTweetText] = useState('');
-	const [dateTimeISO, setDateTimeISO] = useState('');
-	const [error, setError] = useState(false);
-	const [errorText, setErrorText] = useState('');
+	const [content, setContent] = useState('');
+	const [dateTime, setDateTime] = useState('');
+	const [isError, setIsError] = useState(false);
+	const [errorMessage, setErrorMessage] = useState('');
 
 	const createTweetMutation = useCreateTweet();
 
@@ -46,7 +46,7 @@ const CreateTweet = () => {
 		e.preventDefault();
 		resetFormErrors();
 
-		if (!validTextInput(tweetText) || !validScheduledDateTime(dateTimeISO)) {
+		if (!validTextInput(content) || !validScheduledDateTime(dateTime)) {
 			return;
 		}
 
@@ -58,12 +58,12 @@ const CreateTweet = () => {
 		const payload = {
 			accountId: account.id,
 			twitterUserId: account.twitterUser.id,
-			scheduledTimeUTC: dateTimeISO,
-			content: tweetText,
+			scheduledTimeUTC: dateTime,
+			content: content,
 		};
 
 		try {
-			await createTweetMutation.mutateAsync(payload).then(() => setTweetText(''));
+			await createTweetMutation.mutateAsync(payload).then(() => setContent(''));
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
 				switch (e.response?.status) {
@@ -80,20 +80,20 @@ const CreateTweet = () => {
 		}
 	};
 
-	const formError = (errorMessage: string): void => {
-		setError(true);
-		setErrorText(errorMessage);
+	const formError = (message: string): void => {
+		setIsError(true);
+		setErrorMessage(message);
 	};
 
 	return (
 		<TweetForm
 			handleSubmission={handleTweetSubmission}
 			profileImgSrc={account.twitterUser.profileImageUrl}
-			content={tweetText}
-			setContent={setTweetText}
-			setDateTime={setDateTimeISO}
-			isError={error}
-			errorMessage={errorText}
+			content={content}
+			setContent={setContent}
+			setDateTime={setDateTime}
+			isError={isError}
+			errorMessage={errorMessage}
 		/>
 	);
 };
