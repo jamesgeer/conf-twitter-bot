@@ -6,6 +6,7 @@ interface Props {
 	profileImgSrc: string;
 	content: string;
 	setContent: React.Dispatch<React.SetStateAction<string>>;
+	dateTime: string;
 	setDateTime: React.Dispatch<React.SetStateAction<string>>;
 	isError: boolean;
 	errorMessage: string;
@@ -16,6 +17,7 @@ const TweetForm = ({
 	profileImgSrc,
 	content,
 	setContent,
+	dateTime,
 	setDateTime,
 	isError,
 	errorMessage,
@@ -34,7 +36,7 @@ const TweetForm = ({
 						onChange={(e) => setContent(e.target.value)}
 					></textarea>
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
-						<ScheduleTweet setDateTimeISO={setDateTime} />
+						<ScheduleTweet dateTime={dateTime} setDateTime={setDateTime} />
 						<div className="absolute right-0">
 							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
 								Tweet

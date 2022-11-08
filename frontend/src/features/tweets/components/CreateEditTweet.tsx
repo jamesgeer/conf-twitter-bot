@@ -9,10 +9,16 @@ import axios from 'axios';
 import TweetForm from './TweetForm';
 import content from '../../dashboard/components/Content';
 
-const CreateTweet = () => {
+interface Props {
+	isEdit: boolean;
+	editContent: string;
+	editDateTime: string;
+}
+
+const CreateEditTweet = ({ isEdit, editContent, editDateTime }: Props) => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
-	const [content, setContent] = useState('');
-	const [dateTime, setDateTime] = useState('');
+	const [content, setContent] = useState(editContent);
+	const [dateTime, setDateTime] = useState(editDateTime);
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
@@ -91,6 +97,7 @@ const CreateTweet = () => {
 			profileImgSrc={account.twitterUser.profileImageUrl}
 			content={content}
 			setContent={setContent}
+			dateTime={dateTime}
 			setDateTime={setDateTime}
 			isError={isError}
 			errorMessage={errorMessage}
@@ -98,4 +105,4 @@ const CreateTweet = () => {
 	);
 };
 
-export default CreateTweet;
+export default CreateEditTweet;
