@@ -2,12 +2,15 @@ import TweetMenu from './TweetMenu';
 import { Tweet } from '../types';
 import dayjs from 'dayjs';
 import { useDeleteTweet } from '../api/deleteTweet';
+import { useState } from 'react';
 
 interface Props {
 	tweet: Tweet;
 }
 
 const SingleTweet = ({ tweet }: Props) => {
+	const [isEdit, setIsEdit] = useState(false);
+
 	const mutation = useDeleteTweet();
 
 	const handleClick = (menuItem: string) => {
@@ -23,7 +26,13 @@ const SingleTweet = ({ tweet }: Props) => {
 		await mutation.mutateAsync(tweet.id);
 	};
 
-	const handleEdit = () => console.log('TODO');
+	const handleEdit = () => {
+		return (
+			<div>
+				<p>Test</p>
+			</div>
+		);
+	};
 
 	const tweetDate = dayjs(tweet.scheduledTimeUTC).toDate().toLocaleString();
 

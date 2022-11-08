@@ -17,7 +17,7 @@ const TweetMenu = ({ handleClick }: Props) => {
 				_active={{ bg: 'none' }}
 			></MenuButton>
 			<MenuList onClick={(e) => e.stopPropagation()}>
-				<MenuItem bg="white" icon={<IconPencil />}>
+				<MenuItem bg="white" icon={<IconPencil />} onClick={() => handleClick('edit')}>
 					Edit
 				</MenuItem>
 				<MenuItem

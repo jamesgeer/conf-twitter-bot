@@ -6,6 +6,8 @@ import HttpStatus from 'http-status';
 import ScheduleTweet from './ScheduleTweet';
 import { useCreateTweet } from '../api/createTweet';
 import axios from 'axios';
+import TweetForm from './TweetForm';
+import content from '../../dashboard/components/Content';
 
 const CreateTweet = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
@@ -84,34 +86,15 @@ const CreateTweet = () => {
 	};
 
 	return (
-		<form className="px-7 mt-2 text-black" onSubmit={(e) => handleTweetSubmission(e)}>
-			<div className="flex gap-x-4 relative">
-				<div>
-					<img
-						className="w-[48px] h-auto rounded-full"
-						src={account.twitterUser.profileImageUrl}
-						alt="profile"
-					/>
-				</div>
-				<div className="text-xl mt-2 w-full">
-					<textarea
-						className="w-full resize-none outline-none placeholder:text-sgray placeholder:text-opacity-75 overflow-hidden dark:bg-transparent dark:text-white"
-						placeholder="What's on your mind?"
-						value={tweetText}
-						onChange={(e) => setTweetText(e.target.value)}
-					></textarea>
-					<div className="flex items-center justify-between border-t-1 border-slate-100">
-						<ScheduleTweet setDateTimeISO={setDateTimeISO} />
-						<div className="absolute right-0">
-							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-								Tweet
-							</button>
-						</div>
-					</div>
-					<p className={`text-red-500 ${error ? 'block' : 'hidden'}`}>{errorText}</p>
-				</div>
-			</div>
-		</form>
+		<TweetForm
+			handleSubmission={handleTweetSubmission}
+			profileImgSrc={account.twitterUser.profileImageUrl}
+			content={tweetText}
+			setContent={setTweetText}
+			setDateTime={setDateTimeISO}
+			isError={error}
+			errorMessage={errorText}
+		/>
 	);
 };
 
