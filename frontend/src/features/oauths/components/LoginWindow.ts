@@ -12,13 +12,14 @@ class LoginWindow {
 
 	/**
 	 * creates a bare-bones window that should be centered vertically and horizontally within the user's browser client
+	 * about a quarter down from the top of the page
 	 * @param parentWindow
 	 * @param w
 	 * @param h
 	 * @private
 	 */
 	private windowFeatures(parentWindow: Window, w: number, h: number): string {
-		const y = parentWindow.top!.outerHeight / 2 + parentWindow.top!.screenY - h / 2;
+		const y = parentWindow.top!.outerHeight / 4 + parentWindow.top!.screenY - h / 4;
 		const x = parentWindow.top!.outerWidth / 2 + parentWindow.top!.screenX - w / 2;
 		return `toolbar=no, location=no, directories=no, status=no, menubar=no, copyhistory=no, width=${w}, height=${h}, top=${y}, left=${x}`;
 	}
