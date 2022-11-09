@@ -54,6 +54,7 @@ const SingleTweet = ({ tweet }: Props) => {
 			setIsEdit={setIsEdit}
 			editContent={tweet.content}
 			editDateTime={tweet.scheduledTimeUTC.toString()}
+			tweet={tweet}
 		/>
 	) : (
 		myTweet()

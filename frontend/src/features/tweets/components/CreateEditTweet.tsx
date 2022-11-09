@@ -5,18 +5,21 @@ import dayjs from 'dayjs';
 import HttpStatus from 'http-status';
 import ScheduleTweet from './ScheduleTweet';
 import { useCreateTweet } from '../api/createTweet';
+import { useEditTweet } from '../api/editTweet';
 import axios from 'axios';
 import TweetForm from './TweetForm';
 import content from '../../dashboard/components/Content';
+import { Tweet } from '../types';
 
 interface Props {
 	isEdit: boolean;
 	setIsEdit: React.Dispatch<React.SetStateAction<boolean>> | null;
 	editContent: string;
 	editDateTime: string;
+	tweet?: Tweet;
 }
 
-const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime }: Props) => {
+const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime, tweet }: Props) => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
 	const [content, setContent] = useState(editContent);
 	const [dateTime, setDateTime] = useState(editDateTime);
@@ -24,6 +27,7 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime }: Props
 	const [errorMessage, setErrorMessage] = useState('');
 
 	const createTweetMutation = useCreateTweet();
+	const editTweetMutation = useEditTweet();
 
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
@@ -57,8 +61,13 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime }: Props
 			return;
 		}
 
-		// validation passed, post tweet to backend
-		postTweet().then();
+		if (isEdit && tweet) {
+			editTweet();
+			//console.log(tweet.content);
+		} else {
+			// validation passed, post tweet to backend
+			postTweet().then();
+		}
 	};
 
 	const postTweet = async (): Promise<void> => {
@@ -71,6 +80,27 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime }: Props
 
 		try {
 			await createTweetMutation.mutateAsync(payload).then(() => setContent(''));
+		} catch (e) {
+			if (axios.isAxiosError(e)) {
+				switch (e.response?.status) {
+					case HttpStatus.UNAUTHORIZED:
+						console.log('log log');
+						formError('You are not logged in.');
+						break;
+
+					case HttpStatus.INTERNAL_SERVER_ERROR:
+						formError('Internal server error.');
+						break;
+				}
+			}
+		}
+	};
+
+	const editTweet = async () => {
+		const payload = { tweetId: tweet!.id, content: content, scheduledTimeUTC: dateTime };
+
+		try {
+			await editTweetMutation.mutateAsync(payload).then(() => setIsEdit && setIsEdit(false));
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
 				switch (e.response?.status) {
