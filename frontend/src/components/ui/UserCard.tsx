@@ -57,7 +57,7 @@ const UserCard = ({ twitterUser, handleLogout }: Props) => {
 	});
 
 	return (
-		<Menu>
+		<Menu isLazy>
 			{/* menu button displays the current "active" account */}
 			<MenuButton as={Button} size="md" rightIcon={<IconChevronDown />}>
 				<Flex>

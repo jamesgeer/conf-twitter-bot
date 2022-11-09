@@ -1,6 +1,9 @@
 import { Tweet } from '../types';
 import { useTweets } from '../api/getTweets';
 import dayjs from 'dayjs';
+import TweetMenu from './TweetMenu';
+import { useState } from 'react';
+import SingleTweet from './SingleTweet';
 
 interface Props {
 	isList: { activeLayout: string };
@@ -17,31 +20,17 @@ const Tweets = ({ isList }: Props) => {
 		return <div>An error occurred: {error.message}</div>;
 	}
 
-	const displayTweets = tweets.map((tweet: Tweet, index) => {
-		const tweetDate = dayjs(tweet.scheduledTimeUTC).toDate().toLocaleString();
+	const displayTweets = () => {
 		return (
-			<div key={index} className="border-b border-slate-200 pb-4">
-				<small>{tweetDate}</small>
-				<p>{tweet.content}</p>
+			<div className={isList.activeLayout === 'list' ? 'grid gap-4' : 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'}>
+				{tweets.map((tweet: Tweet) => (
+					<SingleTweet key={tweet.id} tweet={tweet} />
+				))}
 			</div>
 		);
-	});
+	};
 
-	return (
-		<>
-			{tweets.length > 0 ? (
-				<div
-					className={
-						isList.activeLayout === 'list' ? 'grid gap-4' : 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'
-					}
-				>
-					{displayTweets}
-				</div>
-			) : (
-				<p>No tweets to display.</p>
-			)}
-		</>
-	);
+	return tweets.length === 0 ? <p>No tweets to display.</p> : displayTweets();
 };
 
 export default Tweets;

@@ -19,6 +19,9 @@ export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 		where: {
 			twitterUserId: BigInt(twitterUserId),
 		},
+		orderBy: {
+			scheduledTimeUTC: 'asc',
+		},
 	});
 
 export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerError> => {
@@ -85,7 +88,7 @@ export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<T
 
 export const deleteTweet = async (tweetId: string): Promise<boolean | ServerError> => {
 	try {
-		prisma.tweet.delete({
+		await prisma.tweet.delete({
 			where: {
 				id: +tweetId,
 			},

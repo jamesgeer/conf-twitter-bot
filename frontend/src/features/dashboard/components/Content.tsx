@@ -1,4 +1,4 @@
-import CreateTweet from '../../tweets/components/CreateTweet';
+import CreateEditTweet from '../../tweets/components/CreateEditTweet';
 import Tweets from '../../tweets/components/Tweets';
 import Papers from '../../papers/components/Papers';
 import ToggleListGrid from './toggleListGrid';
@@ -25,7 +25,7 @@ const Content = ({ active }: Props) => {
 	return (
 		<div className="col-span-8">
 			<h2 className="text-xl font-bold mb-8">Dashboard</h2>
-			<CreateTweet />
+			<CreateEditTweet isEdit={false} setIsEdit={null} editContent="" editDateTime="" />
 			<hr className="my-8" />
 			<div className="flex items-center justify-between gap-6">
 				<h2 className="text-xl font-bold mb-4">{active.title}</h2>
