@@ -21,7 +21,7 @@ const LoginWindow = () => {
 
 	const twitterLoginUrl = async (): Promise<string> => {
 		const oAuthToken = await getOAuthRequestToken();
-		return `https://api.twitter.com/oauth/authenticate?oauth_token=${oAuthToken}`;
+		return `https://api.twitter.com/oauth/authenticate?oauth_token=${oAuthToken}&force_login=true`;
 	};
 
 	const newWindow = async () => {
