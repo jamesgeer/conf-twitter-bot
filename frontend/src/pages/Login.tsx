@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCreateUserSession } from '../features/sessions/api/createUserSession';
 
 interface Props {
 	appLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,6 +13,7 @@ const Login = ({ appLogin }: Props) => {
 	const [password, setPassword] = useState('');
 	const [validationError, setValidationError] = useState(false);
 	const [errorText, setErrorText] = useState('');
+	const mutation = useCreateUserSession();
 	const navigate = useNavigate();
 
 	const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,18 +57,14 @@ const Login = ({ appLogin }: Props) => {
 
 	const authenticateLogin = async (): Promise<void> => {
 		try {
-			const config = {
-				withCredentials: true,
-			};
-			const payload = { username, password };
-			const response = await axios.post('/api/sessions', payload, config);
-			if (response.status === HttpStatus.OK) {
+			const userLogin = { username, password };
+			await mutation.mutateAsync(userLogin).then(() => {
 				appLogin(true);
 				navigate('/select-account');
-			}
-		} catch (err) {
-			if (axios.isAxiosError(err)) {
-				if (err.response?.status === HttpStatus.UNAUTHORIZED) {
+			});
+		} catch (e) {
+			if (axios.isAxiosError(e)) {
+				if (e.response?.status === HttpStatus.UNAUTHORIZED) {
 					formError('Invalid password.');
 					return;
 				}

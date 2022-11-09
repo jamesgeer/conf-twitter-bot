@@ -6,9 +6,11 @@ import { AccountContextProps } from '../../features/accounts/types';
 import { AccountContext } from '../../features/accounts/context/AccountContext';
 import DarkModeButton from '../ui/DarkModeButton';
 import axios from 'axios';
+import { useUseSession } from '../../features/sessions/api/getUserSession';
 
 const Header = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
+	const userSession = useUseSession();
 	const navigate = useNavigate();
 
 	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,6 +36,8 @@ const Header = () => {
 					<DarkModeButton />
 					{account.twitterUser.id > 0 ? (
 						<UserCard twitterUser={account.twitterUser} handleLogout={handleLogout} />
+					) : userSession.data > 0 ? (
+						<Button text={'Logout'} onClick={(e) => handleLogout(e)} />
 					) : (
 						<Button text={'Sign In'} onClick={(e) => handleClick(e)} />
 					)}
