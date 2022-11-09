@@ -19,6 +19,9 @@ export const getTweets = async (twitterUserId: string): Promise<Tweets> =>
 		where: {
 			twitterUserId: BigInt(twitterUserId),
 		},
+		orderBy: {
+			scheduledTimeUTC: 'asc',
+		},
 	});
 
 export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerError> => {
