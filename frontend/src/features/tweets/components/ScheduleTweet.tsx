@@ -1,15 +1,22 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
-	setDateTimeISO: React.Dispatch<React.SetStateAction<string>>;
+	dateTime: string;
+	setDateTime: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const ScheduleTweet = ({ setDateTimeISO }: Props) => {
+const ScheduleTweet = ({ dateTime, setDateTime }: Props) => {
 	// new date time object containing temporal information for -> now <-
 	const currentDateTime = dayjs();
-	// three days from now
-	const defaultDateTime = currentDateTime.add(3, 'day');
+	let defaultDateTime: Dayjs;
+
+	if (dateTime === '') {
+		// three days from now
+		defaultDateTime = currentDateTime.add(3, 'day');
+	} else {
+		defaultDateTime = dayjs(dateTime);
+	}
 
 	const [day, setDay] = useState(defaultDateTime.date().toString());
 	const [month, setMonth] = useState(defaultDateTime.month().toString());
@@ -80,8 +87,8 @@ const ScheduleTweet = ({ setDateTimeISO }: Props) => {
 		// also months are strings so must be parsed before +/-, otherwise you'll do something like "8" + 1 = "81"
 		const oneBasedMonth = (parseInt(month) + 1).toString();
 		const enteredDateTime = dayjs(`${year}-${oneBasedMonth}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
-		setDateTimeISO(enteredDateTime.toISOString());
-	}, [day, month, year, hour, minute, setDateTimeISO]);
+		setDateTime(enteredDateTime.toISOString());
+	}, [day, month, year, hour, minute, setDateTime]);
 
 	return (
 		<div className="grid grid-flow-col gap-x-4">
