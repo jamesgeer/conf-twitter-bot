@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from '@faker-js/faker';
 import { User } from './types';
 import { TwitterAccount } from './oauths/oauths';
@@ -43,7 +44,7 @@ export class RoutesTestHarness {
 	}
 
 	public async createUser(): Promise<void> {
-		this.user.id = <number>await insertUser(faker.internet.userName(), faker.internet.password());
+		this.user = <User>await insertUser(faker.internet.userName(), faker.internet.password());
 	}
 
 	public async createTwitterUser(): Promise<void> {

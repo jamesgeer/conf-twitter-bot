@@ -135,7 +135,7 @@ export const updateTweetSent = async (tweetId: string, sent: boolean): Promise<T
 
 export const deleteTweet = async (tweetId: string): Promise<Tweet | ServerError> => {
 	try {
-		prisma.tweet.delete({
+		return await prisma.tweet.delete({
 			where: {
 				id: +tweetId,
 			},

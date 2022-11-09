@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker';
 import { app } from '../../../app';
 import prisma from '../../../../lib/prisma';
 import { insertUser } from '../users-model';
+import { User } from '../../types';
 
 const request = supertest(http.createServer(app.callback()));
 
@@ -21,10 +22,9 @@ afterAll(async () => {
 });
 
 it('should create one new user', async () => {
-	const result = await insertUser(newUser.username, newUser.password);
-	expect(result).toBeGreaterThan(0);
-	// @ts-ignore
-	newUser.id = result;
+	const user = <User>await insertUser(newUser.username, newUser.password);
+	expect(user.id).toBeGreaterThan(0);
+	newUser.id = user.id;
 });
 
 it('should get newly created account', async () => {
