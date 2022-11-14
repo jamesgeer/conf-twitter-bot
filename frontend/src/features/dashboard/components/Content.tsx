@@ -1,6 +1,7 @@
 import CreateEditTweet from '../../tweets/components/CreateEditTweet';
 import Tweets from '../../tweets/components/Tweets';
 import Papers from '../../papers/components/Papers';
+import Scraper from '../../scraper/components/Scraper';
 import ToggleListGrid from './toggleListGrid';
 import { useState } from 'react';
 
@@ -29,7 +30,7 @@ const Content = ({ active }: Props) => {
 			<hr className="my-8" />
 			<div className="flex items-center justify-between gap-6">
 				<h2 className="text-xl font-bold mb-4">{active.title}</h2>
-				{active.title !== '' && (
+				{active.title !== '' && active.title !== 'Scraper' && (
 					<div className="pb-3">
 						<ToggleListGrid isList={isList} handleClick={handleClick} />
 					</div>
@@ -37,6 +38,7 @@ const Content = ({ active }: Props) => {
 			</div>
 			{active.title === 'Tweets' && <Tweets isList={isList} />}
 			{active.title === 'Papers' && <Papers isList={isList} />}
+			{active.title === 'Scraper' && <Scraper />}
 		</div>
 	);
 };
