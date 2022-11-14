@@ -8,7 +8,6 @@ import { AccountContext } from '../features/accounts/context/AccountContext';
 import SelectAccountMenu from '../features/accounts/components/SelectAccountMenu';
 
 const SelectAccount = () => {
-	const [isLoginWindowOpen, setIsLoginWindowOpen] = useState(false);
 	const { handleAccountChange } = useContext(AccountContext) as AccountContextProps;
 	const navigate = useNavigate();
 	const [isOpen, setIsOpen] = useState(0);
@@ -69,7 +68,7 @@ const SelectAccount = () => {
 	const handleAddAccount = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
-		setIsLoginWindowOpen(true);
+		new LoginWindow();
 	};
 
 	return (
@@ -84,7 +83,6 @@ const SelectAccount = () => {
 				<div className="mt-6 flex justify-center">
 					<Button text={'+ Add Account'} onClick={(e) => handleAddAccount(e)} />
 				</div>
-				{isLoginWindowOpen && <LoginWindow />}
 			</div>
 		</div>
 	);

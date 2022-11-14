@@ -23,6 +23,7 @@ export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// checks passed, user is logged in
 	ctx.status = HttpStatus.OK;
+	ctx.body = ctx.session.userId;
 };
 
 export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
@@ -50,7 +51,7 @@ export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// return success (contains http cookie for ConfTwBot)
 	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Login successful' };
+	ctx.body = userId;
 };
 
 export const userLogout = async (ctx: ParameterizedContext): Promise<void> => {

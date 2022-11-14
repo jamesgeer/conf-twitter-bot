@@ -17,7 +17,7 @@ const SelectAccountMenu = ({ isActive, handleButtonClick, accountId }: Props) =>
 	};
 
 	return (
-		<Menu>
+		<Menu isLazy>
 			<MenuButton
 				onClick={(e) => handleButtonClick(e, accountId)}
 				as={Button}

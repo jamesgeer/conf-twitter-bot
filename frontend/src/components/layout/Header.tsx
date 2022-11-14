@@ -5,10 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { AccountContextProps } from '../../features/accounts/types';
 import { AccountContext } from '../../features/accounts/context/AccountContext';
 import DarkModeButton from '../ui/DarkModeButton';
+import { useUseSession } from '../../features/sessions/api/getUserSession';
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 const Header = () => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
+	const userSession = useUseSession();
+	const queryClient = useQueryClient();
+
 	const navigate = useNavigate();
 
 	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -20,10 +25,16 @@ const Header = () => {
 	const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
-		await axios.post('/api/sessions/logout').then(() => {
-			navigate('/login');
-			account.twitterUser.id = BigInt(0);
-		});
+		try {
+			await axios.post('/api/sessions/logout').then(() => {
+				account.twitterUser.id = BigInt(0);
+				queryClient.removeQueries();
+				queryClient.clear();
+				navigate('/login');
+			});
+		} catch (e) {
+			console.log(e);
+		}
 	};
 
 	return (
@@ -34,6 +45,8 @@ const Header = () => {
 					<DarkModeButton />
 					{account.twitterUser.id > 0 ? (
 						<UserCard twitterUser={account.twitterUser} handleLogout={handleLogout} />
+					) : userSession.data > 0 ? (
+						<Button text={'Logout'} onClick={(e) => handleLogout(e)} />
 					) : (
 						<Button text={'Sign In'} onClick={(e) => handleClick(e)} />
 					)}
