@@ -1,10 +1,10 @@
-import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { scrapePaper } from './scraper-model';
+import { ParameterizedContext } from 'koa';
+import { scrapePapers } from './scraper-model';
 
 export const scrape = async (ctx: ParameterizedContext): Promise<void> => {
-	const { urls } = ctx.params;
-	const scraped = scrapePaper(urls);
+	const { urls } = ctx.request.body;
+	const scraped = scrapePapers(urls);
 
 	if (scraped) {
 		ctx.status = HttpStatus.OK;
