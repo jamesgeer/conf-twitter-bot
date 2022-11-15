@@ -1,14 +1,20 @@
-FROM node:18-alpine
+FROM ubuntu:18.04
+
+# Install Node.js (Currently using the version recommended for docker, 14)
+RUN apt-get update
+RUN apt-get install --yes curl
+RUN curl --silent --location https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install --yes nodejs
+RUN apt-get install --yes build-essential
 
 WORKDIR /app
 COPY ./package.json ./
 
 RUN npm install
 
+# This command only works on Ubuntu (or any linux distro that uses apt-get instead of apk)
 RUN npx playwright install --with-deps chromium
 
 COPY . .
 
 CMD npx prisma migrate dev && npm start
-
-
