@@ -46,14 +46,10 @@ const Scraper = () => {
 		});
 	}
 	return (
-		<>
-			<div>
-				<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
-					<Textarea rows={15} placeholder='Paste your links here. Please put each link on a new line!' onChange={(e) => onChangeHandler(e.target)}/>
-					<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full" type="submit">Scrape</button>
-				</form>
-			</div>
-		</>
+		<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
+			<Textarea rows={15} placeholder='Paste your links here. Please put each link on a new line!' onChange={(e) => onChangeHandler(e.target)}/>
+			<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full" type="submit">Scrape</button>
+		</form>
 	);
 };
 
