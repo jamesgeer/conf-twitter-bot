@@ -4,7 +4,7 @@ import { scrapePapers } from './scraper-model';
 
 export const scrape = async (ctx: ParameterizedContext): Promise<void> => {
 	const { urls } = ctx.request.body;
-	const scraped = scrapePapers(urls);
+	const scraped = await scrapePapers(urls);
 
 	if (scraped) {
 		ctx.status = HttpStatus.OK;
