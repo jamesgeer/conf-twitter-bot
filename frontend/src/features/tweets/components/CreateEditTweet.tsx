@@ -3,12 +3,10 @@ import { AccountContext } from '../../accounts/context/AccountContext';
 import { AccountContextProps } from '../../accounts/types';
 import dayjs from 'dayjs';
 import HttpStatus from 'http-status';
-import ScheduleTweet from './ScheduleTweet';
 import { useCreateTweet } from '../api/createTweet';
 import { useEditTweet } from '../api/editTweet';
 import axios from 'axios';
 import TweetForm from './TweetForm';
-import content from '../../dashboard/components/Content';
 import { Tweet } from '../types';
 
 interface Props {

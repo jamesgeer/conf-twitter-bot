@@ -1,7 +1,7 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import { getUser, insertUser } from './users-model';
-import { ServerError, User } from '../types';
+import { ServerError } from '../types';
 import { userLogin } from '../sessions/sessions-controller';
 import { handleServerError } from '../util';
 
@@ -24,7 +24,8 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 
 	const result = await insertUser(username, password);
 	if (result instanceof ServerError) {
-		return handleServerError(ctx, result);
+		handleServerError(ctx, result);
+		return;
 	}
 
 	// once created, log user in

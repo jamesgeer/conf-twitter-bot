@@ -29,9 +29,3 @@ test('get twitter user should return twitter user', async () => {
 
 	await expect(getTwitterUser(twitterAccount.userId)).resolves.toEqual(twitterUser);
 });
-
-// test('get twitter user should return not found', async () => {
-// 	prismaMock.twitterUser.findUnique.mockResolvedValue(null);
-//
-// 	await expect(getTwitterUser(twitterAccount.userId)).resolves.toEqual(null);
-// });

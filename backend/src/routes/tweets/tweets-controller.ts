@@ -16,7 +16,8 @@ export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
 	const result = await getTweet(id);
 	if (result instanceof ServerError) {
-		return handleServerError(ctx, result);
+		handleServerError(ctx, result);
+		return;
 	}
 
 	ctx.status = HttpStatus.OK;
@@ -31,8 +32,8 @@ export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 
 	const result = await getTweets(ctx.session.twitterUserId);
 	if (result instanceof ServerError) {
-		// eslint-disable-next-line consistent-return
-		return handleServerError(ctx, result);
+		handleServerError(ctx, result);
+		return;
 	}
 
 	ctx.status = HttpStatus.OK;
@@ -77,15 +78,19 @@ export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	if (scheduledTimeUTC) {
 		const result = await updateTweetScheduledTime(id, scheduledTimeUTC);
-		// eslint-disable-next-line consistent-return
-		if (result instanceof ServerError) return handleServerError(ctx, result);
+		if (result instanceof ServerError) {
+			handleServerError(ctx, result);
+			return;
+		}
 		updatedTweet = result;
 	}
 
 	if (content) {
 		const result = await updateTweetContent(id, content);
-		// eslint-disable-next-line consistent-return
-		if (result instanceof ServerError) return handleServerError(ctx, result);
+		if (result instanceof ServerError) {
+			handleServerError(ctx, result);
+			return;
+		}
 		updatedTweet = result;
 	}
 
