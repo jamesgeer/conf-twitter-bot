@@ -33,8 +33,9 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 		headless: true, // setting this to true will not run the UI
 	});
 	try {
-		// opens the page
+		// opens a page
 		const page = await browser.newPage();
+
 		// goes to that URL | TODO: error catching
 		await page.goto(url);
 
@@ -71,7 +72,7 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 			}
 		}
 	} catch (error) {
-		//
+		return false;
 	} finally {
 		await browser.close();
 	}
