@@ -26,10 +26,8 @@ export const userExists = async (username: string): Promise<boolean> => {
 	return result > 0;
 };
 
-type UserId = number;
-
 // attempts to insert user, fails if username taken
-export const insertUser = async (username: string, plainTextPassword: string): Promise<UserId | ServerError> => {
+export const insertUser = async (username: string, plainTextPassword: string): Promise<User | ServerError> => {
 	if (await userExists(username)) {
 		return new ServerError(HttpStatus.CONFLICT, 'Username already in use.');
 	}
@@ -38,13 +36,16 @@ export const insertUser = async (username: string, plainTextPassword: string): P
 	const password = bcrypt.hashSync(plainTextPassword, 10);
 
 	try {
-		const result = await prisma.user.create({
+		return await prisma.user.create({
 			data: {
 				username,
 				password,
 			},
+			select: {
+				id: true,
+				username: true,
+			},
 		});
-		return result.id;
 	} catch (e) {
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');

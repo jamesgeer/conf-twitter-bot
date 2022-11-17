@@ -3,6 +3,7 @@ import HttpStatus from 'http-status';
 import { getUser, insertUser } from './users-model';
 import { ServerError } from '../types';
 import { userLogin } from '../sessions/sessions-controller';
+import { handleServerError } from '../util';
 
 export const user = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
@@ -23,8 +24,7 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 
 	const result = await insertUser(username, password);
 	if (result instanceof ServerError) {
-		ctx.status = result.getStatusCode();
-		ctx.body = { message: result.getMessage() };
+		handleServerError(ctx, result);
 		return;
 	}
 
@@ -33,5 +33,5 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// account successfully created and logged in
 	ctx.status = HttpStatus.CREATED;
-	ctx.body = result; // userId
+	ctx.body = result.id; // userId
 };

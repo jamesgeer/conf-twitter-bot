@@ -1,7 +1,5 @@
 import React, { createContext, useState } from 'react';
 import { AccountContextProps, Account } from '../types';
-import axios from 'axios';
-import HttpStatus from 'http-status';
 import { useUpdateAccountSession } from '../../sessions/api/updateAccountSession';
 
 // stops type error on the 'children' variable within the provider

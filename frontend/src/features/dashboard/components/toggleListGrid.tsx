@@ -1,4 +1,4 @@
-import { Button, css, Stack } from '@chakra-ui/react';
+import { Button, Stack } from '@chakra-ui/react';
 import { IconList, IconLayoutGrid } from '@tabler/icons';
 
 interface Props {
