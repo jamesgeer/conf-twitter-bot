@@ -25,7 +25,7 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime, tweet }
 	const [dateTime, setDateTime] = useState(editDateTime);
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
-	const [image, setImage] = useState({});
+	const [image, setImage] = useState(null);
 
 	const createTweetMutation = useCreateTweet();
 	const editTweetMutation = useEditTweet();
@@ -77,8 +77,24 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime, tweet }
 			twitterUserId: account.twitterUser.id,
 			scheduledTimeUTC: dateTime,
 			content: content,
-			image: File,
 		};
+
+		if (image) {
+			const formData = new FormData();
+			// @ts-ignore
+			formData.append('accountId', account.id);
+			// @ts-ignore
+			formData.append('twitterUserId', account.twitterUser.id);
+			formData.append('scheduledTimeUTC', dateTime);
+			formData.append('content', content);
+			// @ts-ignore
+			formData.append(image.name, image);
+			console.log(formData);
+
+			// @ts-ignore
+			await createTweetMutation.mutateAsync(formData).then(() => setContent(''));
+			return;
+		}
 
 		try {
 			await createTweetMutation.mutateAsync(payload).then(() => setContent(''));
@@ -136,7 +152,7 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime, tweet }
 			errorMessage={errorMessage}
 			isEdit={isEdit}
 			setIsEdit={setIsEdit}
-			image={image}
+			// @ts-ignore
 			setImage={setImage}
 		/>
 	);
