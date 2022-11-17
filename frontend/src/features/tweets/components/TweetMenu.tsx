@@ -1,6 +1,5 @@
 import { IconDotsVertical, IconAlertTriangle, IconPencil } from '@tabler/icons';
 import { Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react';
-import { useDeleteTweet } from '../api/deleteTweet';
 
 interface Props {
 	handleClick: (menuItem: string) => void;

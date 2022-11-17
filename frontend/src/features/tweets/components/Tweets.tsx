@@ -1,8 +1,5 @@
 import { Tweet } from '../types';
 import { useTweets } from '../api/getTweets';
-import dayjs from 'dayjs';
-import TweetMenu from './TweetMenu';
-import { useState } from 'react';
 import SingleTweet from './SingleTweet';
 
 interface Props {

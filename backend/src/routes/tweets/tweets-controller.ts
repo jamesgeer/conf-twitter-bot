@@ -14,14 +14,14 @@ import { handleServerError } from '../util';
 
 export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
-	const tweet = await getTweet(id);
-	if (tweet) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = tweet;
+	const result = await getTweet(id);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
 		return;
 	}
 
-	ctx.status = HttpStatus.NOT_FOUND;
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
 };
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
@@ -29,10 +29,15 @@ export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 		return;
 	}
-	const tweets = await getTweets(ctx.session.twitterUserId);
+
+	const result = await getTweets(ctx.session.twitterUserId);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
+		return;
+	}
 
 	ctx.status = HttpStatus.OK;
-	ctx.body = tweets;
+	ctx.body = result;
 };
 
 export const scheduledTweets = async (ctx: ParameterizedContext): Promise<void> => {
@@ -74,15 +79,19 @@ export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	if (scheduledTimeUTC) {
 		const result = await updateTweetScheduledTime(id, scheduledTimeUTC);
-		// eslint-disable-next-line consistent-return
-		if (result instanceof ServerError) return handleServerError(ctx, result);
+		if (result instanceof ServerError) {
+			handleServerError(ctx, result);
+			return;
+		}
 		updatedTweet = result;
 	}
 
 	if (content) {
 		const result = await updateTweetContent(id, content);
-		// eslint-disable-next-line consistent-return
-		if (result instanceof ServerError) return handleServerError(ctx, result);
+		if (result instanceof ServerError) {
+			handleServerError(ctx, result);
+			return;
+		}
 		updatedTweet = result;
 	}
 
