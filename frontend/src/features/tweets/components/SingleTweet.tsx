@@ -28,7 +28,6 @@ const SingleTweet = ({ tweet }: Props) => {
 	};
 
 	const handleEdit = () => {
-		console.log(isEdit);
 		setIsEdit(!isEdit);
 	};
 

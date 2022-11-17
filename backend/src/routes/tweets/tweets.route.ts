@@ -17,7 +17,7 @@ tweetsRouter.get('/scheduled', scheduledTweets);
 tweetsRouter.get('/sent', sentTweets);
 
 // POST: /api/tweets
-tweetsRouter.post('/', koaBody(), createTweet);
+tweetsRouter.post('/', koaBody({ multipart: true, formidable: { uploadDir: '../images' } }), createTweet);
 
 // PATCH: /api/tweets/:id
 tweetsRouter.patch('/:id', koaBody(), updateTweet);

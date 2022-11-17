@@ -16,6 +16,7 @@ export interface HTTPTweet {
 	twitterUserId: string;
 	scheduledTimeUTC?: string;
 	content: string;
+	image: File;
 }
 
 // Array of Tweets

@@ -1,6 +1,6 @@
 import ScheduleTweet from './ScheduleTweet';
-import React, { FormEvent } from 'react';
-import { Button } from '@chakra-ui/react';
+import React, { FormEvent, useState } from 'react';
+import { Button, Input } from '@chakra-ui/react';
 
 interface Props {
 	handleSubmission: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -13,6 +13,8 @@ interface Props {
 	errorMessage: string;
 	isEdit: boolean;
 	setIsEdit: React.Dispatch<React.SetStateAction<boolean>> | null;
+	image: File | {};
+	setImage: React.Dispatch<React.SetStateAction<File>>;
 }
 
 const TweetForm = ({
@@ -26,14 +28,24 @@ const TweetForm = ({
 	errorMessage,
 	isEdit,
 	setIsEdit,
+	image,
+	setImage,
 }: Props) => {
 	const handleClick = (e: FormEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 		setIsEdit !== null && setIsEdit(false);
 	};
 
+	const onImageChange = (e: File) => {
+		const val = e;
+		console.log(e);
+		setImage((prevState) => {
+			return { ...prevState, image: val };
+		});
+	};
+
 	return (
-		<form className="mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
+		<form encType="multipart/form-data" className="mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
 			{isEdit && (
 				<div className="flex justify-end">
 					<Button colorScheme="gray" onClick={(e) => handleClick(e)}>
@@ -52,6 +64,7 @@ const TweetForm = ({
 						value={content}
 						onChange={(e) => setContent(e.target.value)}
 					></textarea>
+					<Input type="file" name="tweet_image" onChange={(e) => onImageChange(e.target!.files![0])} />
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
 						<ScheduleTweet dateTime={dateTime} setDateTime={setDateTime} />
 						<div className="absolute right-0">

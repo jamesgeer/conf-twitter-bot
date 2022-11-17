@@ -25,6 +25,7 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime, tweet }
 	const [dateTime, setDateTime] = useState(editDateTime);
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
+	const [image, setImage] = useState({});
 
 	const createTweetMutation = useCreateTweet();
 	const editTweetMutation = useEditTweet();
@@ -76,6 +77,7 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime, tweet }
 			twitterUserId: account.twitterUser.id,
 			scheduledTimeUTC: dateTime,
 			content: content,
+			image: File,
 		};
 
 		try {
@@ -134,6 +136,8 @@ const CreateEditTweet = ({ isEdit, setIsEdit, editContent, editDateTime, tweet }
 			errorMessage={errorMessage}
 			isEdit={isEdit}
 			setIsEdit={setIsEdit}
+			image={image}
+			setImage={setImage}
 		/>
 	);
 };
