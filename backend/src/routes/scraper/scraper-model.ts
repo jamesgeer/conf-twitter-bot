@@ -1,6 +1,7 @@
 import playwright, { ElementHandle } from 'playwright';
 import { Paper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
+import prisma from '../../../lib/prisma';
 
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
@@ -39,6 +40,7 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 		// goes to that URL | TODO: error catching
 		await page.goto(url);
 
+		// TODO: also grab the DOI link for automatic full page scraping
 		const paperTypes = await page.$$('.issue-heading');
 		const paperTitleHTags = await page.$$('.issue-item__title');
 		// TODO: click the "+" symbol if it exists for all authors to open
@@ -71,11 +73,43 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 				// ignore entry
 			}
 		}
+		return await uploadPapersToDatabase(papers);
 	} catch (error) {
 		return false;
 	} finally {
 		await browser.close();
 	}
+}
+
+async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
+	if (papers.length === 0) {
+		return false;
+	}
+	for (const thisPaper of papers) {
+		try {
+			// eslint-disable-next-line no-await-in-loop
+			await prisma.paper.create({
+				data: {
+					type: thisPaper.type,
+					title: thisPaper.title,
+					authors: thisPaper.authors,
+					fullAuthors: thisPaper.fullAuthors,
+					doi: thisPaper.doi,
+					url: thisPaper.url,
+					preprint: thisPaper.preprint,
+					shortAbstract: thisPaper.shortAbstract,
+					fullAbstract: thisPaper.fullAbstract,
+					monthYear: thisPaper.monthYear,
+					pages: thisPaper.pages,
+					citations: thisPaper.citations,
+					downloads: thisPaper.downloads,
+				},
+			});
+		} catch (e) {
+			console.log(logToFile(e));
+		}
+	}
+	// TODO: add some kind of check in case some papers were not actually created, maybe in the try catch above
 	return true;
 }
 
@@ -98,35 +132,26 @@ async function extractAcmPaper(
 		return data;
 	});
 
-	console.log(authors);
-	/*
-	const spans = dateAndPages[i].querySelectorAll('span');
-	const monthYear = spans[0].textContent?.replace(', ', '');
-	const pages = spans[1].textContent;
-	const href = paperTitleHTags[i].children[0].getAttribute('href');
+	const spans = await dateAndPages[i].$$('span');
+	// const monthYear = await spans[0].textContent().then((data) => data?.replace(', ', ''));
+	const href = await paperTitleHTags[i].$eval('a', (hrefElm) => hrefElm.href);
+	let paperType = await paperTypes[i].textContent();
+	if (paperType == null) paperType = '';
+	let title = await paperTitleHTags[i].textContent();
+	if (title == null) title = '';
+	let pages = await spans[0].textContent();
+	if (pages == null) pages = '';
 
 	return {
-		type: <string>paperTypes[i].textContent,
-		title: <string>paperTitleHTags[i].textContent,
-		url: `https://dl.acm.org${href}`,
-		doi: <string>href?.replace('/doi/', ''),
+		type: paperType,
+		title,
+		url: href,
+		doi: href?.replace('https://dl.acm.org/doi', ''),
 		authors,
-		monthYear: <string>monthYear,
-		pages: <string>pages,
-		shortAbstract: shortAbstracts[i].innerHTML.trim(),
-		citations: Number(citations[i].textContent),
-		downloads: Number(downloads[i].textContent),
-	}; */
-	return {
-		type: 'test',
-		title: 'test',
-		url: 'test',
-		doi: 'test',
-		authors,
-		monthYear: 'test',
-		pages: 'test',
-		shortAbstract: 'test',
-		citations: 20,
-		downloads: 20,
+		// monthYear,
+		pages,
+		shortAbstract: (await shortAbstracts[i].innerText()).trim(),
+		citations: Number(await citations[i].textContent()),
+		downloads: Number(await downloads[i].textContent()),
 	};
 }

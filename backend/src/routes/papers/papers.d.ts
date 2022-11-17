@@ -5,11 +5,11 @@ export interface Paper {
 	authors: string[];
 	fullAuthors?: string;
 
-	doi?: string;
-	url?: string;
+	doi: string;
+	url: string;
 	preprint?: string;
 
-	shortAbstract?: string;
+	shortAbstract: string;
 	fullAbstract?: string;
 
 	monthYear?: string;
@@ -17,9 +17,6 @@ export interface Paper {
 
 	citations?: number;
 	downloads?: number;
-
-	id?: number;
-	proceedingsId?: number;
 }
 
 export interface PaperForTemplate extends Paper {
