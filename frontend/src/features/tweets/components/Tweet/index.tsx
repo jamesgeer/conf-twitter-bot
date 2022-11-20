@@ -121,19 +121,28 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 	return (
 		<form className="mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
 			{isEdit && cancelEdit()}
-			<div className="text-xl mt-2 w-full">
-				<TweetContent content={content} setContent={setContent} />
-				<div className="flex items-center justify-between border-t-1 border-slate-100">
-					<DateTimePicker dateTime={dateTime} setDateTime={setDateTime} />
-					<div className="absolute right-0">
-						<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-							Tweet
-						</button>
+			<div className="flex gap-x-4 relative">
+				<div>
+					<img
+						className="w-[48px] h-auto rounded-full"
+						src={account.twitterUser.profileImageUrl}
+						alt="profile"
+					/>
+				</div>
+				<div className="text-xl mt-2 w-full">
+					<TweetContent content={content} setContent={setContent} />
+					<div className="flex items-center justify-between border-t-1 border-slate-100">
+						<DateTimePicker dateTime={dateTime} setDateTime={setDateTime} />
+						<div className="absolute right-0">
+							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+								{isEdit ? 'Update' : 'Tweet'}
+							</button>
+						</div>
 					</div>
 					<TweetMediaButtons setImages={setImages} />
 				</div>
+				<p className={`text-red-500 ${isError ? 'block' : 'hidden'}`}>{errorMessage}</p>
 			</div>
-			<p className={`text-red-500 ${isError ? 'block' : 'hidden'}`}>{errorMessage}</p>
 		</form>
 	);
 };
