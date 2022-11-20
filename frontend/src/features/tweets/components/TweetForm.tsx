@@ -35,7 +35,7 @@ const TweetForm = ({
 	};
 
 	return (
-		<form encType="multipart/form-data" className="mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
+		<form className="mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
 			{isEdit && (
 				<div className="flex justify-end">
 					<Button colorScheme="gray" onClick={(e) => handleClick(e)}>
