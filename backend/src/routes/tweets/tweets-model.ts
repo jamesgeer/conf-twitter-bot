@@ -45,19 +45,19 @@ export const getTweets = async (twitterUserId: string): Promise<Tweets | ServerE
 };
 
 export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerError> => {
-	const { accountId, twitterUserId, scheduledTimeUTC, content, image } = httpTweet;
+	const { accountId, twitterUserId, dateTime, content, image } = httpTweet;
 	console.log(image);
 
-	if (!accountId || !twitterUserId || !scheduledTimeUTC || !content) {
+	if (!accountId || !twitterUserId || !dateTime || !content) {
 		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');
 	}
 
 	// temp, need a better check
-	if (accountId.length === 0 || twitterUserId.length === 0 || scheduledTimeUTC.length === 0 || content.length === 0) {
+	if (accountId.length === 0 || twitterUserId.length === 0 || dateTime.length === 0 || content.length === 0) {
 		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');
 	}
 
-	const isoDate = new Date(scheduledTimeUTC);
+	const isoDate = new Date(dateTime);
 
 	try {
 		return await prisma.tweet.create({

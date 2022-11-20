@@ -1,9 +1,9 @@
-import CreateEditTweet from '../../tweets/components/CreateEditTweet';
 import Tweets from '../../tweets/components/Tweets';
 import Papers from '../../papers/components/Papers';
 import Scraper from '../../scraper/components/Scraper';
 import ToggleListGrid from './toggleListGrid';
 import { useState } from 'react';
+import TweetForm from '../../tweets/components/Tweet';
 
 interface Props {
 	active: { index: number; title: string };
@@ -23,10 +23,18 @@ const Content = ({ active }: Props) => {
 		}
 	};
 
+	const tweet = {
+		id: 0,
+		twitterUserId: BigInt(0),
+		dateTime: '',
+		content: '',
+		sent: false,
+	};
+
 	return (
 		<div className="col-span-8">
 			<h2 className="text-xl font-bold mb-8">Dashboard</h2>
-			<CreateEditTweet isEdit={false} setIsEdit={null} editContent="" editDateTime="" />
+			<TweetForm isEdit={false} setIsEdit={null} tweet={tweet} />
 			<hr className="my-8" />
 			<div className="flex items-center justify-between gap-6">
 				<h2 className="text-xl font-bold mb-4">{active.title}</h2>

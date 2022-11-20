@@ -17,7 +17,20 @@ tweetsRouter.get('/scheduled', scheduledTweets);
 tweetsRouter.get('/sent', sentTweets);
 
 // POST: /api/tweets
-tweetsRouter.post('/', koaBody({ multipart: true, formidable: { uploadDir: '../images' } }), createTweet);
+tweetsRouter.post(
+	'/',
+	koaBody({
+		formidable: {
+			uploadDir: 'uploads', // directory where files will be uploaded
+			keepExtensions: true, // keep file extension on upload
+			multiples: true,
+		},
+		multipart: true,
+		urlencoded: true,
+		formLimit: '5mb',
+	}),
+	createTweet,
+);
 
 // PATCH: /api/tweets/:id
 tweetsRouter.patch('/:id', koaBody(), updateTweet);

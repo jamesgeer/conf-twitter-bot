@@ -14,7 +14,7 @@ import HttpStatus from 'http-status';
 
 interface Props {
 	isEdit: boolean;
-	setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+	setIsEdit: React.Dispatch<React.SetStateAction<boolean>> | null;
 	tweet: Tweet;
 }
 
@@ -22,7 +22,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
 
 	const [content, setContent] = useState(tweet.content);
-	const [dateTime, setDateTime] = useState(tweet.scheduledTimeUTC);
+	const [dateTime, setDateTime] = useState(tweet.dateTime);
 	const [images, setImages] = useState<File>();
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
@@ -66,23 +66,14 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 	};
 
 	const payload = () => {
-		const payload = {
-			accountId: account.id,
-			twitterUserId: account.twitterUser.id,
-			dateTime: dateTime,
-			content: content,
-			images: images,
-		};
-
 		const formData = new FormData();
-		for (let key in payload) {
-			// @ts-ignore
-			formData.append(key, payload[key]);
-		}
+		formData.append('accountId', account.id.toString());
+		formData.append('twitterUserId', account.twitterUser.id.toString());
+		formData.append('dateTime', dateTime.toString());
+		formData.append('content', content);
 
-		if (isEdit) {
-			formData.append('tweetId', tweet.id.toString());
-		}
+		images && formData.append('images', images);
+		isEdit && formData.append('tweetId', tweet.id.toString());
 
 		return formData;
 	};
@@ -91,10 +82,10 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 		try {
 			if (isEdit) {
 				// @ts-ignore
-				await editTweetMutation.mutateAsync(payload).then(() => setIsEdit && setIsEdit(false));
+				await editTweetMutation.mutateAsync(payload()).then(() => setIsEdit && setIsEdit(false));
 			} else {
 				// @ts-ignore
-				await createTweetMutation.mutateAsync(payload).then(() => setContent(''));
+				await createTweetMutation.mutateAsync(payload()).then(() => setContent(''));
 			}
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
@@ -120,7 +111,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 	const cancelEdit = () => {
 		return (
 			<div className="flex justify-end">
-				<Button colorScheme="gray" onClick={(e) => setIsEdit(false)}>
+				<Button colorScheme="gray" onClick={() => setIsEdit && setIsEdit(false)}>
 					Cancel
 				</Button>
 			</div>
@@ -142,6 +133,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 					<TweetMediaButtons setImages={setImages} />
 				</div>
 			</div>
+			<p className={`text-red-500 ${isError ? 'block' : 'hidden'}`}>{errorMessage}</p>
 		</form>
 	);
 };

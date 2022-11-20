@@ -1,7 +1,7 @@
 export interface Tweet {
 	id: number;
 	twitterUserId: bigint;
-	scheduledTimeUTC: Date | string;
+	dateTime: Date | string;
 	content: string;
 	sent: boolean;
 }

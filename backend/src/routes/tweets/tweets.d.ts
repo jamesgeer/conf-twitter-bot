@@ -14,7 +14,7 @@ export interface Tweet {
 export interface HTTPTweet {
 	accountId: string;
 	twitterUserId: string;
-	scheduledTimeUTC?: string;
+	dateTime?: string;
 	content: string;
 	image: File;
 }

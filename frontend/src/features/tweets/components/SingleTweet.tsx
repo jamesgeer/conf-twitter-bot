@@ -3,7 +3,7 @@ import { Tweet } from '../types';
 import dayjs from 'dayjs';
 import { useDeleteTweet } from '../api/deleteTweet';
 import { useState } from 'react';
-import CreateEditTweet from './CreateEditTweet';
+import TweetForm from './Tweet';
 
 interface Props {
 	tweet: Tweet;
@@ -31,7 +31,7 @@ const SingleTweet = ({ tweet }: Props) => {
 		setIsEdit(!isEdit);
 	};
 
-	const tweetDate = dayjs(tweet.scheduledTimeUTC).toDate().toLocaleString();
+	const tweetDate = dayjs(tweet.dateTime).toDate().toLocaleString();
 
 	const myTweet = () => {
 		return (
@@ -47,17 +47,7 @@ const SingleTweet = ({ tweet }: Props) => {
 		);
 	};
 
-	return isEdit ? (
-		<CreateEditTweet
-			isEdit={true}
-			setIsEdit={setIsEdit}
-			editContent={tweet.content}
-			editDateTime={tweet.scheduledTimeUTC.toString()}
-			tweet={tweet}
-		/>
-	) : (
-		myTweet()
-	);
+	return isEdit ? <TweetForm isEdit={isEdit} setIsEdit={setIsEdit} tweet={tweet} /> : myTweet();
 };
 
 export default SingleTweet;
