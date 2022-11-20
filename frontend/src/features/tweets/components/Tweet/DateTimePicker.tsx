@@ -2,8 +2,8 @@ import dayjs, { Dayjs } from 'dayjs';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
-	dateTime: string;
-	setDateTime: React.Dispatch<React.SetStateAction<string>>;
+	dateTime: Date | string;
+	setDateTime: React.Dispatch<React.SetStateAction<Date | string>>;
 }
 
 const DateTimePicker = ({ dateTime, setDateTime }: Props) => {

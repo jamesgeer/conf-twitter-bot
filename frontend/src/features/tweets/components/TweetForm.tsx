@@ -34,15 +34,19 @@ const TweetForm = ({
 		setIsEdit !== null && setIsEdit(false);
 	};
 
+	const cancelEdit = () => {
+		return (
+			<div className="flex justify-end">
+				<Button colorScheme="gray" onClick={(e) => handleClick(e)}>
+					Cancel
+				</Button>
+			</div>
+		);
+	};
+
 	return (
 		<form className="mt-2 text-black" onSubmit={(e) => handleSubmission(e)}>
-			{isEdit && (
-				<div className="flex justify-end">
-					<Button colorScheme="gray" onClick={(e) => handleClick(e)}>
-						Cancel
-					</Button>
-				</div>
-			)}
+			{isEdit && cancelEdit()}
 			<div className="flex gap-x-4 relative">
 				<div>
 					<img className="w-[48px] h-auto rounded-full" src={profileImgSrc} alt="profile" />
