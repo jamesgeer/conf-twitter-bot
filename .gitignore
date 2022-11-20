@@ -226,4 +226,4 @@ $RECYCLE.BIN/
 
 twitter-accounts.json
 src/config.json
-backend/src/scraper/sites/output.html
+backend/src/routes/scraper/sites/output.html

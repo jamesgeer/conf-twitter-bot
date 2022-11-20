@@ -5,10 +5,7 @@
     "node": ">=16.0.0"
   },
   "description": "CS Conference Twitter Bot Server",
-  "author": {
-    "name": "Stefan Marr",
-    "email": "git@stefan-marr.de"
-  },
+  "author": "Stefan Marr <git@stefan-marr.de>",
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^3.3.0",
@@ -30,6 +27,7 @@
     "koa-static": "^5.0.0",
     "node-cron": "^3.0.1",
     "pino-pretty": "^9.1.1",
+    "playwright": "^1.27.1",
     "twitter-api-v2": "1.8.0",
     "user-agents": "^1.0.1100"
   },
@@ -72,5 +70,10 @@
     "docker-test:down": "docker-compose -f docker-compose.test.yml down",
     "test:env": "cross-env DATABASE_URL=postgresql://prisma:prisma@localhost:5433/tests",
     "test": "npm run docker-test:up && npm run test:env npx prisma migrate deploy && npm run test:env jest -i && npm run docker-test:down"
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": []
 }

@@ -69,3 +69,20 @@ model TwitterOAuth {
     createdAt    DateTime @default(now())
     updatedAt    DateTime?
 }
+
+model Paper {
+    id              Int     @id @default(autoincrement())
+    type            String
+    title           String
+    authors         String[]
+    fullAuthors     String?
+    doi             String  @unique
+    url             String
+    preprint        String?
+    shortAbstract   String
+    fullAbstract    String?
+    monthYear       String?
+    pages           String?
+    citations       Int?
+    downloads       Int?
+}
