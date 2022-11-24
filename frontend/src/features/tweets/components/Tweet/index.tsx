@@ -1,5 +1,5 @@
 import DateTimePicker from './DateTimePicker';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TweetContent from './TweetContent';
 import TweetMediaButtons from './TweetMediaButtons';
 import { Tweet } from '../../types';
@@ -24,11 +24,18 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 	const [content, setContent] = useState(tweet.content);
 	const [dateTime, setDateTime] = useState(tweet.dateTime);
 	const [images, setImages] = useState<File>();
+	const [imageUrl, setImageUrl] = useState('');
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
 	const createTweetMutation = useCreateTweet();
 	const editTweetMutation = useEditTweet();
+
+	useEffect(() => {
+		if (images) {
+			setImageUrl(URL.createObjectURL(images));
+		}
+	}, [images]);
 
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
@@ -131,6 +138,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 				</div>
 				<div className="text-xl mt-2 w-full">
 					<TweetContent content={content} setContent={setContent} />
+					{imageUrl ? <img src={imageUrl} /> : null}
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
 						<DateTimePicker dateTime={dateTime} setDateTime={setDateTime} />
 						<div className="absolute right-0">
