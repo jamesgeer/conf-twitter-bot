@@ -92,7 +92,11 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 				await editTweetMutation.mutateAsync(payload()).then(() => setIsEdit && setIsEdit(false));
 			} else {
 				// @ts-ignore
-				await createTweetMutation.mutateAsync(payload()).then(() => setContent(''));
+				await createTweetMutation.mutateAsync(payload()).then(() => {
+					setContent('');
+					setImageUrl('');
+					//need setImages() to be reset aswell
+				});
 			}
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
@@ -138,7 +142,11 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 				</div>
 				<div className="text-xl mt-2 w-full">
 					<TweetContent content={content} setContent={setContent} />
-					{imageUrl ? <img src={imageUrl} /> : null}
+					{imageUrl && images ? (
+						<div>
+							<img src={imageUrl} alt={images.name} />
+						</div>
+					) : null}
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
 						<DateTimePicker dateTime={dateTime} setDateTime={setDateTime} />
 						<div className="absolute right-0">
