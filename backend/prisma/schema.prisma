@@ -59,30 +59,40 @@ model Tweet {
     scheduledTimeUTC DateTime    @db.Timestamptz(3)
     content          String      @db.VarChar(280)
     sent             Boolean     @default(false)
+    Image            Image[]
+}
+
+model Image {
+    id      Int     @id @default(autoincrement())
+    tweet   Tweet   @relation(fields: [tweetId], references: [id])
+    tweetId Int
+    name    String  @unique
+    path    String // local path until uploaded to twitter
+    alt     String?
 }
 
 model TwitterOAuth {
-    account      Account  @relation(fields: [accountId], references: [id])
-    accountId    Int      @id @unique
+    account      Account   @relation(fields: [accountId], references: [id])
+    accountId    Int       @id @unique
     accessToken  String
     accessSecret String
-    createdAt    DateTime @default(now())
+    createdAt    DateTime  @default(now())
     updatedAt    DateTime?
 }
 
 model Paper {
-    id              Int     @id @default(autoincrement())
-    type            String
-    title           String
-    authors         String[]
-    fullAuthors     String?
-    doi             String  @unique
-    url             String
-    preprint        String?
-    shortAbstract   String
-    fullAbstract    String?
-    monthYear       String?
-    pages           String?
-    citations       Int?
-    downloads       Int?
+    id            Int      @id @default(autoincrement())
+    type          String
+    title         String
+    authors       String[]
+    fullAuthors   String?
+    doi           String   @unique
+    url           String
+    preprint      String?
+    shortAbstract String
+    fullAbstract  String?
+    monthYear     String?
+    pages         String?
+    citations     Int?
+    downloads     Int?
 }
