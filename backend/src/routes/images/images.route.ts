@@ -1,15 +1,14 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import tweetsRouter from '../tweets/tweets.route';
 import { attachImage, removeImage, tweetImage } from './images-controller';
 
 const imagesRouter = new Router({ prefix: '/images' });
 
 // GET: /api/images/:id
-imagesRouter.get(':/id', tweetImage);
+imagesRouter.get('/:id', tweetImage);
 
 // POST: /api/images
-tweetsRouter.post(
+imagesRouter.post(
 	'/',
 	koaBody({
 		formidable: {
@@ -25,9 +24,9 @@ tweetsRouter.post(
 );
 
 // PATCH: /api/images/:id
-imagesRouter.patch(':/id', () => console.log('PATCH NOT IMPLEMENTED'));
+imagesRouter.patch('/:id', () => console.log('PATCH NOT IMPLEMENTED'));
 
 // DELETE: /api/images/:id
-imagesRouter.delete(':/id', removeImage);
+imagesRouter.delete('/:id', removeImage);
 
 export default imagesRouter;

@@ -17,7 +17,18 @@ export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log(ctx.request.files);
+	const { files } = ctx.request;
+	// console.log(files);
+
+	// @ts-ignore
+	if (files.images) {
+		// @ts-ignore
+		for (const file of files.images) {
+			console.log(file.path);
+			console.log(file.name);
+			console.log(file.type);
+		}
+	}
 };
 
 export const removeImage = async (ctx: ParameterizedContext): Promise<void> => {
