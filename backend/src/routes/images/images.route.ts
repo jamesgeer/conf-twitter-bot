@@ -1,13 +1,14 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
 import tweetsRouter from '../tweets/tweets.route';
+import { attachImage, removeImage, tweetImage } from './images-controller';
 
 const imagesRouter = new Router({ prefix: '/images' });
 
 // GET: /api/images/:id
-imagesRouter.get(':/id', () => console.log('GET NOT IMPLEMENTED'));
+imagesRouter.get(':/id', tweetImage);
 
-// POST: /api/tweets
+// POST: /api/images
 tweetsRouter.post(
 	'/',
 	koaBody({
@@ -20,13 +21,13 @@ tweetsRouter.post(
 		urlencoded: true,
 		formLimit: '5mb',
 	}),
-	() => console.log('POST NOT IMPLEMENTED'),
+	attachImage,
 );
 
 // PATCH: /api/images/:id
 imagesRouter.patch(':/id', () => console.log('PATCH NOT IMPLEMENTED'));
 
 // DELETE: /api/images/:id
-imagesRouter.delete(':/id', () => console.log('DELETE NOT IMPLEMENTED'));
+imagesRouter.delete(':/id', removeImage);
 
 export default imagesRouter;
