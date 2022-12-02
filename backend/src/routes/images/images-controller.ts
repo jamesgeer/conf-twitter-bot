@@ -17,15 +17,13 @@ export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
-	const { files } = ctx.request;
+	// @ts-ignore
+	const { images } = ctx.request.files;
 	const { tweetId } = ctx.request.body;
 
-	// @ts-ignore
-	if (files.images) {
-		// @ts-ignore
-		for (const file of files.images) {
-			// eslint-disable-next-line no-await-in-loop
-			const result = await insertImage(tweetId, file.name, file.path, file.alt);
+	if (images && tweetId) {
+		for (const image of images) {
+			const result = await insertImage(tweetId, image.name, image.path, '');
 			if (result instanceof ServerError) {
 				ctx.status = result.getStatusCode();
 				ctx.body = { message: result.getMessage() };
