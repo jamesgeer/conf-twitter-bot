@@ -2,7 +2,7 @@ import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
-import { deleteImage, getImage } from './images-model';
+import { deleteImage, getImage, insertImage } from './images-model';
 
 export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
@@ -18,17 +18,23 @@ export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 
 export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
 	const { files } = ctx.request;
-	// console.log(files);
+	const { tweetId } = ctx.request.body;
 
 	// @ts-ignore
 	if (files.images) {
 		// @ts-ignore
 		for (const file of files.images) {
-			console.log(file.path);
-			console.log(file.name);
-			console.log(file.type);
+			// eslint-disable-next-line no-await-in-loop
+			const result = await insertImage(tweetId, file.name, file.path, file.alt);
+			if (result instanceof ServerError) {
+				ctx.status = result.getStatusCode();
+				ctx.body = { message: result.getMessage() };
+				return;
+			}
 		}
 	}
+
+	ctx.status = HttpStatus.OK;
 };
 
 export const removeImage = async (ctx: ParameterizedContext): Promise<void> => {
