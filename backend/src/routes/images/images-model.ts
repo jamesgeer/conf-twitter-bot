@@ -28,6 +28,7 @@ export const insertImage = async (
 	path: string,
 	alt: string,
 ): Promise<Image | ServerError> => {
+	console.log(`Attemping to insert: ${name}${path}`);
 	try {
 		return await prisma.image.create({
 			data: {
