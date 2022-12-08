@@ -1,6 +1,8 @@
 import Koa from 'koa';
 import cors from '@koa/cors';
 import koaSession from 'koa-session';
+import serve from 'koa-static';
+import path from 'path';
 import router from './routes';
 import { logToFile, initLogToFile } from './logging/logging';
 // import cronJobs from './jobs';
@@ -46,6 +48,8 @@ app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
 app.use(router.routes());
 app.use(router.allowedMethods());
+
+app.use(serve(path.join(__dirname, '/uploads')));
 
 // run cron jobs
 // cronJobs();

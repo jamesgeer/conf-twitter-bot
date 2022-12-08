@@ -1,7 +1,8 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
+import send from 'koa-send';
 import { ServerError } from '../types';
-import { handleServerError, readImage } from '../util';
+import { handleServerError } from '../util';
 import { deleteImage, getImage, insertImage } from './images-model';
 
 export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
@@ -12,10 +13,9 @@ export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	const imageData = await readImage(result.path);
-
 	ctx.status = HttpStatus.OK;
-	ctx.file = imageData;
+	console.log(result.path);
+	await send(ctx, result.path);
 };
 
 export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {

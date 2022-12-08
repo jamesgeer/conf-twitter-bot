@@ -23,6 +23,7 @@
     "koa": "2.13.4",
     "koa-body": "4.2.0",
     "koa-mount": "^4.0.0",
+    "koa-send": "^5.0.1",
     "koa-session": "6.2.0",
     "koa-static": "^5.0.0",
     "node-cron": "^3.0.1",
