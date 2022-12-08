@@ -27,13 +27,11 @@ export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	let imgArray = [];
+	let imgArray: File[] = [];
 
 	if (Array.isArray(images)) {
-		// @ts-ignore
 		imgArray = images;
 	} else {
-		// @ts-ignore
 		imgArray.push(images);
 	}
 
