@@ -1,5 +1,4 @@
 node_modules/
-public/images/
 test-results/
 playwright-report/
 playwright/.cache/
