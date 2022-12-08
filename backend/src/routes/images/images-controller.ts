@@ -14,8 +14,7 @@ export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	ctx.status = HttpStatus.OK;
-	console.log(result.path);
-	await send(ctx, result.path);
+	await send(ctx, result.path, { root: '/' });
 };
 
 export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {

@@ -1,8 +1,11 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
+import appRoot from 'app-root-path';
+import path from 'path';
 import { attachImage, removeImage, tweetImage } from './images-controller';
 
 const imagesRouter = new Router({ prefix: '/images' });
+const uploadFolder = path.join(appRoot.path, 'public', 'images');
 
 // GET: /api/images/:id
 imagesRouter.get('/:id', tweetImage);
@@ -12,7 +15,7 @@ imagesRouter.post(
 	'/',
 	koaBody({
 		formidable: {
-			uploadDir: 'uploads', // directory where files will be uploaded
+			uploadDir: uploadFolder, // directory where files will be uploaded
 			keepExtensions: true, // keep file extension on upload
 			multiples: true,
 		},
