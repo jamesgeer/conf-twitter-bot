@@ -1,12 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from '@faker-js/faker';
-import { User } from './types';
-import { TwitterAccount } from './oauths/oauths';
-import { Account, TwitterUser } from './accounts/accounts';
-import { insertUser } from './users/users-model';
-import { insertTwitterUser } from './twitter-users/twitter-users-model';
-import { insertAccount } from './accounts/accounts-model';
-import { HTTPTweet } from './tweets/tweets';
+import { User } from '../routes/types';
+import { TwitterAccount } from '../routes/oauths/oauths';
+import { Account, TwitterUser } from '../routes/accounts/accounts';
+import { HTTPTweet } from '../routes/tweets/tweets';
+import { insertUser } from '../routes/users/users-model';
+import { insertTwitterUser } from '../routes/twitter-users/twitter-users-model';
+import { insertAccount } from '../routes/accounts/accounts-model';
 
 export class RoutesTestHarness {
 	user: User;
@@ -88,7 +88,7 @@ export class RoutesTestHarness {
 		this.httpTweet = {
 			accountId: this.account.id.toString(),
 			twitterUserId: this.twitterUser.id.toString(),
-			scheduledTimeUTC: new Date().toString(),
+			dateTime: new Date().toString(),
 			content: 'My test tweet',
 		};
 		return this.httpTweet;

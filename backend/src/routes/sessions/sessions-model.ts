@@ -16,6 +16,7 @@ export const validSessionCookie = (requestCookie: string, sessionCookie: string)
 			}
 		}
 	}
+
 	return false;
 };
 

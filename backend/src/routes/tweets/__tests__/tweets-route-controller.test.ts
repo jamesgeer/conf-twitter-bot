@@ -3,7 +3,7 @@ import HttpStatus from 'http-status';
 import http from 'http';
 import { app } from '../../../app';
 import prisma from '../../../../lib/prisma';
-import { RoutesTestHarness } from '../../RoutesTestHarness';
+import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
 
 const request = supertest(http.createServer(app.callback()));
 

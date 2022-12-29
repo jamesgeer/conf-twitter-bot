@@ -16,7 +16,7 @@ export interface HTTPTweet {
 	twitterUserId: string;
 	dateTime?: string;
 	content: string;
-	image: File;
+	image?: File;
 }
 
 // Array of Tweets

@@ -11,7 +11,7 @@ import {
 } from '../tweets-model';
 import { Tweet, Tweets } from '../tweets';
 import { ServerError } from '../../types';
-import { RoutesTestHarness } from '../../RoutesTestHarness';
+import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
 
 const harness = new RoutesTestHarness();
 
@@ -50,7 +50,7 @@ it('insert tweet should create one new tweet', async () => {
 			twitterUserId: BigInt(httpTweet.twitterUserId),
 			updatedAt: null,
 			// @ts-ignore
-			scheduledTimeUTC: new Date(httpTweet.scheduledTimeUTC),
+			scheduledTimeUTC: new Date(httpTweet.dateTime),
 			content: httpTweet.content,
 			sent: false,
 		}),
