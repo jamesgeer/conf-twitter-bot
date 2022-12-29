@@ -66,8 +66,8 @@ model Image {
     id      Int     @id @default(autoincrement())
     tweet   Tweet   @relation(fields: [tweetId], references: [id])
     tweetId Int
-    name    String  @unique
-    path    String // local path until uploaded to twitter
+    name    String
+    path    String  @unique
     alt     String?
 }
 

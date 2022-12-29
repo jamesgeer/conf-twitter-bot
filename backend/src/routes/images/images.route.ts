@@ -5,7 +5,7 @@ import path from 'path';
 import { attachImage, removeImage, tweetImage } from './images-controller';
 
 const imagesRouter = new Router({ prefix: '/images' });
-const uploadFolder = path.join(appRoot.path, 'public', 'images');
+const uploadFolder = path.join(appRoot.path, 'public', 'uploads');
 
 // GET: /api/images/:id
 imagesRouter.get('/:id', tweetImage);
