@@ -1,5 +1,6 @@
 import HttpStatus from 'http-status';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import * as fs from 'fs';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 import { logToFile } from '../../logging/logging';
@@ -101,7 +102,8 @@ export const updateImageAlt = async (imageId: string, alt: string): Promise<Imag
 	}
 };
 
-export const deleteImage = async (imageId: string): Promise<Image | ServerError> => {
+// remove image from database
+export const deleteImageDb = async (imageId: string): Promise<Image | ServerError> => {
 	try {
 		return await prisma.image.delete({
 			where: {
@@ -119,3 +121,10 @@ export const deleteImage = async (imageId: string): Promise<Image | ServerError>
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete image due to server problem.');
 	}
 };
+
+// remove image file
+export const deleteImageFile = async (filePath: string): Promise<void> =>
+	fs.rmSync(filePath, {
+		// ignore exceptions i.e. file not found (try/catch does not prevent fs from crashing server)
+		force: true,
+	});
