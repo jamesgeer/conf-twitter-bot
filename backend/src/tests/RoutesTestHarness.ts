@@ -3,10 +3,11 @@ import { faker } from '@faker-js/faker';
 import { User } from '../routes/types';
 import { TwitterAccount } from '../routes/oauths/oauths';
 import { Account, TwitterUser } from '../routes/accounts/accounts';
-import { HTTPTweet } from '../routes/tweets/tweets';
+import { HTTPTweet, Tweet } from '../routes/tweets/tweets';
 import { insertUser } from '../routes/users/users-model';
 import { insertTwitterUser } from '../routes/twitter-users/twitter-users-model';
 import { insertAccount } from '../routes/accounts/accounts-model';
+import { insertTweet } from '../routes/tweets/tweets-model';
 
 export class RoutesTestHarness {
 	user: User;
@@ -92,5 +93,9 @@ export class RoutesTestHarness {
 			content: 'My test tweet',
 		};
 		return this.httpTweet;
+	}
+
+	public async createTweet(): Promise<Tweet> {
+		return <Tweet>await insertTweet(this.createHttpTweet());
 	}
 }

@@ -4,6 +4,7 @@ import send from 'koa-send';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
 import { deleteImageDb, deleteImageFile, getImage, insertImage } from './images-model';
+import { Image } from './images';
 
 // retrieve image
 export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
@@ -18,7 +19,8 @@ export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 	await send(ctx, result.path, { root: '/' });
 };
 
-interface Image extends File {
+interface ImageUpload extends File {
+	name: string;
 	path: string;
 }
 
@@ -27,12 +29,13 @@ export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
 	const { images }: any = ctx.request.files;
 	const { tweetId } = ctx.request.body;
 
-	// if missing image(s) or tweet id then bad request
+	// missing image(s) or tweet id then bad request
 	if (!images || !tweetId) {
 		ctx.status = HttpStatus.BAD_REQUEST;
 		return;
 	}
 
+	// required as a single image cannot be iterated over
 	let imgArray: File[] = [];
 	if (Array.isArray(images)) {
 		imgArray = images;
@@ -40,19 +43,24 @@ export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
 		imgArray.push(images);
 	}
 
+	// iterate over uploaded images
+	const results: Image[] = [];
 	for (const image of imgArray) {
-		const { path } = image as Image;
-		const result = await insertImage(tweetId, image.name, path, '');
+		const { name, path } = image as ImageUpload;
+		const result = await insertImage(tweetId, name, path, '');
 
+		// delete uploaded image if database insertion fails
 		if (result instanceof ServerError) {
 			handleServerError(ctx, result);
-			// delete uploaded image if unable to insert into db
 			await deleteImageFile(path);
 			return;
 		}
+
+		results.push(result);
 	}
 
 	ctx.status = HttpStatus.OK;
+	ctx.body = results;
 };
 
 // remove image from database and file system
@@ -70,4 +78,5 @@ export const removeImage = async (ctx: ParameterizedContext): Promise<void> => {
 	await deleteImageFile(result.path);
 
 	ctx.status = HttpStatus.OK;
+	ctx.body = result;
 };
