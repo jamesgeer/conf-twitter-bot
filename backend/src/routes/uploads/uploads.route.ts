@@ -2,16 +2,16 @@ import Router from '@koa/router';
 import koaBody from 'koa-body';
 import appRoot from 'app-root-path';
 import path from 'path';
-import { attachImage, removeImage, tweetImage } from './images-controller';
+import { upload, createUpload, removeUpload } from './uploads-controller';
 
-const imagesRouter = new Router({ prefix: '/images' });
+const uploadsRouter = new Router({ prefix: '/uploads' });
 const uploadFolder = path.join(appRoot.path, 'public', 'uploads');
 
-// GET: /api/images/:id
-imagesRouter.get('/:id', tweetImage);
+// GET: /api/uploads/:id
+uploadsRouter.get('/:id', upload);
 
-// POST: /api/images
-imagesRouter.post(
+// POST: /api/uploads
+uploadsRouter.post(
 	'/',
 	koaBody({
 		formidable: {
@@ -23,13 +23,13 @@ imagesRouter.post(
 		urlencoded: true,
 		formLimit: '5mb',
 	}),
-	attachImage,
+	createUpload,
 );
 
-// PATCH: /api/images/:id
-imagesRouter.patch('/:id', () => console.log('PATCH NOT IMPLEMENTED'));
+// PATCH: /api/uploads/:id
+uploadsRouter.patch('/:id', () => console.log('PATCH NOT IMPLEMENTED'));
 
-// DELETE: /api/images/:id
-imagesRouter.delete('/:id', removeImage);
+// DELETE: /api/uploads/:id
+uploadsRouter.delete('/:id', removeUpload);
 
-export default imagesRouter;
+export default uploadsRouter;

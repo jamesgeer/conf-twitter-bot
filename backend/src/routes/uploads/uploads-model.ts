@@ -4,52 +4,54 @@ import * as fs from 'fs';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 import { logToFile } from '../../logging/logging';
-import { Image } from './images';
+import { Upload } from './uploads';
 
-export const getImage = async (imageId: string): Promise<Image | ServerError> => {
+export const getTweetMedia = async (uploadId: string): Promise<Upload | ServerError> => {
 	try {
-		const result = await prisma.image.findUnique({
+		const result = await prisma.upload.findUnique({
 			where: {
-				id: +imageId,
+				id: +uploadId,
 			},
 		});
 		if (result) {
 			return result;
 		}
-		return new ServerError(HttpStatus.NOT_FOUND, `Image with ID ${imageId} not found.`);
+		return new ServerError(HttpStatus.NOT_FOUND, `Image with ID ${uploadId} not found.`);
 	} catch (e) {
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get image due to server problem.');
 	}
 };
 
-export const insertImage = async (
+export const insertUpload = async (
 	tweetId: string,
 	name: string,
 	path: string,
 	alt: string,
-): Promise<Image | ServerError> => {
+	type: string,
+): Promise<Upload | ServerError> => {
 	console.log(`Attempting to insert: ${name}${path}`);
 	try {
-		return await prisma.image.create({
+		return await prisma.upload.create({
 			data: {
 				tweetId: +tweetId,
 				name,
 				path,
 				alt,
+				type,
 			},
 		});
 	} catch (e) {
 		console.log(logToFile(e));
-		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to insert image due to server problem.');
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to insert upload due to server problem.');
 	}
 };
 
-export const updateImageName = async (imageId: string, name: string): Promise<Image | ServerError> => {
+export const updateUploadName = async (uploadId: string, name: string): Promise<Upload | ServerError> => {
 	try {
-		return await prisma.image.update({
+		return await prisma.upload.update({
 			where: {
-				id: +imageId,
+				id: +uploadId,
 			},
 			data: {
 				name,
@@ -57,18 +59,18 @@ export const updateImageName = async (imageId: string, name: string): Promise<Im
 		});
 	} catch (e) {
 		if (e instanceof PrismaClientKnownRequestError) {
-			return new ServerError(HttpStatus.NOT_FOUND, `Image with ID ${imageId} not found.`);
+			return new ServerError(HttpStatus.NOT_FOUND, `Upload with ID ${uploadId} not found.`);
 		}
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
 	}
 };
 
-export const updateImagePath = async (imageId: string, path: string): Promise<Image | ServerError> => {
+export const updateUploadPath = async (uploadId: string, path: string): Promise<Upload | ServerError> => {
 	try {
-		return await prisma.image.update({
+		return await prisma.upload.update({
 			where: {
-				id: +imageId,
+				id: +uploadId,
 			},
 			data: {
 				path,
@@ -76,18 +78,18 @@ export const updateImagePath = async (imageId: string, path: string): Promise<Im
 		});
 	} catch (e) {
 		if (e instanceof PrismaClientKnownRequestError) {
-			return new ServerError(HttpStatus.NOT_FOUND, `Image with ID ${imageId} not found.`);
+			return new ServerError(HttpStatus.NOT_FOUND, `Upload with ID ${uploadId} not found.`);
 		}
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
 	}
 };
 
-export const updateImageAlt = async (imageId: string, alt: string): Promise<Image | ServerError> => {
+export const updateUploadAlt = async (uploadId: string, alt: string): Promise<Upload | ServerError> => {
 	try {
-		return await prisma.image.update({
+		return await prisma.upload.update({
 			where: {
-				id: +imageId,
+				id: +uploadId,
 			},
 			data: {
 				alt,
@@ -95,7 +97,7 @@ export const updateImageAlt = async (imageId: string, alt: string): Promise<Imag
 		});
 	} catch (e) {
 		if (e instanceof PrismaClientKnownRequestError) {
-			return new ServerError(HttpStatus.NOT_FOUND, `Image with ID ${imageId} not found.`);
+			return new ServerError(HttpStatus.NOT_FOUND, `Image with ID ${uploadId} not found.`);
 		}
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
@@ -103,9 +105,9 @@ export const updateImageAlt = async (imageId: string, alt: string): Promise<Imag
 };
 
 // remove image from database
-export const deleteImageDb = async (imageId: string): Promise<Image | ServerError> => {
+export const deleteUploadDb = async (imageId: string): Promise<Upload | ServerError> => {
 	try {
-		return await prisma.image.delete({
+		return await prisma.upload.delete({
 			where: {
 				id: +imageId,
 			},
@@ -123,7 +125,7 @@ export const deleteImageDb = async (imageId: string): Promise<Image | ServerErro
 };
 
 // remove image file
-export const deleteImageFile = async (filePath: string): Promise<void> =>
+export const deleteUploadFile = async (filePath: string): Promise<void> =>
 	fs.rmSync(filePath, {
 		// ignore exceptions i.e. file not found (try/catch does not prevent fs from crashing server)
 		force: true,

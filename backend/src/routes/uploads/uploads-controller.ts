@@ -3,13 +3,13 @@ import HttpStatus from 'http-status';
 import send from 'koa-send';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
-import { deleteImageDb, deleteImageFile, getImage, insertImage } from './images-model';
-import { Image } from './images';
+import { getTweetMedia, insertUpload, deleteUploadDb, deleteUploadFile } from './uploads-model';
+import { Upload } from './uploads';
 
-// retrieve image
-export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
+// retrieve tweet uploaded media
+export const upload = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
-	const result = await getImage(id);
+	const result = await getTweetMedia(id);
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
@@ -19,40 +19,40 @@ export const tweetImage = async (ctx: ParameterizedContext): Promise<void> => {
 	await send(ctx, result.path, { root: '/' });
 };
 
-interface ImageUpload extends File {
+interface MediaUpload extends File {
 	name: string;
 	path: string;
 }
 
-// assign image(s) to tweet
-export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
-	const { images }: any = ctx.request.files;
+// assign uploaded media to tweet
+export const createUpload = async (ctx: ParameterizedContext): Promise<void> => {
+	const { media }: any = ctx.request.files;
 	const { tweetId } = ctx.request.body;
 
-	// missing image(s) or tweet id then bad request
-	if (!images || !tweetId) {
+	// missing media or tweet id then bad request
+	if (!media || !tweetId) {
 		ctx.status = HttpStatus.BAD_REQUEST;
 		return;
 	}
 
 	// required as a single image cannot be iterated over
-	let imgArray: File[] = [];
-	if (Array.isArray(images)) {
-		imgArray = images;
+	let uploadArray: File[] = [];
+	if (Array.isArray(media)) {
+		uploadArray = media;
 	} else {
-		imgArray.push(images);
+		uploadArray.push(media);
 	}
 
-	// iterate over uploaded images
-	const results: Image[] = [];
-	for (const image of imgArray) {
-		const { name, path } = image as ImageUpload;
-		const result = await insertImage(tweetId, name, path, '');
+	// iterate over uploaded media
+	const results: Upload[] = [];
+	for (const mediaUpload of uploadArray) {
+		const { name, path } = mediaUpload as MediaUpload;
+		const result = await insertUpload(tweetId, name, path, '', 'image');
 
 		// delete uploaded image if database insertion fails
 		if (result instanceof ServerError) {
 			handleServerError(ctx, result);
-			await deleteImageFile(path);
+			await deleteUploadFile(path);
 			return;
 		}
 
@@ -64,18 +64,18 @@ export const attachImage = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 // remove image from database and file system
-export const removeImage = async (ctx: ParameterizedContext): Promise<void> => {
+export const removeUpload = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
 
 	// delete image from database
-	const result = await deleteImageDb(id);
+	const result = await deleteUploadDb(id);
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
 	}
 
 	// only attempt to delete image if successfully removed from database
-	await deleteImageFile(result.path);
+	await deleteUploadFile(result.path);
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = result;

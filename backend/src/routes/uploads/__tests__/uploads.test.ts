@@ -7,13 +7,13 @@ import * as fs from 'fs';
 import { app } from '../../../app';
 import prisma from '../../../../lib/prisma';
 import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
-import { Image } from '../images';
+import { Upload } from '../uploads';
 
 const request = supertest(http.createServer(app.callback()));
 
 const harness = new RoutesTestHarness();
 
-const imagesEndpoint = '/api/images';
+const uploadsEndpoint = '/api/uploads';
 
 // before any tests are run
 beforeAll(async () => {
@@ -22,7 +22,7 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.image.deleteMany({});
+	await prisma.upload.deleteMany({});
 	await prisma.tweet.deleteMany({});
 	await prisma.account.deleteMany({});
 	await prisma.twitterUser.deleteMany({});
@@ -35,18 +35,15 @@ const testImage = (imageName: string) => `${__dirname}/${imageName}.png`;
 const testImage1 = testImage('test_image_1');
 const testImage2 = testImage('test_image_2');
 
-describe('single image crud operation', () => {
+describe('single upload crud operation', () => {
 	let imageId: number;
 
-	it('POST image should create new image and return image', async () => {
+	it('POST upload should create new image and return image', async () => {
 		// create a tweet and extract its id for attaching an image
 		const { id: tweetId } = await harness.createTweet();
 
 		// post request with tweet id and image attached
-		const response = await request
-			.post(`${imagesEndpoint}`)
-			.attach('tweetId', tweetId)
-			.attach('images', testImage1);
+		const response = await request.post(uploadsEndpoint).attach('tweetId', tweetId).attach('media', testImage1);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 
@@ -59,7 +56,7 @@ describe('single image crud operation', () => {
 	});
 
 	it('GET image should return image', async () => {
-		const response = await request.get(`${imagesEndpoint}/${imageId}`);
+		const response = await request.get(`${uploadsEndpoint}/${imageId}`);
 		expect(response.status).toEqual(HttpStatus.OK);
 
 		// compare uploaded image to test image, they should be the same
@@ -68,50 +65,50 @@ describe('single image crud operation', () => {
 	});
 
 	it('DELETE image should delete image', async () => {
-		const response = await request.delete(`${imagesEndpoint}/${imageId}`);
+		const response = await request.delete(`${uploadsEndpoint}/${imageId}`);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 
-		const image: Image = response.body;
-		const imageFileExists = fs.existsSync(image.path);
+		const upload: Upload = response.body;
+		const imageFileExists = fs.existsSync(upload.path);
 		expect(imageFileExists).toBe(false);
 	});
 });
 
-describe('multiple images crud operation', () => {
-	const responseImages: Image[] = [];
+describe('multiple uploads crud operation', () => {
+	const responseImages: Upload[] = [];
 
-	it('POST multiple images should return images', async () => {
+	it('POST multiple uploads should return uploads', async () => {
 		// create a tweet and extract its id for attaching an image
 		const { id: tweetId } = await harness.createTweet();
 
 		// post request with tweet id and image attached
 		const response = await request
-			.post(`${imagesEndpoint}`)
+			.post(`${uploadsEndpoint}`)
 			.attach('tweetId', tweetId)
-			.attach('images', testImage1)
-			.attach('images', testImage2);
+			.attach('media', testImage1)
+			.attach('media', testImage2);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 		expect(response.body.length).toEqual(2);
 
-		const images: Image[] = response.body;
-		images.forEach((image: Image) => {
-			expect(image.tweetId).toEqual(tweetId);
-			responseImages.push(image);
+		const uploads: Upload[] = response.body;
+		uploads.forEach((upload: Upload) => {
+			expect(upload.tweetId).toEqual(tweetId);
+			responseImages.push(upload);
 		});
 	});
 
-	it('DELETE image should delete multiple images', async () => {
+	it('DELETE image should delete multiple uploads', async () => {
 		await Promise.all(
 			responseImages.map(async (respImage) => {
-				const response = await request.delete(`${imagesEndpoint}/${respImage.id}`);
+				const response = await request.delete(`${uploadsEndpoint}/${respImage.id}`);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 
-				const image: Image = response.body;
-				const imageFileExists = fs.existsSync(image.path);
-				expect(imageFileExists).toBe(false);
+				const upload: Upload = response.body;
+				const uploadFileExists = fs.existsSync(upload.path);
+				expect(uploadFileExists).toBe(false);
 			}),
 		);
 	});

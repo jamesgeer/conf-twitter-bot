@@ -59,16 +59,17 @@ model Tweet {
     scheduledTimeUTC DateTime    @db.Timestamptz(3)
     content          String      @db.VarChar(280)
     sent             Boolean     @default(false)
-    Image            Image[]
+    Upload           Upload[]
 }
 
-model Image {
+model Upload {
     id      Int     @id @default(autoincrement())
     tweet   Tweet   @relation(fields: [tweetId], references: [id])
     tweetId Int
     name    String
     path    String  @unique
     alt     String?
+    type    String
 }
 
 model TwitterOAuth {

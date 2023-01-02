@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Tweets } from '../types';
 import { useQuery } from '@tanstack/react-query';
 
-export const getTweets = async (): Promise<Tweets> => {
+const getTweets = async (): Promise<Tweets> => {
 	const { data } = await axios.get('/api/tweets');
 	return data;
 };

@@ -52,7 +52,6 @@ export const sentTweets = async (ctx: ParameterizedContext): Promise<void> => {
 
 export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const httpTweet: HTTPTweet = ctx.request.body;
-	// console.log(ctx.request.files);
 	const result = await insertTweet(httpTweet);
 
 	if (result instanceof ServerError) {
