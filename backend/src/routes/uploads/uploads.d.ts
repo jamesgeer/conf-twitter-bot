@@ -7,4 +7,4 @@ export interface Upload {
 	type: string;
 }
 
-export type Uploads = Array<Uploads>;
+export type Uploads = Array<Upload>;

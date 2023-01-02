@@ -58,6 +58,7 @@ describe('single upload crud operation', () => {
 	it('GET image should return image', async () => {
 		const response = await request.get(`${uploadsEndpoint}/${imageId}`);
 		expect(response.status).toEqual(HttpStatus.OK);
+		console.log(response.body);
 
 		// compare uploaded image to test image, they should be the same
 		const { equal } = await looksSame(response.body, testImage1);
@@ -77,6 +78,7 @@ describe('single upload crud operation', () => {
 
 describe('multiple uploads crud operation', () => {
 	const responseImages: Upload[] = [];
+	let testTweetId: number;
 
 	it('POST multiple uploads should return uploads', async () => {
 		// create a tweet and extract its id for attaching an image
@@ -84,7 +86,7 @@ describe('multiple uploads crud operation', () => {
 
 		// post request with tweet id and image attached
 		const response = await request
-			.post(`${uploadsEndpoint}`)
+			.post(uploadsEndpoint)
 			.attach('tweetId', tweetId)
 			.attach('media', testImage1)
 			.attach('media', testImage2);
@@ -97,6 +99,15 @@ describe('multiple uploads crud operation', () => {
 			expect(upload.tweetId).toEqual(tweetId);
 			responseImages.push(upload);
 		});
+
+		testTweetId = tweetId;
+	});
+
+	it('GET should return all uploads for tweet id', async () => {
+		const response = await request.get(`${uploadsEndpoint}/tweet/${testTweetId}`);
+		expect(response.status).toEqual(HttpStatus.OK);
+		console.log(response.body);
+		expect(response.body.length).toEqual(2);
 	});
 
 	it('DELETE image should delete multiple uploads', async () => {

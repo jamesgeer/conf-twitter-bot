@@ -2,10 +2,13 @@ import Router from '@koa/router';
 import koaBody from 'koa-body';
 import appRoot from 'app-root-path';
 import path from 'path';
-import { upload, createUpload, removeUpload } from './uploads-controller';
+import { uploads, upload, createUpload, removeUpload } from './uploads-controller';
 
 const uploadsRouter = new Router({ prefix: '/uploads' });
 const uploadFolder = path.join(appRoot.path, 'public', 'uploads');
+
+// GET: /api/uploads/tweet/:tweetId
+uploadsRouter.get('/tweet/:tweetId', koaBody(), uploads);
 
 // GET: /api/uploads/:id
 uploadsRouter.get('/:id', upload);

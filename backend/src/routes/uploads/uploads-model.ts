@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 import { logToFile } from '../../logging/logging';
-import { Upload } from './uploads';
+import { Upload, Uploads } from './uploads';
 
-export const getTweetMedia = async (uploadId: string): Promise<Upload | ServerError> => {
+export const getUpload = async (uploadId: string): Promise<Upload | ServerError> => {
 	try {
 		const result = await prisma.upload.findUnique({
 			where: {
@@ -20,6 +20,19 @@ export const getTweetMedia = async (uploadId: string): Promise<Upload | ServerEr
 	} catch (e) {
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get image due to server problem.');
+	}
+};
+
+export const getUploads = async (tweetId: string): Promise<Uploads | ServerError> => {
+	try {
+		return await prisma.upload.findMany({
+			where: {
+				tweetId: +tweetId,
+			},
+		});
+	} catch (e) {
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get uploads due to server problem.');
 	}
 };
 

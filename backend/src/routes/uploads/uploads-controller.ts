@@ -3,13 +3,13 @@ import HttpStatus from 'http-status';
 import send from 'koa-send';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
-import { getTweetMedia, insertUpload, deleteUploadDb, deleteUploadFile } from './uploads-model';
+import { getUpload, getUploads, insertUpload, deleteUploadDb, deleteUploadFile } from './uploads-model';
 import { Upload } from './uploads';
 
-// retrieve tweet uploaded media
+// upload by id
 export const upload = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
-	const result = await getTweetMedia(id);
+	const result = await getUpload(id);
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
@@ -17,6 +17,26 @@ export const upload = async (ctx: ParameterizedContext): Promise<void> => {
 
 	ctx.status = HttpStatus.OK;
 	await send(ctx, result.path, { root: '/' });
+};
+
+// retrieve tweet uploaded media
+export const uploads = async (ctx: ParameterizedContext): Promise<void> => {
+	const { tweetId } = ctx.params;
+
+	if (!tweetId) {
+		ctx.status = HttpStatus.BAD_REQUEST;
+		ctx.body = 'Missing or invalid Tweet id';
+		return;
+	}
+
+	const result = await getUploads(tweetId);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
 };
 
 interface MediaUpload extends File {
