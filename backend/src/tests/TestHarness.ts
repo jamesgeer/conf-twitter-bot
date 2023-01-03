@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from '@faker-js/faker';
 import { User } from '../routes/types';
-import { TwitterAccount } from '../routes/oauths/oauths';
+import { TwitterOAuthAccount } from '../routes/oauths/oauths';
 import { Account, TwitterUser } from '../routes/accounts/accounts';
 import { HTTPTweet, Tweet } from '../routes/tweets/tweets';
 import { insertUser } from '../routes/users/users-model';
@@ -9,10 +9,10 @@ import { insertTwitterUser } from '../routes/twitter-users/twitter-users-model';
 import { insertAccount } from '../routes/accounts/accounts-model';
 import { insertTweet } from '../routes/tweets/tweets-model';
 
-export class RoutesTestHarness {
+export class TestHarness {
 	user: User;
-	twitterAccount: TwitterAccount;
 	twitterUser: TwitterUser;
+	twitterOAuthAccount: TwitterOAuthAccount;
 	account: Account;
 	httpTweet: HTTPTweet;
 
@@ -22,19 +22,16 @@ export class RoutesTestHarness {
 			username: '',
 		};
 
-		this.twitterAccount = {
-			userId: '0',
-			name: '',
-			screenName: '',
-			profileImageUrl: '',
-			oauth: {},
-		};
-
 		this.twitterUser = {
 			id: BigInt(0),
 			name: '',
 			screenName: '',
 			profileImageUrl: '',
+		};
+
+		this.twitterOAuthAccount = {
+			twitterUser: this.twitterUser,
+			oauth: {},
 		};
 
 		this.account = {
@@ -44,12 +41,20 @@ export class RoutesTestHarness {
 		};
 	}
 
-	public generateTwitterAccount(): TwitterAccount {
-		return {
-			userId: this.user.id.toString(),
+	public generateTwitterUser(): TwitterUser {
+		this.twitterUser = {
+			id: faker.datatype.bigInt(),
 			name: faker.internet.userName().replace('_', ' '),
 			screenName: faker.internet.userName(),
 			profileImageUrl: faker.internet.avatar(),
+		};
+
+		return this.twitterUser;
+	}
+
+	public generateTwitterOAuthAccount(): TwitterOAuthAccount {
+		return {
+			twitterUser: this.twitterUser,
 			oauth: {},
 		};
 	}
@@ -59,9 +64,7 @@ export class RoutesTestHarness {
 	}
 
 	public async createTwitterUser(): Promise<void> {
-		this.twitterAccount = this.generateTwitterAccount();
-
-		this.twitterUser = <TwitterUser>await insertTwitterUser(this.twitterAccount);
+		this.twitterUser = <TwitterUser>await insertTwitterUser(this.generateTwitterUser());
 	}
 
 	public async createTwitterAccount(): Promise<void> {

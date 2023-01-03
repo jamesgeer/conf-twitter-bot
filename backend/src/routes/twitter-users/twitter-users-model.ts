@@ -2,14 +2,26 @@ import HttpStatus from 'http-status';
 import { TwitterUser } from '../accounts/accounts';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
-import { TwitterAccount } from '../oauths/oauths';
 import { logToFile } from '../../logging/logging';
 
-export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser | ServerError> => {
+/**
+ * returns true if the Twitter user exists, false otherwise
+ * @param twitterUserId
+ */
+export const twitterUserExists = async (twitterUserId: bigint): Promise<boolean> => {
+	const result = await prisma.twitterUser.count({
+		where: {
+			id: twitterUserId,
+		},
+	});
+	return result > 0;
+};
+
+export const getTwitterUser = async (twitterUserId: bigint): Promise<TwitterUser | ServerError> => {
 	try {
 		const result = await prisma.twitterUser.findUnique({
 			where: {
-				id: BigInt(twitterUserId),
+				id: twitterUserId,
 			},
 		});
 		if (result) {
@@ -22,12 +34,12 @@ export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser
 	}
 };
 
-export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise<TwitterUser | ServerError> => {
-	const { userId, name, screenName, profileImageUrl } = twitterAccount;
+export const insertTwitterUser = async (twitterUser: TwitterUser): Promise<TwitterUser | ServerError> => {
+	const { id, name, screenName, profileImageUrl } = twitterUser;
 	try {
 		return await prisma.twitterUser.create({
 			data: {
-				id: BigInt(userId),
+				id,
 				name,
 				screenName,
 				profileImageUrl,

@@ -1,9 +1,9 @@
 import { getTwitterUser, insertTwitterUser } from '../twitter-users-model';
 import { TwitterUser } from '../../accounts/accounts';
 import prisma from '../../../../lib/prisma';
-import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
 
-const harness = new RoutesTestHarness();
+const harness = new TestHarness();
 
 beforeAll(async () => {
 	await harness.createUser();
@@ -18,16 +18,16 @@ afterAll(async () => {
 	await prisma.$disconnect();
 });
 
-const twitterAccount = harness.generateTwitterAccount();
+const twitterUser = harness.generateTwitterUser();
 
 test('insert twitter user should create and return a twitter user', async () => {
-	const result = <TwitterUser>await insertTwitterUser(twitterAccount);
+	const result = <TwitterUser>await insertTwitterUser(twitterUser);
 
-	expect(result).toEqual(twitterAccount);
+	expect(result).toEqual(twitterUser);
 });
 
 test('get twitter user should return twitter user', async () => {
-	const result = <TwitterUser>await getTwitterUser(twitterAccount.userId);
+	const result = <TwitterUser>await getTwitterUser(twitterUser.id);
 
-	expect(result).toEqual(twitterAccount);
+	expect(result).toEqual(twitterUser);
 });

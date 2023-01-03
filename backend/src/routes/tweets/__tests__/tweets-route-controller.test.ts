@@ -3,11 +3,11 @@ import HttpStatus from 'http-status';
 import http from 'http';
 import { app } from '../../../app';
 import prisma from '../../../../lib/prisma';
-import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
 
 const request = supertest(http.createServer(app.callback()));
 
-const harness = new RoutesTestHarness();
+const harness = new TestHarness();
 
 const tweetsEndpoint = '/api/tweets';
 

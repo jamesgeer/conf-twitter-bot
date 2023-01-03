@@ -11,9 +11,9 @@ import {
 } from '../tweets-model';
 import { Tweet, Tweets } from '../tweets';
 import { ServerError } from '../../types';
-import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
 
-const harness = new RoutesTestHarness();
+const harness = new TestHarness();
 
 let tweet: Tweet;
 
