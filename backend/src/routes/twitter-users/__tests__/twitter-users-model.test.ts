@@ -1,31 +1,33 @@
-import { prismaMock } from '../../../../lib/prismaMock';
 import { getTwitterUser, insertTwitterUser } from '../twitter-users-model';
-import { TwitterAccount } from '../../oauths/oauths';
 import { TwitterUser } from '../../accounts/accounts';
+import prisma from '../../../../lib/prisma';
+import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
 
-const twitterUser: TwitterUser = {
-	id: BigInt(1),
-	name: 'test_account',
-	screenName: 'Test Account',
-	profileImageUrl: 'image.png',
-};
+const harness = new RoutesTestHarness();
 
-const twitterAccount: TwitterAccount = {
-	userId: twitterUser.id.toString(),
-	name: twitterUser.name,
-	screenName: twitterUser.screenName,
-	profileImageUrl: twitterUser.profileImageUrl,
-	oauth: {},
-};
+beforeAll(async () => {
+	await harness.createUser();
+});
 
-test('should create twitter user', async () => {
-	prismaMock.twitterUser.create.mockResolvedValue(twitterUser);
+// after all tests complete
+afterAll(async () => {
+	await prisma.tweet.deleteMany({});
+	await prisma.account.deleteMany({});
+	await prisma.twitterUser.deleteMany({});
+	await prisma.user.deleteMany({});
+	await prisma.$disconnect();
+});
 
-	await expect(insertTwitterUser(twitterAccount)).resolves.toEqual(twitterUser.id);
+const twitterAccount = harness.generateTwitterAccount();
+
+test('insert twitter user should create and return a twitter user', async () => {
+	const result = <TwitterUser>await insertTwitterUser(twitterAccount);
+
+	expect(result).toEqual(twitterAccount);
 });
 
 test('get twitter user should return twitter user', async () => {
-	prismaMock.twitterUser.findUnique.mockResolvedValue(twitterUser);
+	const result = <TwitterUser>await getTwitterUser(twitterAccount.userId);
 
-	await expect(getTwitterUser(twitterAccount.userId)).resolves.toEqual(twitterUser);
+	expect(result).toEqual(twitterAccount);
 });

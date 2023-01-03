@@ -44,20 +44,24 @@ export class RoutesTestHarness {
 		};
 	}
 
-	public async createUser(): Promise<void> {
-		this.user = <User>await insertUser(faker.internet.userName(), faker.internet.password());
-	}
-
-	public async createTwitterUser(): Promise<void> {
-		this.twitterAccount = {
+	public generateTwitterAccount(): TwitterAccount {
+		return {
 			userId: this.user.id.toString(),
 			name: faker.internet.userName().replace('_', ' '),
 			screenName: faker.internet.userName(),
 			profileImageUrl: faker.internet.avatar(),
 			oauth: {},
 		};
+	}
 
-		this.twitterUser.id = <bigint>await insertTwitterUser(this.twitterAccount);
+	public async createUser(): Promise<void> {
+		this.user = <User>await insertUser(faker.internet.userName(), faker.internet.password());
+	}
+
+	public async createTwitterUser(): Promise<void> {
+		this.twitterAccount = this.generateTwitterAccount();
+
+		this.twitterUser = <TwitterUser>await insertTwitterUser(this.twitterAccount);
 	}
 
 	public async createTwitterAccount(): Promise<void> {

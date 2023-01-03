@@ -1,3 +1,5 @@
+import { TwitterUser } from '../accounts/accounts';
+
 interface TwitterOAuthRequestToken {
 	oauthToken?: string;
 	oauthTokenSecret: string;
@@ -8,12 +10,7 @@ export interface TwitterOAuthAccessToken {
 	accessSecret?: string;
 }
 
-export interface TwitterAccount {
-	userId: string;
-	name: string;
-	screenName: string;
-	profileImageUrl: string;
+export interface TwitterOAuthAccount {
+	twitterUser: TwitterUser;
 	oauth: TwitterOAuthAccessToken;
 }
-
-export type TwitterAccounts = Array<TwitterAccount>;

@@ -22,10 +22,10 @@ export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser
 	}
 };
 
-export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise<bigint | ServerError> => {
+export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise<TwitterUser | ServerError> => {
 	const { userId, name, screenName, profileImageUrl } = twitterAccount;
 	try {
-		const result = await prisma.twitterUser.create({
+		return await prisma.twitterUser.create({
 			data: {
 				id: BigInt(userId),
 				name,
@@ -33,7 +33,6 @@ export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise
 				profileImageUrl,
 			},
 		});
-		return result.id;
 	} catch (e) {
 		console.log(e);
 		console.log(logToFile(e));
