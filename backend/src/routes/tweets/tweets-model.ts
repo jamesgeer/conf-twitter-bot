@@ -26,7 +26,7 @@ export const getTweet = async (tweetId: string): Promise<Tweet | ServerError> =>
 	}
 };
 
-export const getTweets = async (twitterUserId: string): Promise<Tweets | ServerError> => {
+export const getTweets = async (twitterUserId: bigint): Promise<Tweets | ServerError> => {
 	const twitterUserExists = await getTwitterUser(twitterUserId);
 	if (twitterUserExists instanceof ServerError) {
 		return twitterUserExists;
@@ -35,7 +35,7 @@ export const getTweets = async (twitterUserId: string): Promise<Tweets | ServerE
 	try {
 		return await prisma.tweet.findMany({
 			where: {
-				twitterUserId: BigInt(twitterUserId),
+				twitterUserId,
 			},
 		});
 	} catch (e) {
@@ -45,7 +45,7 @@ export const getTweets = async (twitterUserId: string): Promise<Tweets | ServerE
 };
 
 export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerError> => {
-	const { accountId, twitterUserId, dateTime, content, image } = httpTweet;
+	const { accountId, twitterUserId, dateTime, content } = httpTweet;
 
 	if (!accountId || !twitterUserId || !dateTime || !content) {
 		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');

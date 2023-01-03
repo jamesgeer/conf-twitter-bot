@@ -65,14 +65,14 @@ it('get tweet should return inserted tweet', async () => {
 });
 
 it('get tweets should return an array with one tweet', async () => {
-	const result = <Tweets>await getTweets(harness.getTwitterUser().id.toString());
+	const result = <Tweets>await getTweets(harness.getTwitterUser().id);
 
 	expect(result.length).toEqual(1);
 	result.map((result: Tweet) => expect(result.id).toEqual(tweet.id));
 });
 
 it('get tweets should return error', async () => {
-	const result = <ServerError>await getTweets('738');
+	const result = <ServerError>await getTweets(BigInt(738));
 
 	expect(result).toBeInstanceOf(ServerError);
 	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
