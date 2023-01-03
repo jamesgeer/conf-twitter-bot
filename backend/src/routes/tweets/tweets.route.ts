@@ -4,10 +4,10 @@ import { tweet, tweets, scheduledTweets, sentTweets, createTweet, updateTweet, r
 
 const tweetsRouter = new Router({ prefix: '/tweets' });
 
-// GET: /api/tweets
+// GET: /api/tweets/:id
 tweetsRouter.get('/:id', tweet);
 
-// GET: /api/tweets/:id
+// GET: /api/tweets/
 tweetsRouter.get('/', tweets);
 
 // GET: /api/tweets/scheduled
@@ -17,10 +17,10 @@ tweetsRouter.get('/scheduled', scheduledTweets);
 tweetsRouter.get('/sent', sentTweets);
 
 // POST: /api/tweets
-tweetsRouter.post('/', koaBody(), createTweet);
+tweetsRouter.post('/', koaBody({ multipart: true }), createTweet);
 
 // PATCH: /api/tweets/:id
-tweetsRouter.patch('/:id', koaBody(), updateTweet);
+tweetsRouter.patch('/:id', koaBody({ multipart: true }), updateTweet);
 
 // DELETE: /api/tweets/:id
 tweetsRouter.delete('/:id', removeTweet);
