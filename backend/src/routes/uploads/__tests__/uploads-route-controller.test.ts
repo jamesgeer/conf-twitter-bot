@@ -5,7 +5,6 @@ import path from 'path';
 import looksSame from 'looks-same';
 import * as fs from 'fs';
 import { app } from '../../../app';
-import prisma from '../../../../lib/prisma';
 import { TestHarness } from '../../../tests/TestHarness';
 import { Upload } from '../uploads';
 
@@ -22,12 +21,7 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.upload.deleteMany({});
-	await prisma.tweet.deleteMany({});
-	await prisma.account.deleteMany({});
-	await prisma.twitterUser.deleteMany({});
-	await prisma.user.deleteMany({});
-	await prisma.$disconnect();
+	await TestHarness.deleteAll();
 });
 
 const testImage = (imageName: string) => `${__dirname}/${imageName}.png`;

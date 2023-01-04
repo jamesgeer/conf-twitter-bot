@@ -2,7 +2,6 @@ import supertest from 'supertest';
 import HttpStatus from 'http-status';
 import http from 'http';
 import { app } from '../../../app';
-import prisma from '../../../../lib/prisma';
 import { TestHarness } from '../../../tests/TestHarness';
 import { Tweet } from '../tweets';
 
@@ -21,11 +20,7 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.tweet.deleteMany({});
-	await prisma.account.deleteMany({});
-	await prisma.twitterUser.deleteMany({});
-	await prisma.user.deleteMany({});
-	await prisma.$disconnect();
+	await TestHarness.deleteAll();
 });
 
 it('GET tweet should return not found status', async () => {

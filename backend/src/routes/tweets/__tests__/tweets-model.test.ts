@@ -1,5 +1,4 @@
 import HttpStatus from 'http-status';
-import prisma from '../../../../lib/prisma';
 import {
 	deleteTweet,
 	getTweet,
@@ -24,11 +23,7 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.tweet.deleteMany({});
-	await prisma.account.deleteMany({});
-	await prisma.twitterUser.deleteMany({});
-	await prisma.user.deleteMany({});
-	await prisma.$disconnect();
+	await TestHarness.deleteAll();
 });
 
 it('get tweet should return status of not found', async () => {

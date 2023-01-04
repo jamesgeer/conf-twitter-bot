@@ -8,6 +8,7 @@ import { insertUser } from '../routes/users/users-model';
 import { insertTwitterUser } from '../routes/twitter-users/twitter-users-model';
 import { insertAccount } from '../routes/accounts/accounts-model';
 import { insertTweet } from '../routes/tweets/tweets-model';
+import prisma from '../../lib/prisma';
 
 export class TestHarness {
 	user: User;
@@ -78,6 +79,14 @@ export class TestHarness {
 		await this.createUser();
 		await this.createTwitterUser();
 		await this.createTwitterAccount();
+	}
+
+	static async deleteAll(): Promise<void> {
+		await prisma.tweet.deleteMany({});
+		await prisma.account.deleteMany({});
+		await prisma.twitterUser.deleteMany({});
+		await prisma.user.deleteMany({});
+		await prisma.$disconnect();
 	}
 
 	public getUser(): User {
