@@ -15,37 +15,40 @@ afterAll(async () => {
 	await TestHarness.deleteAll();
 });
 
+const user = harness.getUser();
 const twitterUser = harness.generateTwitterUser();
 
-it('insert twitter user should create and return a twitter user', async () => {
-	const result = <TwitterUser>await insertTwitterUser(twitterUser);
+describe('create and check twitter user', () => {
+	it('insert twitter user should create and return a twitter user', async () => {
+		const result = <TwitterUser>await insertTwitterUser(twitterUser);
 
-	expect(result).toEqual(twitterUser);
-});
+		expect(result).toEqual(twitterUser);
+	});
 
-it('get twitter user should return twitter user', async () => {
-	const result = <TwitterUser>await getTwitterUser(twitterUser.id);
+	it('get twitter user should return twitter user', async () => {
+		const result = <TwitterUser>await getTwitterUser(twitterUser.id);
 
-	expect(result).toEqual(twitterUser);
-});
+		expect(result).toEqual(twitterUser);
+	});
 
-it('check twitter user exists should return true', async () => {
-	const result = await twitterUserExists(twitterUser.id);
+	it('check twitter user exists should return true', async () => {
+		const result = await twitterUserExists(twitterUser.id);
 
-	expect(result).toBe(true);
-});
+		expect(result).toBe(true);
+	});
 
-it('check twitter user exists should return false', async () => {
-	const result = await twitterUserExists(BigInt(999));
+	it('check twitter user exists should return false', async () => {
+		const result = await twitterUserExists(BigInt(999));
 
-	expect(result).toBe(false);
-});
+		expect(result).toBe(false);
+	});
 
-it('get twitter user should return not found error', async () => {
-	const result = <ServerError>await getTwitterUser(BigInt(999));
+	it('get twitter user should return not found error', async () => {
+		const result = <ServerError>await getTwitterUser(BigInt(999));
 
-	expect(result).toBeInstanceOf(ServerError);
-	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
+		expect(result).toBeInstanceOf(ServerError);
+		expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
+	});
 });
 
 describe('delete twitter user', () => {
@@ -68,3 +71,5 @@ describe('delete twitter user', () => {
 		expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
 	});
 });
+
+describe('multiple accounts using the same twitter user', () => {});

@@ -17,6 +17,16 @@ export const twitterUserExists = async (twitterUserId: bigint): Promise<boolean>
 	return result > 0;
 };
 
+export const twitterUserExistsForAccount = async (userId: number, twitterUserId: bigint): Promise<boolean> => {
+	const result = await prisma.account.count({
+		where: {
+			userId,
+			twitterUserId,
+		},
+	});
+	return result > 0;
+};
+
 export const getTwitterUser = async (twitterUserId: bigint): Promise<TwitterUser | ServerError> => {
 	try {
 		const result = await prisma.twitterUser.findUnique({

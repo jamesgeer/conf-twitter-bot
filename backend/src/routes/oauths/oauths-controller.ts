@@ -4,7 +4,7 @@ import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken, insertTwi
 import { TwitterOAuthRequestToken } from './oauths';
 import { ServerError } from '../types';
 import { insertAccount } from '../accounts/accounts-model';
-import { insertTwitterUser, twitterUserExists } from '../twitter-users/twitter-users-model';
+import { insertTwitterUser, twitterUserExistsForAccount } from '../twitter-users/twitter-users-model';
 import { handleServerError } from '../util';
 
 // need a better solution than to store temp auth in a variable
@@ -28,6 +28,14 @@ export const requestToken = async (ctx: ParameterizedContext): Promise<void> => 
 
 export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	const { token, verifier } = ctx.request.body;
+	// @ts-ignore
+	const { userId } = ctx.session;
+
+	if (!ctx.session || !userId) {
+		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+		ctx.body = { message: 'Failed to retrieve user id.' };
+		return;
+	}
 
 	if (!token || !verifier || !tempAuthDetails) {
 		ctx.status = HttpStatus.BAD_REQUEST;
@@ -43,8 +51,8 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	// 1. store Twitter user
-	const isExistingUser = await twitterUserExists(twitterAccount.twitterUser.id);
-	if (isExistingUser) {
+	const isAlreadyAdded = await twitterUserExistsForAccount(userId, twitterAccount.twitterUser.id);
+	if (isAlreadyAdded) {
 		ctx.status = HttpStatus.CONFLICT;
 		ctx.body = { message: 'User already exists.' };
 		return;
@@ -57,13 +65,6 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	// 2. create account
-	if (!ctx.session) {
-		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-		ctx.body = { message: 'Failed to retrieve user id.' };
-		return;
-	}
-
-	const { userId } = ctx.session;
 	const twitterUserId = twitterAccount.twitterUser.id;
 
 	const accountId = await insertAccount(userId, twitterUserId);
