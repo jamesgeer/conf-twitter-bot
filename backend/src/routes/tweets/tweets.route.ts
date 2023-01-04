@@ -17,10 +17,10 @@ tweetsRouter.get('/scheduled', scheduledTweets);
 tweetsRouter.get('/sent', sentTweets);
 
 // POST: /api/tweets
-tweetsRouter.post('/', koaBody({ multipart: true }), createTweet);
+tweetsRouter.post('/', koaBody(), createTweet);
 
 // PATCH: /api/tweets/:id
-tweetsRouter.patch('/:id', koaBody({ multipart: true }), updateTweet);
+tweetsRouter.patch('/:id', koaBody(), updateTweet);
 
 // DELETE: /api/tweets/:id
 tweetsRouter.delete('/:id', removeTweet);

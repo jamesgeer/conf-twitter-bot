@@ -63,7 +63,7 @@ export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// success
 	ctx.status = HttpStatus.CREATED;
-	ctx.body = result.id;
+	ctx.body = result;
 };
 
 export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
