@@ -7,20 +7,24 @@ import { handleServerError } from '../util';
 
 export const user = async (ctx: ParameterizedContext): Promise<void> => {
 	const { userId } = ctx.params;
-	const result = await getUser(userId);
 
-	if (result) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = result;
+	const result = await getUser(userId);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
 		return;
 	}
 
-	ctx.status = HttpStatus.NOT_FOUND;
-	ctx.body = { message: 'No user with that ID exists.' };
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
 };
 
 export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 	const { username, password } = ctx.request.body;
+
+	if (!username || !password) {
+		ctx.status = HttpStatus.BAD_REQUEST;
+		return;
+	}
 
 	const result = await insertUser(username, password);
 	if (result instanceof ServerError) {
@@ -33,5 +37,5 @@ export const createUser = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// account successfully created and logged in
 	ctx.status = HttpStatus.CREATED;
-	ctx.body = result.id; // userId
+	ctx.body = result;
 };
