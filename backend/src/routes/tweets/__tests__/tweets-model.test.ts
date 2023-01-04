@@ -66,11 +66,10 @@ it('get tweets should return an array with one tweet', async () => {
 	result.map((result: Tweet) => expect(result.id).toEqual(tweet.id));
 });
 
-it('get tweets should return error', async () => {
-	const result = <ServerError>await getTweets(BigInt(738));
+it('get tweets should return an empty array of tweets', async () => {
+	const result = <Tweets>await getTweets(BigInt(738));
 
-	expect(result).toBeInstanceOf(ServerError);
-	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
+	expect(result.length).toEqual(0);
 });
 
 it('update tweet should update content', async () => {

@@ -6,7 +6,12 @@ import { userLogin } from '../sessions/sessions-controller';
 import { handleServerError } from '../util';
 
 export const user = async (ctx: ParameterizedContext): Promise<void> => {
-	const { userId } = ctx.params;
+	const { id: userId }: { id: string } = ctx.params;
+
+	if (!userId) {
+		ctx.status = HttpStatus.BAD_REQUEST;
+		return;
+	}
 
 	const result = await getUser(userId);
 	if (result instanceof ServerError) {

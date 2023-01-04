@@ -1,5 +1,11 @@
 import HttpStatus from 'http-status';
-import { deleteTwitterUser, getTwitterUser, insertTwitterUser, twitterUserExists } from '../twitter-users-model';
+import {
+	deleteTwitterUser,
+	getTwitterUser,
+	insertTwitterUser,
+	twitterUserExists,
+	twitterUserExistsForAccount,
+} from '../twitter-users-model';
 import { TwitterUser } from '../../accounts/accounts';
 import { TestHarness } from '../../../tests/TestHarness';
 import { ServerError } from '../../types';
@@ -20,7 +26,7 @@ const twitterUser = harness.generateTwitterUser();
 
 describe('create and check twitter user', () => {
 	it('insert twitter user should create and return a twitter user', async () => {
-		const result = <TwitterUser>await insertTwitterUser(twitterUser);
+		const result = <TwitterUser>await insertTwitterUser(user.id, twitterUser);
 
 		expect(result).toEqual(twitterUser);
 	});
@@ -72,4 +78,36 @@ describe('delete twitter user', () => {
 	});
 });
 
-describe('multiple accounts using the same twitter user', () => {});
+describe('twitter user conflict tests', () => {
+	const harness = new TestHarness();
+	let user;
+	let twitterUser;
+
+	it('twitter user should not exist for this user', async () => {
+		await harness.createUser();
+		user = harness.getUser();
+		console.log(user);
+
+		const result = await twitterUserExistsForAccount(user.id, BigInt(999));
+
+		expect(result).toBe(false);
+	});
+
+	it('twitter user should exist for this user', async () => {
+		await harness.createTwitterUser();
+		twitterUser = harness.getTwitterUser();
+
+		console.log(user, twitterUser);
+		await insertTwitterUser(user.id, twitterUser);
+		const result = await twitterUserExistsForAccount(user.id, twitterUser.id);
+
+		expect(result).toBe(true);
+	});
+
+	// it('insert existing twitter user for account should return conflict error', async () => {
+	// 	const result = <ServerError>await insertTwitterUser(user.id, twitterUser);
+	//
+	// 	expect(result).toBeInstanceOf(ServerError);
+	// 	expect(result.getStatusCode()).toEqual(HttpStatus.CONFLICT);
+	// });
+});

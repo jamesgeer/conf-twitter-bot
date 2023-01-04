@@ -7,7 +7,7 @@ const tweetsRouter = new Router({ prefix: '/tweets' });
 // GET: /api/tweets/:id
 tweetsRouter.get('/:id', tweet);
 
-// GET: /api/tweets/
+// GET: /api/tweets
 tweetsRouter.get('/', tweets);
 
 // GET: /api/tweets/scheduled

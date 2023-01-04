@@ -65,7 +65,7 @@ export class TestHarness {
 	}
 
 	public async createTwitterUser(): Promise<void> {
-		this.twitterUser = <TwitterUser>await insertTwitterUser(this.generateTwitterUser());
+		this.twitterUser = <TwitterUser>await insertTwitterUser(this.user.id, this.generateTwitterUser());
 	}
 
 	public async createTwitterAccount(): Promise<void> {

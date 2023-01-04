@@ -7,7 +7,6 @@ import { HTTPTweet, Tweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { logToFile } from '../../logging/logging';
-import { getTwitterUser } from '../twitter-users/twitter-users-model';
 
 export const getTweet = async (tweetId: string): Promise<Tweet | ServerError> => {
 	try {
@@ -27,11 +26,6 @@ export const getTweet = async (tweetId: string): Promise<Tweet | ServerError> =>
 };
 
 export const getTweets = async (twitterUserId: bigint): Promise<Tweets | ServerError> => {
-	const twitterUserExists = await getTwitterUser(twitterUserId);
-	if (twitterUserExists instanceof ServerError) {
-		return twitterUserExists;
-	}
-
 	try {
 		return await prisma.tweet.findMany({
 			where: {
@@ -39,6 +33,7 @@ export const getTweets = async (twitterUserId: bigint): Promise<Tweets | ServerE
 			},
 		});
 	} catch (e) {
+		console.log(e);
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get tweets due to server problem.');
 	}

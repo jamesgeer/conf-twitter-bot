@@ -58,7 +58,7 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	const insertTwitterUserResult = await insertTwitterUser(twitterAccount.twitterUser);
+	const insertTwitterUserResult = await insertTwitterUser(userId, twitterAccount.twitterUser);
 	if (insertTwitterUserResult instanceof ServerError) {
 		handleServerError(ctx, insertTwitterUserResult);
 		return;
