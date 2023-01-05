@@ -49,8 +49,8 @@ export const getAccount = async (accountId: string): Promise<Account | null> =>
 export const accountExists = async (userId: number, twitterUserId: bigint): Promise<boolean> => {
 	const result = await prisma.account.count({
 		where: {
-			userId: +userId,
-			twitterUserId: BigInt(twitterUserId),
+			userId,
+			twitterUserId,
 		},
 	});
 

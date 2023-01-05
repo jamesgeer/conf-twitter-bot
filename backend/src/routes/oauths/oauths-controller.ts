@@ -3,8 +3,8 @@ import HttpStatus from 'http-status';
 import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken, insertTwitterOAuth } from './oauths-model';
 import { TwitterOAuthRequestToken } from './oauths';
 import { ServerError } from '../types';
-import { insertAccount } from '../accounts/accounts-model';
-import { insertTwitterUser, twitterUserExistsForAccount } from '../twitter-users/twitter-users-model';
+import { accountExists, insertAccount } from '../accounts/accounts-model';
+import { insertTwitterUser } from '../twitter-users/twitter-users-model';
 import { handleServerError } from '../util';
 
 // need a better solution than to store temp auth in a variable
@@ -51,7 +51,7 @@ export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	// 1. store Twitter user
-	const isAlreadyAdded = await twitterUserExistsForAccount(userId, twitterAccount.twitterUser.id);
+	const isAlreadyAdded = await accountExists(userId, twitterAccount.twitterUser.id);
 	if (isAlreadyAdded) {
 		ctx.status = HttpStatus.CONFLICT;
 		ctx.body = { message: 'User already exists.' };

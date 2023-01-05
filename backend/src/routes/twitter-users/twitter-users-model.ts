@@ -3,6 +3,7 @@ import { TwitterUser } from '../accounts/accounts';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { logToFile } from '../../logging/logging';
+import { accountExists } from '../accounts/accounts-model';
 
 /**
  * returns true if the Twitter user exists, false otherwise
@@ -12,16 +13,6 @@ export const twitterUserExists = async (twitterUserId: bigint): Promise<boolean>
 	const result = await prisma.twitterUser.count({
 		where: {
 			id: twitterUserId,
-		},
-	});
-	return result > 0;
-};
-
-export const twitterUserExistsForAccount = async (userId: number, twitterUserId: bigint): Promise<boolean> => {
-	const result = await prisma.account.count({
-		where: {
-			userId,
-			twitterUserId,
 		},
 	});
 	return result > 0;
@@ -49,15 +40,18 @@ export const insertTwitterUser = async (
 	twitterUser: TwitterUser,
 ): Promise<TwitterUser | ServerError> => {
 	// user is attempting to add a Twitter account that they already control
-	if (await twitterUserExistsForAccount(userId, twitterUser.id)) {
+	if (await accountExists(userId, twitterUser.id)) {
+		console.log('conflict');
 		return new ServerError(HttpStatus.CONFLICT, 'You already have access to this Twitter user.');
 	}
 
 	// another user is trying to add an existing account so just use existing value
 	if (await twitterUserExists(twitterUser.id)) {
+		console.log('exists');
 		return twitterUser;
 	}
 
+	console.log('new');
 	const { id, name, screenName, profileImageUrl } = twitterUser;
 	try {
 		return await prisma.twitterUser.create({
