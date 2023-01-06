@@ -69,6 +69,7 @@ export const insertAccount = async (userId: number, twitterUserId: bigint): Prom
 				twitterUserId,
 			},
 		});
+		console.log(result);
 		return result.id;
 	} catch (e) {
 		console.log(e);

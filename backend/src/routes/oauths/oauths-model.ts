@@ -1,6 +1,6 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import HttpStatus from 'http-status';
-import { TwitterOAuthRequestToken, TwitterOAuthAccount } from './oauths';
+import { TwitterOAuthRequestToken, TwitterUserOAuth } from './oauths';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 import { TWITTER_API_KEY, TWITTER_API_SECRET } from '../../keys';
@@ -40,7 +40,7 @@ export const getTwitterAccountByRequestToken = async (
 	tempAuthDetails: TwitterOAuthRequestToken,
 	oauthToken: string,
 	oauthVerifier: string,
-): Promise<TwitterOAuthAccount | ServerError> => {
+): Promise<TwitterUserOAuth | ServerError> => {
 	if (oauthToken !== tempAuthDetails.oauthToken) {
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'oAuth Tokens do not match.');
 	}

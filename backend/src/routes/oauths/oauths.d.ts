@@ -10,7 +10,7 @@ export interface TwitterOAuthAccessToken {
 	accessSecret?: string;
 }
 
-export interface TwitterOAuthAccount {
+export interface TwitterUserOAuth {
 	twitterUser: TwitterUser;
 	oauth: TwitterOAuthAccessToken;
 }
