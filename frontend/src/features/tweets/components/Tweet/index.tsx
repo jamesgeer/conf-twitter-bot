@@ -2,7 +2,7 @@ import DateTimePicker from './DateTimePicker';
 import React, { useContext, useEffect, useState } from 'react';
 import TweetContent from './TweetContent';
 import TweetMediaButtons from './TweetMediaButtons';
-import { Tweet } from '../../types';
+import { HTTPTweet, Tweet } from '../../types';
 import { Button } from '@chakra-ui/react';
 import { AccountContext } from '../../../accounts/context/AccountContext';
 import { AccountContextProps } from '../../../accounts/types';
@@ -72,27 +72,22 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 		await submitTweet().then();
 	};
 
-	const payload = () => {
-		const formData = new FormData();
-		formData.append('accountId', account.id.toString());
-		formData.append('twitterUserId', account.twitterUser.id.toString());
-		formData.append('dateTime', dateTime.toString());
-		formData.append('content', content);
-
-		images && formData.append('images', images);
-		isEdit && formData.append('tweetId', tweet.id.toString());
-
-		return formData;
+	const tweetPayload = (): HTTPTweet => {
+		return {
+			...(isEdit && { tweetId: tweet.id }), // add tweet id if tweet is in edit mode
+			accountId: account.id,
+			twitterUserId: account.twitterUser.id,
+			dateTime: dateTime,
+			content: content,
+		};
 	};
 
 	const submitTweet = async (): Promise<void> => {
 		try {
 			if (isEdit) {
-				// @ts-ignore
-				await editTweetMutation.mutateAsync(payload()).then(() => setIsEdit && setIsEdit(false));
+				await editTweetMutation.mutateAsync(tweetPayload()).then(() => setIsEdit && setIsEdit(false));
 			} else {
-				// @ts-ignore
-				await createTweetMutation.mutateAsync(payload()).then(() => {
+				await createTweetMutation.mutateAsync(tweetPayload()).then(() => {
 					setContent('');
 					setImageUrl('');
 					//need setImages() to be reset aswell
@@ -102,7 +97,6 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 			if (axios.isAxiosError(e)) {
 				switch (e.response?.status) {
 					case HttpStatus.UNAUTHORIZED:
-						console.log('log log');
 						formError('You are not logged in.');
 						break;
 

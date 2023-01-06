@@ -1,5 +1,4 @@
 import HttpStatus from 'http-status';
-import prisma from '../../../../lib/prisma';
 import {
 	deleteTweet,
 	getTweet,
@@ -11,9 +10,9 @@ import {
 } from '../tweets-model';
 import { Tweet, Tweets } from '../tweets';
 import { ServerError } from '../../types';
-import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
 
-const harness = new RoutesTestHarness();
+const harness = new TestHarness();
 
 let tweet: Tweet;
 
@@ -24,11 +23,7 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.tweet.deleteMany({});
-	await prisma.account.deleteMany({});
-	await prisma.twitterUser.deleteMany({});
-	await prisma.user.deleteMany({});
-	await prisma.$disconnect();
+	await TestHarness.deleteAll();
 });
 
 it('get tweet should return status of not found', async () => {
@@ -65,17 +60,16 @@ it('get tweet should return inserted tweet', async () => {
 });
 
 it('get tweets should return an array with one tweet', async () => {
-	const result = <Tweets>await getTweets(harness.getTwitterUser().id.toString());
+	const result = <Tweets>await getTweets(harness.getTwitterUser().id);
 
 	expect(result.length).toEqual(1);
 	result.map((result: Tweet) => expect(result.id).toEqual(tweet.id));
 });
 
-it('get tweets should return error', async () => {
-	const result = <ServerError>await getTweets('738');
+it('get tweets should return an empty array of tweets', async () => {
+	const result = <Tweets>await getTweets(BigInt(738));
 
-	expect(result).toBeInstanceOf(ServerError);
-	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
+	expect(result.length).toEqual(0);
 });
 
 it('update tweet should update content', async () => {

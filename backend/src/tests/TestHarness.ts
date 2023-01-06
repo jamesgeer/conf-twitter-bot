@@ -1,18 +1,19 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from '@faker-js/faker';
 import { User } from '../routes/types';
-import { TwitterAccount } from '../routes/oauths/oauths';
+import { TwitterUserOAuth } from '../routes/oauths/oauths';
 import { Account, TwitterUser } from '../routes/accounts/accounts';
 import { HTTPTweet, Tweet } from '../routes/tweets/tweets';
 import { insertUser } from '../routes/users/users-model';
 import { insertTwitterUser } from '../routes/twitter-users/twitter-users-model';
 import { insertAccount } from '../routes/accounts/accounts-model';
 import { insertTweet } from '../routes/tweets/tweets-model';
+import prisma from '../../lib/prisma';
 
-export class RoutesTestHarness {
+export class TestHarness {
 	user: User;
-	twitterAccount: TwitterAccount;
 	twitterUser: TwitterUser;
+	twitterUserOAuth: TwitterUserOAuth;
 	account: Account;
 	httpTweet: HTTPTweet;
 
@@ -22,19 +23,16 @@ export class RoutesTestHarness {
 			username: '',
 		};
 
-		this.twitterAccount = {
-			userId: '0',
-			name: '',
-			screenName: '',
-			profileImageUrl: '',
-			oauth: {},
-		};
-
 		this.twitterUser = {
 			id: BigInt(0),
 			name: '',
 			screenName: '',
 			profileImageUrl: '',
+		};
+
+		this.twitterUserOAuth = {
+			twitterUser: this.twitterUser,
+			oauth: {},
 		};
 
 		this.account = {
@@ -44,33 +42,47 @@ export class RoutesTestHarness {
 		};
 	}
 
-	public async createUser(): Promise<void> {
-		this.user = <User>await insertUser(faker.internet.userName(), faker.internet.password());
-	}
-
-	public async createTwitterUser(): Promise<void> {
-		this.twitterAccount = {
-			userId: this.user.id.toString(),
+	public generateTwitterUser(): TwitterUser {
+		this.twitterUser = {
+			id: faker.datatype.bigInt(),
 			name: faker.internet.userName().replace('_', ' '),
 			screenName: faker.internet.userName(),
 			profileImageUrl: faker.internet.avatar(),
-			oauth: {},
 		};
 
-		this.twitterUser.id = <bigint>await insertTwitterUser(this.twitterAccount);
+		return this.twitterUser;
 	}
 
-	public async createTwitterAccount(): Promise<void> {
-		this.account.userId = this.user.id;
-		this.account.twitterUser = this.twitterUser;
+	public async createUser(): Promise<User> {
+		this.user = <User>await insertUser(faker.internet.userName(), faker.internet.password());
+		return this.user;
+	}
 
-		this.account.id = <number>await insertAccount(this.user.id, this.twitterUser.id);
+	public async createTwitterUser(user: User, twitterUser: TwitterUser): Promise<TwitterUser> {
+		this.twitterUser = <TwitterUser>await insertTwitterUser(user.id, twitterUser);
+		return this.twitterUser;
+	}
+
+	public async createAccount(user: User, twitterUser: TwitterUser): Promise<Account> {
+		this.account = <Account>await insertAccount(user.id, twitterUser.id);
+		return this.account;
 	}
 
 	public async createStandard(): Promise<void> {
-		await this.createUser();
-		await this.createTwitterUser();
-		await this.createTwitterAccount();
+		const user = await this.createUser();
+		const newTwitterUser = this.generateTwitterUser();
+
+		const twitterUser = await this.createTwitterUser(user, newTwitterUser);
+
+		await this.createAccount(user, twitterUser);
+	}
+
+	static async deleteAll(): Promise<void> {
+		await prisma.tweet.deleteMany({});
+		await prisma.account.deleteMany({});
+		await prisma.twitterUser.deleteMany({});
+		await prisma.user.deleteMany({});
+		await prisma.$disconnect();
 	}
 
 	public getUser(): User {

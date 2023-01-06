@@ -25,12 +25,15 @@ export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
-	if (!ctx.session) {
+	// @ts-ignore
+	const { twitterUserId } = ctx.session;
+
+	if (!twitterUserId) {
 		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 		return;
 	}
 
-	const result = await getTweets(ctx.session.twitterUserId);
+	const result = await getTweets(BigInt(twitterUserId));
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
@@ -52,6 +55,7 @@ export const sentTweets = async (ctx: ParameterizedContext): Promise<void> => {
 
 export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const httpTweet: HTTPTweet = ctx.request.body;
+	console.log(httpTweet);
 	const result = await insertTweet(httpTweet);
 
 	if (result instanceof ServerError) {
@@ -62,7 +66,7 @@ export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// success
 	ctx.status = HttpStatus.CREATED;
-	ctx.body = result.id;
+	ctx.body = result;
 };
 
 export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {

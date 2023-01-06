@@ -2,12 +2,12 @@ import supertest from 'supertest';
 import HttpStatus from 'http-status';
 import http from 'http';
 import { app } from '../../../app';
-import prisma from '../../../../lib/prisma';
-import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
+import { Tweet } from '../tweets';
 
 const request = supertest(http.createServer(app.callback()));
 
-const harness = new RoutesTestHarness();
+const harness = new TestHarness();
 
 const tweetsEndpoint = '/api/tweets';
 
@@ -20,11 +20,7 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.tweet.deleteMany({});
-	await prisma.account.deleteMany({});
-	await prisma.twitterUser.deleteMany({});
-	await prisma.user.deleteMany({});
-	await prisma.$disconnect();
+	await TestHarness.deleteAll();
 });
 
 it('GET tweet should return not found status', async () => {
@@ -33,14 +29,17 @@ it('GET tweet should return not found status', async () => {
 	expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 });
 
-it('POST tweet should create new tweet and return id', async () => {
+it('POST tweet should create new tweet and return tweet', async () => {
 	const httpTweet = harness.createHttpTweet();
 
 	const response = await request.post(tweetsEndpoint).send(httpTweet);
 	expect(response.status).toEqual(HttpStatus.CREATED);
-	expect(response.body).toBeGreaterThan(0);
 
-	tweetId = response.body;
+	const createdTweet: Tweet = response.body;
+	expect(createdTweet.id).toBeGreaterThan(0);
+	expect(createdTweet.content).toEqual(httpTweet.content);
+
+	tweetId = createdTweet.id;
 });
 
 it('GET tweet should return tweet for provided id', async () => {

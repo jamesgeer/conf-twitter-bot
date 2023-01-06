@@ -5,13 +5,12 @@ import path from 'path';
 import looksSame from 'looks-same';
 import * as fs from 'fs';
 import { app } from '../../../app';
-import prisma from '../../../../lib/prisma';
-import { RoutesTestHarness } from '../../../tests/RoutesTestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
 import { Upload } from '../uploads';
 
 const request = supertest(http.createServer(app.callback()));
 
-const harness = new RoutesTestHarness();
+const harness = new TestHarness();
 
 const uploadsEndpoint = '/api/uploads';
 
@@ -22,12 +21,7 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.upload.deleteMany({});
-	await prisma.tweet.deleteMany({});
-	await prisma.account.deleteMany({});
-	await prisma.twitterUser.deleteMany({});
-	await prisma.user.deleteMany({});
-	await prisma.$disconnect();
+	await TestHarness.deleteAll();
 });
 
 const testImage = (imageName: string) => `${__dirname}/${imageName}.png`;

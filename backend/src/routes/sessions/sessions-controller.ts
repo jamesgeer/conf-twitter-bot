@@ -84,6 +84,12 @@ export const accountSession = async (ctx: ParameterizedContext): Promise<void> =
 	ctx.status = HttpStatus.UNAUTHORIZED;
 };
 
+interface AccountLoginRequest {
+	accountId: number;
+	userId: number;
+	twitterUserId: bigint;
+}
+
 export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => {
 	if (ctx.session && !ctx.session.isLoggedIn) {
 		ctx.status = HttpStatus.UNAUTHORIZED;
@@ -91,13 +97,13 @@ export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => 
 		return;
 	}
 
-	const { accountId, userId, twitterUserId } = ctx.request.body;
+	const { accountId, userId, twitterUserId }: AccountLoginRequest = ctx.request.body;
 	if (await accountExists(userId, twitterUserId)) {
 		// checks passed, store account details in session
 		if (ctx.session) {
-			ctx.session.userId = +userId;
-			ctx.session.accountId = +accountId;
-			ctx.session.twitterUserId = BigInt(twitterUserId);
+			ctx.session.userId = userId;
+			ctx.session.accountId = accountId;
+			ctx.session.twitterUserId = twitterUserId;
 		}
 
 		ctx.status = HttpStatus.OK;
