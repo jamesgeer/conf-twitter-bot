@@ -68,20 +68,3 @@ export const insertTwitterUser = async (
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
 };
-
-export const deleteTwitterUser = async (twitterUserId: bigint): Promise<TwitterUser | ServerError> => {
-	try {
-		return await prisma.twitterUser.delete({
-			where: {
-				id: twitterUserId,
-			},
-		});
-	} catch (e) {
-		console.log(e);
-		console.log(logToFile(e));
-		return new ServerError(
-			HttpStatus.INTERNAL_SERVER_ERROR,
-			'Unable to delete Twitter user due to server problem.',
-		);
-	}
-};

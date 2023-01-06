@@ -58,23 +58,23 @@ export class TestHarness {
 		return this.user;
 	}
 
-	public async createTwitterUser(): Promise<TwitterUser> {
-		this.twitterUser = <TwitterUser>await insertTwitterUser(this.user.id, this.generateTwitterUser());
+	public async createTwitterUser(user: User, twitterUser: TwitterUser): Promise<TwitterUser> {
+		this.twitterUser = <TwitterUser>await insertTwitterUser(user.id, twitterUser);
 		return this.twitterUser;
 	}
 
-	public async createTwitterAccount(): Promise<number> {
-		this.account.userId = this.user.id;
-		this.account.twitterUser = this.twitterUser;
-
-		this.account.id = <number>await insertAccount(this.user.id, this.twitterUser.id);
-		return this.account.id;
+	public async createAccount(user: User, twitterUser: TwitterUser): Promise<Account> {
+		this.account = <Account>await insertAccount(user.id, twitterUser.id);
+		return this.account;
 	}
 
 	public async createStandard(): Promise<void> {
-		await this.createUser();
-		await this.createTwitterUser();
-		await this.createTwitterAccount();
+		const user = await this.createUser();
+		const newTwitterUser = this.generateTwitterUser();
+
+		const twitterUser = await this.createTwitterUser(user, newTwitterUser);
+
+		await this.createAccount(user, twitterUser);
 	}
 
 	static async deleteAll(): Promise<void> {
