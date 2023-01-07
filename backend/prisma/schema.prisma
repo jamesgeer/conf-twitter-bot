@@ -67,7 +67,7 @@ model Upload {
     tweet   Tweet   @relation(fields: [tweetId], references: [id])
     tweetId Int
     name    String
-    path    String  @unique
+    url     String  @unique
     alt     String?
     type    String
 }
