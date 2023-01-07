@@ -16,7 +16,8 @@ export const upload = async (ctx: ParameterizedContext): Promise<void> => {
 	}
 
 	ctx.status = HttpStatus.OK;
-	await send(ctx, result.path, { root: '/' });
+	ctx.body = result;
+	// await send(ctx, result.path, { root: '/' });
 };
 
 // retrieve tweet uploaded media
