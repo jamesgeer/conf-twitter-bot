@@ -24,7 +24,7 @@ afterAll(async () => {
 });
 
 it('GET tweet should return not found status', async () => {
-	const response = await request.get(`${tweetsEndpoint}/1`);
+	const response = await request.get(`${tweetsEndpoint}/${999}`);
 
 	expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 });

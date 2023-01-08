@@ -1,11 +1,12 @@
 import HttpStatus from 'http-status';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import * as fs from 'fs';
-import { lineBreakG } from 'acorn';
+import { existsSync, rmSync } from 'fs';
+import path from 'path';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 import { logToFile } from '../../logging/logging';
 import { Upload, Uploads } from './uploads';
+import { uploadFolder } from '../util';
 
 export const getUpload = async (uploadId: number): Promise<Upload | ServerError> => {
 	try {
@@ -19,6 +20,7 @@ export const getUpload = async (uploadId: number): Promise<Upload | ServerError>
 		}
 		return new ServerError(HttpStatus.NOT_FOUND, `Image with ID ${uploadId} not found.`);
 	} catch (e) {
+		console.log(e);
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get image due to server problem.');
 	}
@@ -77,10 +79,13 @@ export const deleteUploadDb = async (imageId: number): Promise<Upload | ServerEr
 	}
 };
 
-// remove image file
-// TODO:
+// remove uploaded file
 export const deleteUploadFile = async (fileName: string): Promise<void> =>
-	fs.rmSync(fileName, {
+	rmSync(path.join(uploadFolder, fileName), {
 		// ignore exceptions i.e. file not found (try/catch does not prevent fs from crashing server)
 		force: true,
 	});
+
+// check uploaded file exists
+export const uploadFileExists = async (fileName: string): Promise<boolean> =>
+	existsSync(path.join(uploadFolder, fileName));

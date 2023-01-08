@@ -1,5 +1,6 @@
 import { ParameterizedContext } from 'koa';
-import * as fs from 'fs';
+import path from 'path';
+import appRoot from 'app-root-path';
 import { ServerError } from './types';
 
 export const handleServerError = (ctx: ParameterizedContext, result: ServerError): void => {
@@ -7,13 +8,4 @@ export const handleServerError = (ctx: ParameterizedContext, result: ServerError
 	ctx.body = { message: result.getMessage() };
 };
 
-export const readImage = (imagePath: string): any =>
-	fs.readFile(imagePath, (err, image) => {
-		if (err) {
-			return;
-		}
-
-		console.log(image);
-		// eslint-disable-next-line consistent-return
-		return image;
-	});
+export const uploadFolder = path.join(appRoot.path, 'public', 'uploads');

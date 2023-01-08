@@ -8,8 +8,15 @@ import { Upload } from './uploads';
 
 // upload by id
 export const upload = async (ctx: ParameterizedContext): Promise<void> => {
-	const { id } = ctx.params;
-	const result = await getUpload(id);
+	const { id }: { id: string } = ctx.params;
+	const uploadId: number = +id;
+
+	if (uploadId <= 0) {
+		ctx.status = HttpStatus.BAD_REQUEST;
+		return;
+	}
+
+	const result = await getUpload(uploadId);
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
@@ -21,9 +28,10 @@ export const upload = async (ctx: ParameterizedContext): Promise<void> => {
 
 // retrieve tweet uploaded media
 export const uploads = async (ctx: ParameterizedContext): Promise<void> => {
-	const { tweetId } = ctx.params;
+	const { id }: { id: string } = ctx.params;
+	const tweetId = +id;
 
-	if (!tweetId) {
+	if (tweetId <= 0) {
 		ctx.status = HttpStatus.BAD_REQUEST;
 		ctx.body = 'Missing or invalid Tweet id';
 		return;
@@ -94,10 +102,16 @@ export const createUpload = async (ctx: ParameterizedContext): Promise<void> => 
 
 // remove image from database and file system
 export const removeUpload = async (ctx: ParameterizedContext): Promise<void> => {
-	const { id } = ctx.params;
+	const { id }: { id: string } = ctx.params;
+	const uploadId: number = +id;
+
+	if (uploadId <= 0) {
+		ctx.status = HttpStatus.BAD_REQUEST;
+		return;
+	}
 
 	// delete image from database
-	const result = await deleteUploadDb(id);
+	const result = await deleteUploadDb(uploadId);
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
