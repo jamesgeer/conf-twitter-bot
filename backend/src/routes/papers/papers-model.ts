@@ -6,6 +6,7 @@ let papers: Papers;
 
 export async function getPapers(): Promise<Papers> {
 	try {
+		// @ts-ignore
 		papers = await prisma.paper.findMany().then((paperArray) => <Papers>paperArray);
 	} catch (e) {
 		console.error(e);
