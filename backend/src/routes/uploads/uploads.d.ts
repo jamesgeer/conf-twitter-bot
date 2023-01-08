@@ -2,7 +2,7 @@ export interface Upload {
 	id: number;
 	tweetId: number;
 	name: string;
-	path: string;
+	url: string;
 	alt: string | null;
 	type: string;
 }

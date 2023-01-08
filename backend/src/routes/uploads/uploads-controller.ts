@@ -1,6 +1,6 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import send from 'koa-send';
+import path from 'path';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
 import { getUpload, getUploads, insertUpload, deleteUploadDb, deleteUploadFile } from './uploads-model';
@@ -17,7 +17,6 @@ export const upload = async (ctx: ParameterizedContext): Promise<void> => {
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = result;
-	// await send(ctx, result.path, { root: '/' });
 };
 
 // retrieve tweet uploaded media
@@ -41,7 +40,6 @@ export const uploads = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 interface MediaUpload extends File {
-	name: string;
 	path: string;
 }
 
@@ -67,13 +65,23 @@ export const createUpload = async (ctx: ParameterizedContext): Promise<void> => 
 	// iterate over uploaded media
 	const results: Upload[] = [];
 	for (const mediaUpload of uploadArray) {
-		const { name, path } = mediaUpload as MediaUpload;
-		const result = await insertUpload(tweetId, name, path, '', 'image');
+		const filename = path.basename((mediaUpload as MediaUpload).path);
+
+		const upload: Upload = {
+			id: 0,
+			tweetId: +tweetId,
+			name: filename,
+			url: `http://localhost:3000/uploads/${filename}`, // TODO: replace with env variable
+			alt: '',
+			type: mediaUpload.type,
+		};
+
+		const result = await insertUpload(upload);
 
 		// delete uploaded image if database insertion fails
 		if (result instanceof ServerError) {
 			handleServerError(ctx, result);
-			await deleteUploadFile(path);
+			await deleteUploadFile(filename);
 			return;
 		}
 
@@ -96,7 +104,7 @@ export const removeUpload = async (ctx: ParameterizedContext): Promise<void> => 
 	}
 
 	// only attempt to delete image if successfully removed from database
-	await deleteUploadFile(result.path);
+	await deleteUploadFile(result.name);
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = result;
