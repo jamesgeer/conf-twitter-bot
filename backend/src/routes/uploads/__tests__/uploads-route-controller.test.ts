@@ -1,9 +1,7 @@
 import supertest from 'supertest';
 import HttpStatus from 'http-status';
 import http from 'http';
-import path from 'path';
 import looksSame from 'looks-same';
-import * as fs from 'fs';
 import { app } from '../../../app';
 import { TestHarness } from '../../../tests/TestHarness';
 import { Upload, Uploads } from '../uploads';

@@ -5,6 +5,7 @@ import { ServerError } from '../types';
 import { handleServerError } from '../util';
 import { getUpload, getUploads, insertUpload, deleteUploadDb, deleteUploadFile } from './uploads-model';
 import { Upload } from './uploads';
+import { APP_URL } from '../../keys';
 
 // upload by id
 export const upload = async (ctx: ParameterizedContext): Promise<void> => {
@@ -79,7 +80,7 @@ export const createUpload = async (ctx: ParameterizedContext): Promise<void> => 
 			id: 0,
 			tweetId: +tweetId,
 			name: filename,
-			url: `http://localhost:3000/uploads/${filename}`, // TODO: replace with env variable
+			url: `${APP_URL}/uploads/${filename}`, // TODO: replace with env variable
 			alt: '',
 			type: mediaUpload.type,
 		};

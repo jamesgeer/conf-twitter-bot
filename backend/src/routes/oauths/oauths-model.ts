@@ -3,7 +3,7 @@ import HttpStatus from 'http-status';
 import { TwitterOAuthRequestToken, TwitterUserOAuth } from './oauths';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
-import { TWITTER_API_KEY, TWITTER_API_SECRET } from '../../keys';
+import { TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_CALLBACK_URL } from '../../keys';
 import { logToFile } from '../../logging/logging';
 import { TwitterUser } from '../accounts/accounts';
 
@@ -13,9 +13,7 @@ export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequest
 		appSecret: <string>TWITTER_API_SECRET,
 	});
 
-	// TODO: replace callbackUrl with an env variable
-	const callbackUrl = 'http://localhost:3000/twitter-oauth-callback';
-	const authLink = await client.generateAuthLink(callbackUrl);
+	const authLink = await client.generateAuthLink(TWITTER_CALLBACK_URL);
 
 	if (authLink && authLink.oauth_token.length > 0) {
 		return {
