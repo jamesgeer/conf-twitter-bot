@@ -80,7 +80,7 @@ export const createUpload = async (ctx: ParameterizedContext): Promise<void> => 
 			id: 0,
 			tweetId: +tweetId,
 			name: filename,
-			url: `${APP_URL}/uploads/${filename}`, // TODO: replace with env variable
+			url: `${APP_URL}/uploads/${filename}`,
 			alt: '',
 			type: mediaUpload.type,
 		};

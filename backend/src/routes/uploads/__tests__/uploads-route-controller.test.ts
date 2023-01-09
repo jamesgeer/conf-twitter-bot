@@ -2,6 +2,7 @@ import supertest from 'supertest';
 import HttpStatus from 'http-status';
 import http from 'http';
 import looksSame from 'looks-same';
+import { readFileSync } from 'fs';
 import { app } from '../../../app';
 import { TestHarness } from '../../../tests/TestHarness';
 import { Upload, Uploads } from '../uploads';
@@ -30,6 +31,16 @@ const testImage2 = testImage('test_image_2');
 
 describe('single upload crud operation', () => {
 	let imageId: number;
+
+	it('POST upload without file should return bad request error', async () => {
+		// create a tweet and extract its id for attaching an image
+		const tweet = await harness.createTweet();
+
+		// post request with tweet id but without a file attached
+		const response = await request.post(uploadsEndpoint).attach('tweetId', tweet.id);
+
+		expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+	});
 
 	it('POST upload should create image and return image', async () => {
 		// create a tweet and extract its id for attaching an image
