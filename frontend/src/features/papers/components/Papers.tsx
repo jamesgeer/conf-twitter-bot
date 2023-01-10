@@ -2,6 +2,7 @@ import { Paper } from '../types';
 import { usePapers } from '../api/getPapers';
 import { createColumnHelper } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
+import FilterInputs from './FilterInputs';
 
 interface Props {
 	isList: { activeLayout: string };
@@ -32,6 +33,7 @@ const Papers = ({ isList }: Props) => {
 		);
 	});
 
+	//move to types folder?
 	type PaperRowData = {
 		title: string;
 		conference: string;
@@ -80,7 +82,10 @@ const Papers = ({ isList }: Props) => {
 		<>
 			{papers.length > 0 ? (
 				isList.activeLayout === 'list' ? (
-					<DataTable columns={columns} data={defaultData} />
+					<>
+						<FilterInputs />
+						<DataTable columns={columns} data={defaultData} />
+					</>
 				) : (
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{displayPapers}</div>
 				)
