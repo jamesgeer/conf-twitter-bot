@@ -7,7 +7,7 @@ export interface Tweet {
 	twitterUserId: bigint;
 	createdAt: Date | string;
 	updatedAt: Date | string | null;
-	scheduledTimeUTC: Date | string;
+	dateTime: Date | string;
 	content: string;
 	sent: boolean;
 	uploads?: Uploads;

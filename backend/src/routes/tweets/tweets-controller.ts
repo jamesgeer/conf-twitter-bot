@@ -61,17 +61,17 @@ export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
-	const { scheduledTimeUTC, content } = ctx.request.body;
+	const { dateTime, content } = ctx.request.body;
 
-	if (!scheduledTimeUTC && !content) {
+	if (!dateTime && !content) {
 		ctx.status = HttpStatus.BAD_REQUEST;
 		return;
 	}
 
 	let updatedTweet = {} as Tweet;
 
-	if (scheduledTimeUTC) {
-		const result = await updateTweetScheduledTime(id, scheduledTimeUTC);
+	if (dateTime) {
+		const result = await updateTweetScheduledTime(id, dateTime);
 		if (result instanceof ServerError) {
 			handleServerError(ctx, result);
 			return;

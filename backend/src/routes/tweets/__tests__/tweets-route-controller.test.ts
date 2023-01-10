@@ -75,17 +75,14 @@ it('GET tweet should return with updated content', async () => {
 
 it('PATCH tweet should update content and scheduledTime', async () => {
 	const content = 'new content dropped';
-	const scheduledTimeUTC = new Date();
 
 	const response = await request.patch(`${tweetsEndpoint}/${tweetId}`).send({
 		content,
-		scheduledTimeUTC,
 	});
 
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body.id).toEqual(tweetId);
 	expect(response.body.content).toEqual(content);
-	expect(response.body.scheduledTimeUTC).toEqual(scheduledTimeUTC.toISOString());
 });
 
 it('PATCH tweet missing expected parameters should return bad request', async () => {

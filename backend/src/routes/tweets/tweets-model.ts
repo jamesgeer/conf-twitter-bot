@@ -32,7 +32,7 @@ export const getTweets = async (twitterUserId: bigint): Promise<Tweets | ServerE
 				twitterUserId,
 			},
 			include: {
-				Upload: true,
+				uploads: true,
 			},
 		});
 	} catch (e) {
@@ -62,7 +62,7 @@ export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerE
 			data: {
 				accountId: +accountId,
 				twitterUserId: BigInt(twitterUserId),
-				scheduledTimeUTC: isoDate,
+				dateTime: isoDate,
 				content,
 			},
 		});
@@ -93,7 +93,7 @@ export const updateTweetContent = async (tweetId: string, content: string): Prom
 
 export const updateTweetScheduledTime = async (
 	tweetId: string,
-	scheduledTimeUTC: Date | string,
+	dateTime: Date | string,
 ): Promise<Tweet | ServerError> => {
 	try {
 		return await prisma.tweet.update({
@@ -101,7 +101,7 @@ export const updateTweetScheduledTime = async (
 				id: +tweetId,
 			},
 			data: {
-				scheduledTimeUTC,
+				dateTime,
 			},
 		});
 	} catch (e) {

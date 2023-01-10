@@ -45,7 +45,7 @@ it('insert tweet should create one new tweet', async () => {
 			twitterUserId: BigInt(httpTweet.twitterUserId),
 			updatedAt: null,
 			// @ts-ignore
-			scheduledTimeUTC: new Date(httpTweet.dateTime),
+			dateTime: new Date(httpTweet.dateTime),
 			content: httpTweet.content,
 			sent: false,
 		}),
@@ -117,24 +117,24 @@ it('get tweet should return tweet with updated content', async () => {
 });
 
 it('update tweet should update scheduled datetime', async () => {
-	const scheduledTimeUTC = new Date('2022-10-29T21:48:54.738Z');
-	const result = await updateTweetScheduledTime(tweet.id.toString(), scheduledTimeUTC);
+	const dateTime = new Date('2022-10-29T21:48:54.738Z');
+	const result = await updateTweetScheduledTime(tweet.id.toString(), dateTime);
 
 	expect(result).toEqual(
 		expect.objectContaining({
 			...tweet,
-			scheduledTimeUTC,
+			dateTime,
 		}),
 	);
 
-	tweet.scheduledTimeUTC = scheduledTimeUTC;
+	tweet.dateTime = dateTime;
 });
 
 it('get tweet should return tweet with updated scheduled datetime', async () => {
 	const result = <Tweet>await getTweet(tweet.id.toString());
 
 	expect(result.id).toEqual(tweet.id);
-	expect(result.scheduledTimeUTC).toEqual(tweet.scheduledTimeUTC);
+	expect(result.dateTime).toEqual(tweet.dateTime);
 });
 
 it('update tweet should change sent to true', async () => {
