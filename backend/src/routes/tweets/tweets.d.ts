@@ -16,8 +16,8 @@ export interface Tweet {
 // Tweet sent from frontend and received by backend
 export interface HTTPTweet {
 	accountId: string;
-	twitterUserId: string;
-	dateTime?: string;
+	twitterUserId?: string;
+	dateTime: string;
 	content: string;
 }
 

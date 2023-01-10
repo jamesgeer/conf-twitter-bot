@@ -1,29 +1,30 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { tweet, tweets, createTweet, updateTweet, removeTweet } from './tweets-controller';
+import {
+	tweet,
+	tweets,
+	createTweet,
+	updateTweet,
+	removeTweet,
+	twitterUserTweets,
+	createTwitterUserTweet,
+} from './tweets-controller';
 
 const tweetsRouter = new Router();
-
-/**
- * Get Twitter User's tweet with ID
- *
- * GET: /api/twitter-users/:twitterUserId/tweets/:id
- */
-tweetsRouter.get('/twitter-users/:twitterUserId/tweets/:id', () => console.log('TODO'));
 
 /**
  * Get all Twitter User's tweets
  *
  * GET: /api/twitter-users/:id/tweets
  */
-tweetsRouter.get('/twitter-users/:id/tweets', tweets);
+tweetsRouter.get('/twitter-users/:id/tweets', twitterUserTweets);
 
 /**
  * Create Tweet for Twitter User
  *
  * POST: /api/twitter-users/:id/tweets
  */
-tweetsRouter.post('/twitter-users/:id/tweets', koaBody(), () => console.log('TODO'));
+tweetsRouter.post('/twitter-users/:id/tweets', koaBody(), createTwitterUserTweet);
 
 /**
  * Get tweet with ID
