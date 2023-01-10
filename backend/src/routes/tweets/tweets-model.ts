@@ -31,6 +31,9 @@ export const getTweets = async (twitterUserId: bigint): Promise<Tweets | ServerE
 			where: {
 				twitterUserId,
 			},
+			include: {
+				Upload: true,
+			},
 		});
 	} catch (e) {
 		console.log(e);

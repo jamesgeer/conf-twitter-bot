@@ -3,6 +3,7 @@ import HttpStatus from 'http-status';
 import { validSessionCookie, validUserLogin } from './sessions-model';
 import { accountExists } from '../accounts/accounts-model';
 import { ServerError } from '../types';
+import { handleServerError } from '../util';
 
 export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 	// if no session exists or isLoggedIn is false then user not logged in
@@ -27,12 +28,11 @@ export const userSession = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
-	const { username, password } = ctx.request.body;
+	const { username, password }: { username: string; password: string } = ctx.request.body;
 
 	const userId = await validUserLogin(username, password);
 	if (userId instanceof ServerError) {
-		ctx.status = userId.getStatusCode();
-		ctx.body = { message: userId.getMessage() };
+		handleServerError(ctx, userId);
 		return;
 	}
 
@@ -45,7 +45,7 @@ export const userLogin = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// save login session
 	ctx.session.isLoggedIn = true;
-	ctx.session.userId = +userId;
+	ctx.session.userId = userId;
 	ctx.session.save();
 	ctx.session.manuallyCommit();
 
@@ -85,9 +85,9 @@ export const accountSession = async (ctx: ParameterizedContext): Promise<void> =
 };
 
 interface AccountLoginRequest {
-	accountId: number;
-	userId: number;
-	twitterUserId: bigint;
+	accountId: string;
+	userId: string;
+	twitterUserId: string;
 }
 
 export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => {
@@ -98,12 +98,13 @@ export const accountLogin = async (ctx: ParameterizedContext): Promise<void> => 
 	}
 
 	const { accountId, userId, twitterUserId }: AccountLoginRequest = ctx.request.body;
-	if (await accountExists(userId, twitterUserId)) {
+
+	if (await accountExists(+userId, BigInt(twitterUserId))) {
 		// checks passed, store account details in session
 		if (ctx.session) {
-			ctx.session.userId = userId;
-			ctx.session.accountId = accountId;
-			ctx.session.twitterUserId = twitterUserId;
+			ctx.session.userId = +userId;
+			ctx.session.accountId = +accountId;
+			ctx.session.twitterUserId = BigInt(twitterUserId);
 		}
 
 		ctx.status = HttpStatus.OK;

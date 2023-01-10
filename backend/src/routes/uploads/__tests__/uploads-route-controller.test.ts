@@ -2,7 +2,6 @@ import supertest from 'supertest';
 import HttpStatus from 'http-status';
 import http from 'http';
 import looksSame from 'looks-same';
-import { readFileSync } from 'fs';
 import { app } from '../../../app';
 import { TestHarness } from '../../../tests/TestHarness';
 import { Upload, Uploads } from '../uploads';
@@ -85,6 +84,15 @@ describe('single upload crud operation', () => {
 		// compare uploaded image to test image, they should be the same
 		const { equal } = await looksSame(uploadResponse.body, testImage1);
 		expect(equal).toBe(true);
+	});
+
+	it('GET uploaded image should not equal different image', async () => {
+		const response = await request.get(`${uploadsEndpoint}/${imageId}`);
+		const upload: Upload = response.body;
+		const uploadResponse = await request.get(`/uploads/${upload.name}`);
+		const { equal } = await looksSame(uploadResponse.body, testImage2);
+
+		expect(equal).toBe(false);
 	});
 
 	it('DELETE image should delete image', async () => {
