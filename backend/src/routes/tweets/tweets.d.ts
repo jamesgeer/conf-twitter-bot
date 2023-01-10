@@ -1,4 +1,6 @@
 // Single Tweet
+import { Uploads } from '../uploads/uploads';
+
 export interface Tweet {
 	id: number;
 	accountId: number;
@@ -8,6 +10,7 @@ export interface Tweet {
 	scheduledTimeUTC: Date | string;
 	content: string;
 	sent: boolean;
+	uploads?: Uploads;
 }
 
 // Tweet sent from frontend and received by backend

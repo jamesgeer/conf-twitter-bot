@@ -43,16 +43,6 @@ export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.body = result;
 };
 
-export const scheduledTweets = async (ctx: ParameterizedContext): Promise<void> => {
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Not implemented.' };
-};
-
-export const sentTweets = async (ctx: ParameterizedContext): Promise<void> => {
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Not implemented.' };
-};
-
 export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const httpTweet: HTTPTweet = ctx.request.body;
 	console.log(httpTweet);
