@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { useDeleteTweet } from '../api/deleteTweet';
 import { useState } from 'react';
 import TweetForm from './Tweet';
+import { Upload } from '../../uploads/types';
 
 interface Props {
 	tweet: Tweet;
@@ -39,10 +40,14 @@ const SingleTweet = ({ tweet }: Props) => {
 				<div>
 					<small>{tweetDate}</small>
 					<p>{tweet.content}</p>
+					<div>
+						{tweet.uploads &&
+							tweet.uploads.map((upload: Upload) => {
+								return <img src={upload.url} alt={upload.alt} />;
+							})}
+					</div>
 				</div>
-				<div>
-					<TweetMenu handleClick={handleClick} />
-				</div>
+				<TweetMenu handleClick={handleClick} />
 			</div>
 		);
 	};

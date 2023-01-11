@@ -2,7 +2,7 @@ import Tweets from '../../tweets/components/Tweets';
 import Papers from '../../papers/components/Papers';
 import Scraper from '../../scraper/components/Scraper';
 import ToggleListGrid from './toggleListGrid';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import TweetForm from '../../tweets/components/Tweet';
 
 interface Props {
@@ -25,6 +25,7 @@ const Content = ({ active }: Props) => {
 
 	const tweet = {
 		id: 0,
+		accountId: 0,
 		twitterUserId: BigInt(0),
 		dateTime: '',
 		content: '',

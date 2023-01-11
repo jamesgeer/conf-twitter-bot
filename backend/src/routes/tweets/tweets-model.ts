@@ -29,6 +29,7 @@ export const insertTwitterUserTweet = async (
 	twitterUserId: bigint,
 	httpTweet: HTTPTweet,
 ): Promise<Tweet | ServerError> => {
+	console.log(httpTweet);
 	const { accountId, dateTime, content } = httpTweet;
 
 	try {
@@ -41,6 +42,7 @@ export const insertTwitterUserTweet = async (
 			},
 		});
 	} catch (e) {
+		console.log(e);
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
 	}

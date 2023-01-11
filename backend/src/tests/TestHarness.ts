@@ -98,17 +98,20 @@ export class TestHarness {
 		return this.account;
 	}
 
-	public createHttpTweet(): HTTPTweet {
+	public async generateHttpTweet(): Promise<HTTPTweet> {
+		await this.createStandard();
+
 		this.httpTweet = {
-			accountId: this.account.id.toString(),
-			twitterUserId: this.twitterUser.id.toString(),
+			accountId: this.getAccount().id.toString(),
+			twitterUserId: this.getTwitterUser().id.toString(),
 			dateTime: new Date().toString(),
 			content: 'My test tweet',
 		};
+
 		return this.httpTweet;
 	}
 
 	public async createTweet(): Promise<Tweet> {
-		return <Tweet>await insertTweet(this.createHttpTweet());
+		return <Tweet>await insertTweet(await this.generateHttpTweet());
 	}
 }

@@ -40,7 +40,7 @@ it('get tweets should return an empty array of tweets', async () => {
 });
 
 it('insert tweet should create one new tweet', async () => {
-	const httpTweet = harness.createHttpTweet();
+	const httpTweet = await harness.generateHttpTweet();
 
 	tweet = <Tweet>await insertTweet(httpTweet);
 
