@@ -6,7 +6,7 @@ const DisplayUploads = ({ uploads }: { uploads: Uploads }) => {
 	return (
 		<SimpleGrid columns={4} spacing={10} paddingTop={'1rem'}>
 			{uploads.map((upload: Upload) => (
-				<UploadModal upload={upload} />
+				<UploadModal key={upload.name} upload={upload} />
 			))}
 		</SimpleGrid>
 	);

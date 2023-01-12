@@ -7,10 +7,10 @@ const UploadModal = ({ upload }: { upload: Upload }) => {
 	return (
 		<>
 			<Image
-				key={upload.name}
 				objectFit="cover"
 				borderRadius="1rem"
 				minHeight="100%"
+				cursor="pointer"
 				src={upload.url}
 				alt={upload.alt}
 				onClick={onOpen}
