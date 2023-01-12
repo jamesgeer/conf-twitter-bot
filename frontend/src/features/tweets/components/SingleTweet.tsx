@@ -13,7 +13,7 @@ interface Props {
 const SingleTweet = ({ tweet }: Props) => {
 	const [isEdit, setIsEdit] = useState(false);
 
-	const mutation = useDeleteTweet();
+	const { id, content, dateTime, uploads } = tweet;
 
 	const handleClick = (menuItem: string) => {
 		switch (menuItem) {
@@ -24,23 +24,24 @@ const SingleTweet = ({ tweet }: Props) => {
 		}
 	};
 
+	const mutation = useDeleteTweet();
 	const handleDelete = async () => {
-		await mutation.mutateAsync(tweet.id);
+		await mutation.mutateAsync(id);
 	};
 
 	const handleEdit = () => {
 		setIsEdit(!isEdit);
 	};
 
-	const tweetDate = dayjs(tweet.dateTime).toDate().toLocaleString();
+	const tweetDate = dayjs(dateTime).toDate().toLocaleString();
 
 	const myTweet = () => {
 		return (
 			<div className="border-b border-slate-200 pb-4 flex justify-between">
 				<div>
 					<small>{tweetDate}</small>
-					<p>{tweet.content}</p>
-					{tweet.uploads && <DisplayUploads uploads={tweet.uploads} />}
+					<p>{content}</p>
+					{uploads && <DisplayUploads uploads={uploads} />}
 				</div>
 				<TweetMenu handleClick={handleClick} />
 			</div>
