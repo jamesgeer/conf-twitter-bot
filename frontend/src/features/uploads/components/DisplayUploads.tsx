@@ -7,19 +7,27 @@ const DisplayUploads = ({ uploads }: { uploads: Uploads }) => {
 
 	const media = uploads.map((upload: Upload) => {
 		return (
-			<Box key={upload.name} objectFit="cover" borderRadius="1rem">
-				{/*<ModalImage small={upload.url} large={upload.url} alt={upload.alt} />*/}
-				<Image src={upload.url} alt={upload.alt} onClick={onOpen} />
-				<Modal isOpen={isOpen} onClose={onClose}>
+			<Image
+				key={upload.name}
+				objectFit="cover"
+				borderRadius="1rem"
+				minHeight="100%"
+				src={upload.url}
+				alt={upload.alt}
+				onClick={onOpen}
+			/>
+		);
+	});
+
+	/*
+					<Modal isOpen={isOpen} onClose={onClose}>
 					<ModalOverlay />
 					<ModalContent maxWidth={'fit-content'}>
 						<ModalCloseButton />
 						<Image src={upload.url} alt={upload.alt} />
 					</ModalContent>
 				</Modal>
-			</Box>
-		);
-	});
+	 */
 
 	return (
 		<SimpleGrid columns={4} spacing={10} paddingTop={'1rem'}>
