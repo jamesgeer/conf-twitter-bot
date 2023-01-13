@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image } from '@chakra-ui/react';
+import { SimpleGrid, Box, Image, Button } from '@chakra-ui/react';
+import { IconX } from '@tabler/icons';
 
 interface Props {
 	media: File[] | undefined;
@@ -12,13 +13,34 @@ const TweetMedia = ({ media, setMedia }: Props) => {
 		media ? setMedia((existing) => existing?.filter((file) => file !== medium)) : setMedia(undefined);
 	};
 
+	const attachments = () =>
+		media?.map((medium: File) => {
+			const url = URL.createObjectURL(medium);
+			return (
+				<Box position="relative">
+					<Button
+						variant="solid"
+						position="absolute"
+						left="2"
+						top="2"
+						size="xs"
+						padding="5px"
+						height="initial"
+						borderRadius="full"
+						_hover={{ bg: 'red', color: 'white' }}
+						onClick={() => removeFile(medium)}
+					>
+						<IconX />
+					</Button>
+					<Image objectFit="cover" borderRadius="1rem" minHeight="100%" src={url} />
+				</Box>
+			);
+		});
+
 	return (
-		<div>
-			{media?.map((medium: File) => {
-				const url = URL.createObjectURL(medium);
-				return <Image src={url} onClick={() => removeFile(medium)} />;
-			})}
-		</div>
+		<SimpleGrid columns={4} spacing={10} paddingTop="1rem" paddingBottom="1rem">
+			{attachments()}
+		</SimpleGrid>
 	);
 };
 
