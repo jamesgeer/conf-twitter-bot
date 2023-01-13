@@ -1,6 +1,7 @@
 import React from 'react';
 import { SimpleGrid, Box, Image, Button } from '@chakra-ui/react';
 import { IconX } from '@tabler/icons';
+import uuid from 'react-uuid';
 
 interface Props {
 	media: File[] | undefined;
@@ -17,7 +18,7 @@ const TweetMedia = ({ media, setMedia }: Props) => {
 		media?.map((medium: File) => {
 			const url = URL.createObjectURL(medium);
 			return (
-				<Box position="relative">
+				<Box key={uuid()} position="relative">
 					<Button
 						variant="solid"
 						position="absolute"
