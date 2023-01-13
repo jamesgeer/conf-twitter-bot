@@ -137,7 +137,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 							</button>
 						</div>
 					</div>
-					<TweetMediaButtons setMedia={setMedia} />
+					<TweetMediaButtons media={media} setMedia={setMedia} />
 				</div>
 				<p className={`text-red-500 ${isError ? 'block' : 'hidden'}`}>{errorMessage}</p>
 			</div>
