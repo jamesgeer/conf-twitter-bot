@@ -3,11 +3,21 @@ import React from 'react';
 import { IconPhoto } from '@tabler/icons';
 
 interface Props {
-	setImages: React.Dispatch<React.SetStateAction<File | undefined>>;
+	setMedia: React.Dispatch<React.SetStateAction<File[] | undefined>>;
 }
 
-const TweetMediaButtons = ({ setImages }: Props) => {
+const TweetMediaButtons = ({ setMedia }: Props) => {
 	const { colorMode } = useColorMode();
+
+	const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { files } = e.target;
+		if (!files) {
+			return;
+		}
+
+		setMedia(Array.from(files));
+	};
+
 	return (
 		<div className="pt-4">
 			<div className="inline-block">
@@ -16,13 +26,7 @@ const TweetMediaButtons = ({ setImages }: Props) => {
 					{/* Not sure why chakra does not handle dark mode here*/}
 					<IconPhoto color={colorMode === 'dark' ? 'white' : 'black'} />
 				</FormLabel>
-				<Input
-					type="file"
-					id="add-image"
-					name="tweet_image"
-					onChange={(e) => setImages(e.target!.files![0])}
-					hidden
-				></Input>
+				<Input type="file" id="add-image" name="tweet_image" onChange={(e) => handleUpload(e)} hidden></Input>
 			</div>
 		</div>
 	);

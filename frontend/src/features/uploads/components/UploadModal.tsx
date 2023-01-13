@@ -17,7 +17,7 @@ const UploadModal = ({ upload }: { upload: Upload }) => {
 			/>
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
-				<ModalContent maxWidth={'fit-content'}>
+				<ModalContent maxWidth="fit-content">
 					<ModalCloseButton />
 					<Image src={upload.url} alt={upload.alt} />
 				</ModalContent>

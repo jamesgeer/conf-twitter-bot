@@ -11,6 +11,7 @@ import { useEditTweet } from '../../api/editTweet';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import HttpStatus from 'http-status';
+import TweetMedia from './TweetMedia';
 
 interface Props {
 	isEdit: boolean;
@@ -23,19 +24,12 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 
 	const [content, setContent] = useState(tweet.content);
 	const [dateTime, setDateTime] = useState(tweet.dateTime);
-	const [images, setImages] = useState<File>();
-	const [imageUrl, setImageUrl] = useState('');
+	const [media, setMedia] = useState<File[]>();
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
 	const createTweetMutation = useCreateTweet();
 	const editTweetMutation = useEditTweet();
-
-	useEffect(() => {
-		if (images) {
-			setImageUrl(URL.createObjectURL(images));
-		}
-	}, [images]);
 
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
@@ -89,8 +83,6 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 			} else {
 				await createTweetMutation.mutateAsync(tweetPayload()).then(() => {
 					setContent('');
-					setImageUrl('');
-					//need setImages() to be reset aswell
 				});
 			}
 		} catch (e) {
@@ -136,11 +128,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 				</div>
 				<div className="text-xl mt-2 w-full">
 					<TweetContent content={content} setContent={setContent} />
-					{imageUrl && images ? (
-						<div>
-							<img src={imageUrl} alt={images.name} />
-						</div>
-					) : null}
+					<TweetMedia media={media} setMedia={setMedia} />
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
 						<DateTimePicker dateTime={dateTime} setDateTime={setDateTime} />
 						<div className="absolute right-0">
@@ -149,7 +137,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 							</button>
 						</div>
 					</div>
-					<TweetMediaButtons setImages={setImages} />
+					<TweetMediaButtons setMedia={setMedia} />
 				</div>
 				<p className={`text-red-500 ${isError ? 'block' : 'hidden'}`}>{errorMessage}</p>
 			</div>
