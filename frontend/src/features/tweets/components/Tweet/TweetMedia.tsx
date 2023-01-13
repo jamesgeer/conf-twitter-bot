@@ -7,15 +7,16 @@ interface Props {
 }
 
 const TweetMedia = ({ media, setMedia }: Props) => {
-	const removeFile = (index: number) => {
-		setMedia(media?.slice(index, 1));
+	const removeFile = (medium: File) => {
+		// set new file array without the selected attached media, if media array empty then set to undefined
+		media ? setMedia((existing) => existing?.filter((file) => file !== medium)) : setMedia(undefined);
 	};
 
 	return (
 		<div>
 			{media?.map((medium: File) => {
 				const url = URL.createObjectURL(medium);
-				return <Image src={url} onClick={() => removeFile(1)} />;
+				return <Image src={url} onClick={() => removeFile(medium)} />;
 			})}
 		</div>
 	);
