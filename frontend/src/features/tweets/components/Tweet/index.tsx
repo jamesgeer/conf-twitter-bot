@@ -1,5 +1,5 @@
 import DateTimePicker from './DateTimePicker';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import TweetContent from './TweetContent';
 import TweetMediaButtons from './TweetMediaButtons';
 import { HTTPTweet, Tweet } from '../../types';
@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 import HttpStatus from 'http-status';
 import TweetMedia from './TweetMedia';
+import { useCreateTweetWithUpload } from '../../../uploads/api/createUpload';
 
 interface Props {
 	isEdit: boolean;
@@ -29,6 +30,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 	const [errorMessage, setErrorMessage] = useState('');
 
 	const createTweetMutation = useCreateTweet();
+	const createTweetWithUploadMutation = useCreateTweetWithUpload();
 	const editTweetMutation = useEditTweet();
 
 	const validTextInput = (text: string): boolean => {
@@ -87,22 +89,22 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 
 	const submitTweet = async (): Promise<void> => {
 		try {
+			// tweet was edited
 			if (isEdit) {
 				await editTweetMutation.mutateAsync(tweetPayload()).then(() => setIsEdit && setIsEdit(false));
 			} else {
-				if (media) {
-					const response = await axios.post(`/api/tweets`, tweetPayload());
-					const tweet: Tweet = response.data;
-
-					console.log(tweet);
-					await axios.post(`/api/uploads/tweet/${tweet.id}`, mediaPayload()).then(() => {
-						setContent(''); // clear content
-						setMedia(undefined); // clear uploads
-						return;
-					});
+				// new tweet with just content, no media to upload
+				if (!media) {
+					await createTweetMutation.mutateAsync(tweetPayload()).then(() => setContent(''));
+					return;
 				}
 
-				await createTweetMutation.mutateAsync(tweetPayload()).then(() => setContent(''));
+				// new tweet with media attached
+				const payload = { tweetPayload: tweetPayload(), mediaPayload: mediaPayload() };
+				await createTweetWithUploadMutation.mutateAsync(payload).then(() => {
+					setContent(''); // clear content
+					setMedia(undefined); // clear uploads
+				});
 			}
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
