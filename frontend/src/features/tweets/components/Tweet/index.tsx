@@ -76,14 +76,33 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 		};
 	};
 
+	const mediaPayload = (): FormData => {
+		const formData = new FormData();
+
+		formData.append('tweetId', tweet.id.toString());
+		media?.map((medium: File) => formData.append('media', medium));
+
+		return formData;
+	};
+
 	const submitTweet = async (): Promise<void> => {
 		try {
 			if (isEdit) {
 				await editTweetMutation.mutateAsync(tweetPayload()).then(() => setIsEdit && setIsEdit(false));
 			} else {
-				await createTweetMutation.mutateAsync(tweetPayload()).then(() => {
-					setContent('');
-				});
+				if (media) {
+					const response = await axios.post(`/api/tweets`, tweetPayload());
+					const tweet: Tweet = response.data;
+
+					console.log(tweet);
+					await axios.post(`/api/uploads/tweet/${tweet.id}`, mediaPayload()).then(() => {
+						setContent(''); // clear content
+						setMedia(undefined); // clear uploads
+						return;
+					});
+				}
+
+				await createTweetMutation.mutateAsync(tweetPayload()).then(() => setContent(''));
 			}
 		} catch (e) {
 			if (axios.isAxiosError(e)) {

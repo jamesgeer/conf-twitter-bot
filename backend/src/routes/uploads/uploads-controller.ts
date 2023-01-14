@@ -55,7 +55,15 @@ interface MediaUpload extends File {
 // assign uploaded media to tweet
 export const createUpload = async (ctx: ParameterizedContext): Promise<void> => {
 	const { media }: any = ctx.request.files;
-	const { tweetId } = ctx.request.body;
+	let tweetId: number;
+
+	if (ctx.params.id) {
+		const { id }: { id: string } = ctx.params;
+		tweetId = +id;
+	} else {
+		const id: string = ctx.request.body.tweetId;
+		tweetId = +id;
+	}
 
 	// missing media or tweet id then bad request
 	if (!media || !tweetId) {

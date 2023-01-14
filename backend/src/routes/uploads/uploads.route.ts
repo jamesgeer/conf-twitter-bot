@@ -5,32 +5,58 @@ import { uploadFolder } from '../util';
 
 const uploadsRouter = new Router({ prefix: '/uploads' });
 
-// GET: /api/uploads/tweet/:id
+// configuration object for how uploads are accepted/handled by koa
+const uploadConfig = {
+	formidable: {
+		uploadDir: uploadFolder, // directory where files will be uploaded
+		keepExtensions: true, // keep file extension on upload
+		multiples: true,
+	},
+	multipart: true,
+	urlencoded: true,
+	formLimit: '5mb',
+};
+
+/**
+ * Get all uploads for the provided tweet id
+ *
+ * GET: /api/uploads/tweet/:id
+ */
 uploadsRouter.get('/tweet/:id', koaBody(), uploads); // id = tweetId)
 
-// GET: /api/uploads/:id
+/**
+ * Attach uploads to the provided tweet id
+ *
+ * POST: /api/uploads/tweet/:id
+ */
+uploadsRouter.post('/tweet/:id', koaBody(uploadConfig), createUpload);
+
+/**
+ * Get upload with id
+ *
+ * GET: /api/uploads/:id
+ */
 uploadsRouter.get('/:id', upload);
 
-// POST: /api/uploads
-uploadsRouter.post(
-	'/',
-	koaBody({
-		formidable: {
-			uploadDir: uploadFolder, // directory where files will be uploaded
-			keepExtensions: true, // keep file extension on upload
-			multiples: true,
-		},
-		multipart: true,
-		urlencoded: true,
-		formLimit: '5mb',
-	}),
-	createUpload,
-);
+/**
+ * Create upload
+ *
+ * POST: /api/uploads
+ */
+uploadsRouter.post('/', koaBody(uploadConfig), createUpload);
 
-// PATCH: /api/uploads/:id
+/**
+ * Update upload with id
+ *
+ * PATCH: /api/uploads/:id
+ */
 uploadsRouter.patch('/:id', () => console.log('PATCH NOT IMPLEMENTED'));
 
-// DELETE: /api/uploads/:id
+/**
+ * Delete upload with id
+ *
+ * DELETE: /api/uploads/:id
+ */
 uploadsRouter.delete('/:id', removeUpload);
 
 export default uploadsRouter;

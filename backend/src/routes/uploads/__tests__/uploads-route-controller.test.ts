@@ -29,7 +29,7 @@ const testImage1 = testImage('test_image_1');
 const testImage2 = testImage('test_image_2');
 
 describe('single upload crud operation', () => {
-	let imageId: number;
+	let uploadId: number;
 
 	it('POST upload without file should return bad request error', async () => {
 		// create a tweet and extract its id for attaching an image
@@ -60,21 +60,21 @@ describe('single upload crud operation', () => {
 		// check uploaded file exists in system
 		expect(await uploadFileExists(upload.name)).toBe(true);
 
-		imageId = upload.id;
+		uploadId = upload.id;
 	});
 
 	it('GET image should return image', async () => {
-		const response = await request.get(`${uploadsEndpoint}/${imageId}`);
+		const response = await request.get(`${uploadsEndpoint}/${uploadId}`);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 
 		const upload: Upload = response.body;
-		expect(upload.id).toEqual(imageId);
+		expect(upload.id).toEqual(uploadId);
 		expect(upload.name).toContain('upload_');
 	});
 
 	it('GET uploaded image should equal test image', async () => {
-		const response = await request.get(`${uploadsEndpoint}/${imageId}`);
+		const response = await request.get(`${uploadsEndpoint}/${uploadId}`);
 		const upload: Upload = response.body;
 
 		// upload.url won't work for this test as the connection will be refused
@@ -87,7 +87,7 @@ describe('single upload crud operation', () => {
 	});
 
 	it('GET uploaded image should not equal different image', async () => {
-		const response = await request.get(`${uploadsEndpoint}/${imageId}`);
+		const response = await request.get(`${uploadsEndpoint}/${uploadId}`);
 		const upload: Upload = response.body;
 		const uploadResponse = await request.get(`/uploads/${upload.name}`);
 		const { equal } = await looksSame(uploadResponse.body, testImage2);
@@ -96,7 +96,7 @@ describe('single upload crud operation', () => {
 	});
 
 	it('DELETE image should delete image', async () => {
-		const response = await request.delete(`${uploadsEndpoint}/${imageId}`);
+		const response = await request.delete(`${uploadsEndpoint}/${uploadId}`);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 
@@ -150,5 +150,44 @@ describe('multiple uploads crud operation', () => {
 				expect(await uploadFileExists(upload.name)).toBe(false);
 			}),
 		);
+	});
+});
+
+describe('upload to tweet endpoint', () => {
+	let tweetId: number;
+	let uploadId: number;
+
+	it('POST upload should create image and return image', async () => {
+		// create a tweet and extract its id for attaching an image
+		const tweet = await harness.createTweet();
+		tweetId = tweet.id;
+
+		// post request with tweet id and image attached
+		const response = await request.post(`${uploadsEndpoint}/tweet/${tweetId}`).attach('media', testImage1);
+
+		expect(response.status).toEqual(HttpStatus.OK);
+
+		const uploads: Uploads = response.body;
+
+		// first upload from array
+		const [upload] = uploads;
+		expect(upload.tweetId).toEqual(tweet.id);
+		expect(upload.name).toContain('upload_');
+
+		// check uploaded file exists in system
+		expect(await uploadFileExists(upload.name)).toBe(true);
+
+		uploadId = upload.id;
+	});
+
+	it('GET should return an array containing all uploads for tweet', async () => {
+		const response = await request.get(`${uploadsEndpoint}/tweet/${tweetId}`);
+
+		expect(response.status).toEqual(HttpStatus.OK);
+		expect(response.body.length).toEqual(1);
+
+		const uploads: Uploads = response.body;
+		expect(uploads[0].id).toEqual(uploadId);
+		expect(uploads[0].name).toContain('upload_');
 	});
 });
