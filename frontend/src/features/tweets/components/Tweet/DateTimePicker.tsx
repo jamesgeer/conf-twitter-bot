@@ -2,17 +2,21 @@ import dayjs, { Dayjs } from 'dayjs';
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DateTimeHandle } from './index';
 
-const DateTimePicker = forwardRef<DateTimeHandle | undefined>((props, ref) => {
+interface Props {
+	initDateTime: string;
+}
+
+const DateTimePicker = forwardRef<DateTimeHandle | undefined, Props>(({ initDateTime }, ref) => {
 	// new date time object containing temporal information for -> now <-
 	const currentDateTime = dayjs();
 	let defaultDateTime: Dayjs;
 
-	// if (ref.current === '') {
-	// three days from now
-	defaultDateTime = currentDateTime.add(3, 'day');
-	// } else {
-	//defaultDateTime = dayjs(scheduleRef.current);
-	// }
+	if (initDateTime === '') {
+		// three days from now
+		defaultDateTime = currentDateTime.add(3, 'day');
+	} else {
+		defaultDateTime = dayjs(initDateTime);
+	}
 
 	const [day, setDay] = useState(defaultDateTime.date().toString());
 	const [month, setMonth] = useState(defaultDateTime.month().toString());

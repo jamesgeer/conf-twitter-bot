@@ -38,6 +38,13 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 	const createTweetWithUploadMutation = useCreateTweetWithUpload();
 	const editTweetMutation = useEditTweet();
 
+	let initContent = '';
+	let initDateTime = '';
+	if (isEdit) {
+		initContent = tweet.content;
+		initDateTime = tweet.dateTime.toString();
+	}
+
 	const validTextInput = (text: string): boolean => {
 		if (text.length === 0) {
 			formError('Tweet did not contain any content!');
@@ -162,10 +169,10 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 					/>
 				</div>
 				<div className="text-xl mt-2 w-full">
-					<TweetContent contentRef={contentRef} />
+					<TweetContent contentRef={contentRef} initContent={initContent} />
 					<TweetMedia media={media} setMedia={setMedia} />
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
-						<DateTimePicker ref={scheduleRef} />
+						<DateTimePicker ref={scheduleRef} initDateTime={initDateTime} />
 						<div className="absolute right-0">
 							<button className="cursor-pointer px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
 								{isEdit ? 'Update' : 'Tweet'}
