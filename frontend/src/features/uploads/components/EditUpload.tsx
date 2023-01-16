@@ -8,15 +8,15 @@ import axios from 'axios';
 
 interface Props {
 	upload: Upload;
-	handleDelete: (upload: Upload) => void;
+	handleDelete: (upload: Upload, undoDelete: boolean) => void;
 }
 
 const EditUpload = ({ upload, handleDelete }: Props) => {
 	const [isDelete, setIsDelete] = useState(false);
 
 	const handleClick = () => {
-		console.log('click');
 		setIsDelete(!isDelete);
+		handleDelete(upload, isDelete);
 	};
 
 	// const handleDeleteNow = async () => {
@@ -37,7 +37,7 @@ const EditUpload = ({ upload, handleDelete }: Props) => {
 				src={upload.url}
 				filter={isDelete ? 'grayscale(100%)' : ''}
 			/>
-			{isDelete && <ConfirmDeleteUploadButton handleClick={() => handleDelete(upload)} />}
+			{isDelete && <ConfirmDeleteUploadButton handleClick={() => handleDelete(upload, false)} />}
 		</Box>
 	);
 };
