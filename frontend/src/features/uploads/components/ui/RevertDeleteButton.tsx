@@ -9,7 +9,6 @@ interface Props {
 const RevertDeleteButton = ({ handleClick }: Props) => {
 	return (
 		<Button
-			bg="grey"
 			variant="solid"
 			position="absolute"
 			left="2"
@@ -18,7 +17,8 @@ const RevertDeleteButton = ({ handleClick }: Props) => {
 			padding="5px"
 			height="initial"
 			borderRadius="full"
-			_hover={{ bg: 'blue', color: 'white' }}
+			zIndex="1"
+			_hover={{ bg: 'DodgerBlue', color: 'white' }}
 			onClick={() => handleClick()}
 		>
 			<IconArrowBackUp />

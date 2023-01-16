@@ -1,5 +1,4 @@
-import { Box, Button, Image } from '@chakra-ui/react';
-import uuid from 'react-uuid';
+import { Box, Image } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Upload } from '../types';
 import RevertDeleteButton from './ui/RevertDeleteButton';
@@ -12,10 +11,25 @@ interface Props {
 const EditUpload = ({ upload }: Props) => {
 	const [isDelete, setIsDelete] = useState(false);
 
+	const handleClick = () => {
+		console.log('click');
+		setIsDelete(!isDelete);
+	};
+
 	return (
-		<Box key={uuid()} position="relative">
-			{isDelete ? <RevertDeleteButton handleClick={} /> : <DeleteUploadButton handleClick={} />}
-			<Image objectFit="cover" borderRadius="1rem" minHeight="100%" src={upload.url} />
+		<Box position="relative">
+			{isDelete ? (
+				<RevertDeleteButton handleClick={handleClick} />
+			) : (
+				<DeleteUploadButton handleClick={handleClick} />
+			)}
+			<Image
+				objectFit="cover"
+				borderRadius="1rem"
+				minHeight="100%"
+				src={upload.url}
+				filter={isDelete ? 'grayscale(100%)' : ''}
+			/>
 		</Box>
 	);
 };
