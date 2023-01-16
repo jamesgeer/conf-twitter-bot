@@ -11,8 +11,9 @@ import { useEditTweet } from '../../api/editTweet';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import HttpStatus from 'http-status';
-import TweetMedia from './TweetMedia';
 import { useCreateTweetWithUpload } from '../../../uploads/api/createUpload';
+import EditLocalUploadsList from '../../../uploads/components/EditLocalUploadsList';
+import EditUploadsList from '../../../uploads/components/EditUploadsList';
 
 interface Props {
 	isEdit: boolean;
@@ -170,7 +171,11 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 				</div>
 				<div className="text-xl mt-2 w-full">
 					<TweetContent contentRef={contentRef} initContent={initContent} />
-					<TweetMedia media={media} setMedia={setMedia} />
+					{isEdit && tweet.uploads ? (
+						<EditUploadsList media={tweet.uploads} />
+					) : (
+						<EditLocalUploadsList media={media} setMedia={setMedia} />
+					)}
 					<div className="flex items-center justify-between border-t-1 border-slate-100">
 						<DateTimePicker ref={scheduleRef} initDateTime={initDateTime} />
 						<div className="absolute right-0">
