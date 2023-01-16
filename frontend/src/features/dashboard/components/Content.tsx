@@ -35,7 +35,7 @@ const Content = ({ active }: Props) => {
 	return (
 		<div className="col-span-8">
 			<h2 className="text-xl font-bold mb-8">Dashboard</h2>
-			<TweetForm isEdit={false} setIsEdit={null} tweet={tweet} />
+			<TweetForm isEdit={false} setIsEdit={null} initTweet={tweet} />
 			<hr className="my-8" />
 			<div className="flex items-center justify-between gap-6">
 				<h2 className="text-xl font-bold mb-4">{active.title}</h2>

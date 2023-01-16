@@ -1,5 +1,7 @@
 import axios from 'axios';
+import { Upload } from '../types';
 
-const deleteUpload = async (uploadId: number): Promise<any> => {
-	return await axios.delete('/api/uploads/' + uploadId);
+export const deleteUpload = async (uploadId: number): Promise<Upload> => {
+	const response = await axios.delete(`/api/uploads/${uploadId}`);
+	return response.data;
 };

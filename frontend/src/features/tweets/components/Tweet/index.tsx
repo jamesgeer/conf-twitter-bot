@@ -18,19 +18,20 @@ import EditUploadsList from '../../../uploads/components/EditUploadsList';
 interface Props {
 	isEdit: boolean;
 	setIsEdit: React.Dispatch<React.SetStateAction<boolean>> | null;
-	tweet: Tweet;
+	initTweet: Tweet;
 }
 
 export interface DateTimeHandle {
 	getDateTime: () => string;
 }
 
-const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
+const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
 
 	const contentRef = useRef<HTMLTextAreaElement | null>(null);
 	const scheduleRef = useRef<DateTimeHandle>();
 
+	const [tweet, setTweet] = useState<Tweet>(initTweet);
 	const [media, setMedia] = useState<File[]>();
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
@@ -172,7 +173,7 @@ const TweetForm = ({ isEdit, setIsEdit, tweet }: Props) => {
 				<div className="text-xl mt-2 w-full">
 					<TweetContent contentRef={contentRef} initContent={initContent} />
 					{isEdit && tweet.uploads ? (
-						<EditUploadsList media={tweet.uploads} />
+						<EditUploadsList uploads={tweet.uploads} setUploads={setTweet} />
 					) : (
 						<EditLocalUploadsList media={media} setMedia={setMedia} />
 					)}

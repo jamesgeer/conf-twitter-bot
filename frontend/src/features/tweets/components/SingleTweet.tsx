@@ -48,7 +48,7 @@ const SingleTweet = ({ tweet }: Props) => {
 		);
 	};
 
-	return isEdit ? <TweetForm isEdit={isEdit} setIsEdit={setIsEdit} tweet={tweet} /> : myTweet();
+	return isEdit ? <TweetForm isEdit={isEdit} setIsEdit={setIsEdit} initTweet={tweet} /> : myTweet();
 };
 
 export default SingleTweet;

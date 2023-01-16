@@ -4,12 +4,14 @@ import { Upload } from '../types';
 import RevertDeleteButton from './ui/RevertDeleteButton';
 import DeleteUploadButton from './ui/DeleteUploadButton';
 import ConfirmDeleteUploadButton from './ui/ConfirmDeleteUploadButton';
+import axios from 'axios';
 
 interface Props {
 	upload: Upload;
+	handleDelete: (upload: Upload) => void;
 }
 
-const EditUpload = ({ upload }: Props) => {
+const EditUpload = ({ upload, handleDelete }: Props) => {
 	const [isDelete, setIsDelete] = useState(false);
 
 	const handleClick = () => {
@@ -17,9 +19,9 @@ const EditUpload = ({ upload }: Props) => {
 		setIsDelete(!isDelete);
 	};
 
-	const handleDeleteNow = () => {
-		console.log('delete me');
-	};
+	// const handleDeleteNow = async () => {
+	// 	await axios.delete('/api/uploads/' + upload.id);
+	// };
 
 	return (
 		<Box position="relative">
@@ -35,7 +37,7 @@ const EditUpload = ({ upload }: Props) => {
 				src={upload.url}
 				filter={isDelete ? 'grayscale(100%)' : ''}
 			/>
-			{isDelete && <ConfirmDeleteUploadButton handleClick={handleDeleteNow} />}
+			{isDelete && <ConfirmDeleteUploadButton handleClick={() => handleDelete(upload)} />}
 		</Box>
 	);
 };
