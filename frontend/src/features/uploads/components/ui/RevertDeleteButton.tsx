@@ -20,6 +20,7 @@ const RevertDeleteButton = ({ handleClick }: Props) => {
 			zIndex="1"
 			_hover={{ bg: 'DodgerBlue', color: 'white' }}
 			onClick={() => handleClick()}
+			title="Undo deletion"
 		>
 			<IconArrowBackUp />
 		</Button>

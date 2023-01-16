@@ -6,13 +6,13 @@ interface Props {
 	handleClick: () => void;
 }
 
-const DeleteUploadButton = ({ handleClick }: Props) => {
+const ConfirmDeleteUploadButton = ({ handleClick }: Props) => {
 	return (
 		<Button
 			variant="solid"
 			position="absolute"
-			left="2"
 			top="2"
+			right="2"
 			size="xs"
 			padding="5px"
 			height="initial"
@@ -20,11 +20,11 @@ const DeleteUploadButton = ({ handleClick }: Props) => {
 			zIndex="1"
 			_hover={{ bg: 'red', color: 'white' }}
 			onClick={() => handleClick()}
-			title="Delete upload"
+			title="Confirm deletion"
 		>
 			<IconX />
 		</Button>
 	);
 };
 
-export default DeleteUploadButton;
+export default ConfirmDeleteUploadButton;

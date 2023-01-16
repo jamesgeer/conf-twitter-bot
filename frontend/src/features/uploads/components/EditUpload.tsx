@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Upload } from '../types';
 import RevertDeleteButton from './ui/RevertDeleteButton';
 import DeleteUploadButton from './ui/DeleteUploadButton';
+import ConfirmDeleteUploadButton from './ui/ConfirmDeleteUploadButton';
 
 interface Props {
 	upload: Upload;
@@ -14,6 +15,10 @@ const EditUpload = ({ upload }: Props) => {
 	const handleClick = () => {
 		console.log('click');
 		setIsDelete(!isDelete);
+	};
+
+	const handleDeleteNow = () => {
+		console.log('delete me');
 	};
 
 	return (
@@ -30,6 +35,7 @@ const EditUpload = ({ upload }: Props) => {
 				src={upload.url}
 				filter={isDelete ? 'grayscale(100%)' : ''}
 			/>
+			{isDelete && <ConfirmDeleteUploadButton handleClick={handleDeleteNow} />}
 		</Box>
 	);
 };
