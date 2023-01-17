@@ -4,6 +4,7 @@ import { Upload } from '../types';
 import RevertDeleteButton from './ui/RevertDeleteButton';
 import DeleteUploadButton from './ui/DeleteUploadButton';
 import ConfirmDeleteUploadButton from './ui/ConfirmDeleteUploadButton';
+import DeleteLocalUploadButton from './ui/DeleteLocalUploadButton';
 
 interface Props {
 	upload: Upload | File;
@@ -38,6 +39,8 @@ const EditUpload = ({ upload, handleDelete }: Props) => {
 		<Box position="relative">
 			{isDelete ? (
 				<RevertDeleteButton handleClick={() => handleClick()} />
+			) : upload instanceof File ? (
+				<DeleteLocalUploadButton handleClick={() => handleDelete(mediaToDelete, true, true)} />
 			) : (
 				<DeleteUploadButton handleClick={() => handleClick()} />
 			)}

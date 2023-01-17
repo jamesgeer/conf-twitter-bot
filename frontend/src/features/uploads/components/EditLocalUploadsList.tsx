@@ -1,7 +1,7 @@
 import React from 'react';
-import { SimpleGrid, Box, Image, Button } from '@chakra-ui/react';
-import { IconX } from '@tabler/icons';
+import { SimpleGrid, Box, Image } from '@chakra-ui/react';
 import uuid from 'react-uuid';
+import DeleteLocalUploadButton from './ui/DeleteLocalUploadButton';
 
 interface Props {
 	media: File[] | undefined;
@@ -25,20 +25,7 @@ const EditLocalUploadsList = ({ media, setMedia }: Props) => {
 			const url = URL.createObjectURL(medium);
 			return (
 				<Box key={uuid()} position="relative">
-					<Button
-						variant="solid"
-						position="absolute"
-						left="2"
-						top="2"
-						size="xs"
-						padding="5px"
-						height="initial"
-						borderRadius="full"
-						_hover={{ bg: 'red', color: 'white' }}
-						onClick={() => removeFile(medium)}
-					>
-						<IconX />
-					</Button>
+					<DeleteLocalUploadButton handleClick={() => removeFile(medium)} />
 					<Image objectFit="cover" borderRadius="1rem" minHeight="100%" src={url} />
 				</Box>
 			);
