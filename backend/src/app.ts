@@ -1,8 +1,12 @@
 import Koa from 'koa';
 import cors from '@koa/cors';
 import koaSession from 'koa-session';
+import serve from 'koa-static';
+import path from 'path';
+import appRoot from 'app-root-path';
 import router from './routes';
 import { logToFile, initLogToFile } from './logging/logging';
+import { APP_URL } from './keys';
 // import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
@@ -42,10 +46,13 @@ app.use(async (ctx, next) => {
 	}
 });
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: APP_URL, credentials: true }));
 
 app.use(router.routes());
 app.use(router.allowedMethods());
+
+// serve static assets from within the public directory, for example GET /uploads/some_file.png
+app.use(serve(path.join(appRoot.path, 'public')));
 
 // run cron jobs
 // cronJobs();

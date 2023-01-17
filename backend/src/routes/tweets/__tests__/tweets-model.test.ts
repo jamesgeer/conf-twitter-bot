@@ -1,5 +1,4 @@
 import HttpStatus from 'http-status';
-import prisma from '../../../../lib/prisma';
 import {
 	deleteTweet,
 	getTweet,
@@ -11,9 +10,9 @@ import {
 } from '../tweets-model';
 import { Tweet, Tweets } from '../tweets';
 import { ServerError } from '../../types';
-import { RoutesTestHarness } from '../../RoutesTestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
 
-const harness = new RoutesTestHarness();
+const harness = new TestHarness();
 
 let tweet: Tweet;
 
@@ -24,22 +23,24 @@ beforeAll(async () => {
 
 // after all tests complete
 afterAll(async () => {
-	await prisma.tweet.deleteMany({});
-	await prisma.account.deleteMany({});
-	await prisma.twitterUser.deleteMany({});
-	await prisma.user.deleteMany({});
-	await prisma.$disconnect();
+	await TestHarness.deleteAll();
 });
 
 it('get tweet should return status of not found', async () => {
-	const result = <ServerError>await getTweet('1');
+	const result = <ServerError>await getTweet(1);
 
 	expect(result).toBeInstanceOf(ServerError);
 	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
 });
 
+it('get tweets should return an empty array of tweets', async () => {
+	const result = <Tweets>await getTweets();
+
+	expect(result.length).toEqual(0);
+});
+
 it('insert tweet should create one new tweet', async () => {
-	const httpTweet = harness.createHttpTweet();
+	const httpTweet = await harness.generateHttpTweet();
 
 	tweet = <Tweet>await insertTweet(httpTweet);
 
@@ -47,10 +48,11 @@ it('insert tweet should create one new tweet', async () => {
 	expect(tweet).toEqual(
 		expect.objectContaining({
 			accountId: +httpTweet.accountId,
+			// @ts-ignore
 			twitterUserId: BigInt(httpTweet.twitterUserId),
 			updatedAt: null,
 			// @ts-ignore
-			scheduledTimeUTC: new Date(httpTweet.scheduledTimeUTC),
+			dateTime: new Date(httpTweet.dateTime),
 			content: httpTweet.content,
 			sent: false,
 		}),
@@ -58,24 +60,17 @@ it('insert tweet should create one new tweet', async () => {
 });
 
 it('get tweet should return inserted tweet', async () => {
-	const result = <Tweet>await getTweet(tweet.id.toString());
+	const result = <Tweet>await getTweet(tweet.id);
 
 	expect(result.id).toEqual(tweet.id);
 	expect(result.content).toEqual(tweet.content);
 });
 
 it('get tweets should return an array with one tweet', async () => {
-	const result = <Tweets>await getTweets(harness.getTwitterUser().id.toString());
+	const result = <Tweets>await getTweets();
 
 	expect(result.length).toEqual(1);
 	result.map((result: Tweet) => expect(result.id).toEqual(tweet.id));
-});
-
-it('get tweets should return error', async () => {
-	const result = <ServerError>await getTweets('738');
-
-	expect(result).toBeInstanceOf(ServerError);
-	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
 });
 
 it('update tweet should update content', async () => {
@@ -116,31 +111,31 @@ describe('update non-existent tweet content should return not found', () => {
 });
 
 it('get tweet should return tweet with updated content', async () => {
-	const result = <Tweet>await getTweet(tweet.id.toString());
+	const result = <Tweet>await getTweet(tweet.id);
 
 	expect(result.id).toEqual(tweet.id);
 	expect(result.content).toEqual(tweet.content);
 });
 
 it('update tweet should update scheduled datetime', async () => {
-	const scheduledTimeUTC = new Date('2022-10-29T21:48:54.738Z');
-	const result = await updateTweetScheduledTime(tweet.id.toString(), scheduledTimeUTC);
+	const dateTime = new Date('2022-10-29T21:48:54.738Z');
+	const result = await updateTweetScheduledTime(tweet.id.toString(), dateTime);
 
 	expect(result).toEqual(
 		expect.objectContaining({
 			...tweet,
-			scheduledTimeUTC,
+			dateTime,
 		}),
 	);
 
-	tweet.scheduledTimeUTC = scheduledTimeUTC;
+	tweet.dateTime = dateTime;
 });
 
 it('get tweet should return tweet with updated scheduled datetime', async () => {
-	const result = <Tweet>await getTweet(tweet.id.toString());
+	const result = <Tweet>await getTweet(tweet.id);
 
 	expect(result.id).toEqual(tweet.id);
-	expect(result.scheduledTimeUTC).toEqual(tweet.scheduledTimeUTC);
+	expect(result.dateTime).toEqual(tweet.dateTime);
 });
 
 it('update tweet should change sent to true', async () => {
@@ -158,7 +153,7 @@ it('update tweet should change sent to true', async () => {
 });
 
 it('get tweet should return tweet with sent true', async () => {
-	const result = <Tweet>await getTweet(tweet.id.toString());
+	const result = <Tweet>await getTweet(tweet.id);
 
 	expect(result.id).toEqual(tweet.id);
 	expect(result.sent).toEqual(tweet.sent);
@@ -171,7 +166,7 @@ it('delete tweet should delete tweet with id', async () => {
 });
 
 it('get deleted tweet should return status of not found', async () => {
-	const result = <ServerError>await getTweet(tweet.id.toString());
+	const result = <ServerError>await getTweet(tweet.id);
 
 	expect(result).toBeInstanceOf(ServerError);
 	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);

@@ -5,7 +5,7 @@ import { user, createUser } from './users-controller';
 const usersRouter = new Router({ prefix: '/users' });
 
 // GET: /api/users/:id
-usersRouter.get('/:userId', user);
+usersRouter.get('/:id', user);
 
 // POST: /api/users
 usersRouter.post('/', koaBody(), createUser);

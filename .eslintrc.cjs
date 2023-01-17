@@ -44,6 +44,7 @@ module.exports = {
 		'func-names': 'off',
 		'no-continue': 'off',
 		'no-plusplus': 'off',
+		'no-await-in-loop': 'off',
 		'no-param-reassign': 'off',
 		'operator-linebreak': 'off',
 		'object-curly-newline': 'off',

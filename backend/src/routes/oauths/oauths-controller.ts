@@ -1,10 +1,11 @@
-import HttpStatus from 'http-status';
 import { ParameterizedContext } from 'koa';
+import HttpStatus from 'http-status';
 import { getTwitterOAuthRequestToken, getTwitterAccountByRequestToken, insertTwitterOAuth } from './oauths-model';
 import { TwitterOAuthRequestToken } from './oauths';
 import { ServerError } from '../types';
-import { insertAccount } from '../accounts/accounts-model';
-import { getTwitterUser, insertTwitterUser } from '../twitter-users/twitter-users-model';
+import { accountExists, insertAccount } from '../accounts/accounts-model';
+import { insertTwitterUser } from '../twitter-users/twitter-users-model';
+import { handleServerError } from '../util';
 
 // need a better solution than to store temp auth in a variable
 let tempAuthDetails: TwitterOAuthRequestToken;
@@ -25,67 +26,70 @@ export const requestToken = async (ctx: ParameterizedContext): Promise<void> => 
 	ctx.body = { oauthToken: result.oauthToken };
 };
 
-// TODO: See if this error handle can be abstracted
 export const accessToken = async (ctx: ParameterizedContext): Promise<void> => {
-	const { token: oauthToken, verifier: oauthVerifier } = ctx.request.body;
-	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, oauthToken, oauthVerifier);
+	const { token, verifier } = ctx.request.body;
+	// @ts-ignore
+	const { userId } = ctx.session;
 
-	if (twitterAccount instanceof ServerError) {
-		ctx.status = twitterAccount.getStatusCode();
-		ctx.body = { message: twitterAccount.getMessage() };
-		return;
-	}
-
-	// 1. store Twitter user
-	const twitterUserExists = await getTwitterUser(twitterAccount.userId);
-
-	if (!twitterUserExists) {
-		const insertTwitterUserResult = await insertTwitterUser(twitterAccount);
-
-		if (insertTwitterUserResult instanceof ServerError) {
-			console.log(insertTwitterUserResult.getMessage());
-			ctx.status = insertTwitterUserResult.getStatusCode();
-			ctx.body = { message: insertTwitterUserResult.getMessage() };
-			return;
-		}
-	}
-
-	// 2. create account
-	if (!ctx.session) {
+	if (!ctx.session || !userId) {
 		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 		ctx.body = { message: 'Failed to retrieve user id.' };
 		return;
 	}
-	const { userId } = ctx.session;
-	const twitterUserId = BigInt(twitterAccount.userId);
-	const accountId = await insertAccount(userId, twitterUserId);
 
-	if (accountId instanceof ServerError) {
-		console.log(accountId.getMessage());
-		ctx.status = accountId.getStatusCode();
-		ctx.body = { message: accountId.getMessage() };
+	if (!token || !verifier || !tempAuthDetails) {
+		ctx.status = HttpStatus.BAD_REQUEST;
+		return;
+	}
+
+	const twitterAccount = await getTwitterAccountByRequestToken(tempAuthDetails, token, verifier);
+	console.log(twitterAccount);
+
+	if (twitterAccount instanceof ServerError) {
+		handleServerError(ctx, twitterAccount);
+		return;
+	}
+
+	// 1. store Twitter user
+	const isAlreadyAdded = await accountExists(userId, twitterAccount.twitterUser.id);
+	if (isAlreadyAdded) {
+		ctx.status = HttpStatus.CONFLICT;
+		ctx.body = { message: 'User already exists.' };
+		return;
+	}
+
+	const insertTwitterUserResult = await insertTwitterUser(userId, twitterAccount.twitterUser);
+	if (insertTwitterUserResult instanceof ServerError) {
+		handleServerError(ctx, insertTwitterUserResult);
+		return;
+	}
+
+	// 2. create account
+	const twitterUserId = twitterAccount.twitterUser.id;
+
+	const account = await insertAccount(userId, twitterUserId);
+	if (account instanceof ServerError) {
+		handleServerError(ctx, account);
 		return;
 	}
 
 	// 3. using account id, store oAuth credentials
-	const { accessToken: token, accessSecret: secret } = twitterAccount.oauth;
-	if (token && secret) {
-		const insertOAuthResult = await insertTwitterOAuth(accountId, token, secret);
-
-		if (insertOAuthResult instanceof ServerError) {
-			console.log(insertOAuthResult.getMessage());
-			ctx.status = insertOAuthResult.getStatusCode();
-			ctx.body = { message: insertOAuthResult.getMessage() };
-			return;
-		}
-
-		// remove oAuth credentials before sending user
-		twitterAccount.oauth = {};
-
-		// success
-		ctx.status = HttpStatus.CREATED;
-		ctx.body = twitterAccount;
+	const { accessToken, accessSecret } = twitterAccount.oauth;
+	if (!accessToken || !accessSecret) {
+		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+		return;
 	}
 
-	ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+	const insertOAuthResult = await insertTwitterOAuth(account.id, accessToken, accessSecret);
+	if (insertOAuthResult instanceof ServerError) {
+		handleServerError(ctx, insertOAuthResult);
+		return;
+	}
+
+	// remove oAuth credentials before sending user
+	twitterAccount.oauth = {};
+
+	// success
+	ctx.status = HttpStatus.CREATED;
+	ctx.body = twitterAccount;
 };

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const deleteTweet = async (tweetId: number): Promise<any> => {
+const deleteTweet = async (tweetId: number): Promise<any> => {
 	return await axios.delete('/api/tweets/' + tweetId);
 };
 

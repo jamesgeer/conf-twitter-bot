@@ -1,14 +1,8 @@
 import axios from 'axios';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { HTTPTweet, Tweet } from '../types';
 
-interface CreateTweetPayload {
-	accountId: number;
-	twitterUserId: bigint;
-	scheduledTimeUTC: string;
-	content: string;
-}
-
-export const createTweet = async (payload: CreateTweetPayload): Promise<number> => {
+const createTweet = async (payload: HTTPTweet): Promise<Tweet> => {
 	return await axios.post('/api/tweets', payload);
 };
 

@@ -12,7 +12,7 @@ const account = {
 test('should create new account', async () => {
 	prismaMock.account.create.mockResolvedValue(account);
 
-	await expect(insertAccount(account.id, account.twitterUserId)).resolves.toEqual(account.id);
+	await expect(insertAccount(account.id, account.twitterUserId)).resolves.toEqual(account);
 });
 
 test('create account should return account already exists error', async () => {

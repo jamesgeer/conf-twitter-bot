@@ -3,7 +3,8 @@ import { Tweet } from '../types';
 import dayjs from 'dayjs';
 import { useDeleteTweet } from '../api/deleteTweet';
 import { useState } from 'react';
-import CreateEditTweet from './CreateEditTweet';
+import TweetForm from './Tweet';
+import UploadsList from '../../uploads/components/UploadsList';
 
 interface Props {
 	tweet: Tweet;
@@ -12,7 +13,7 @@ interface Props {
 const SingleTweet = ({ tweet }: Props) => {
 	const [isEdit, setIsEdit] = useState(false);
 
-	const mutation = useDeleteTweet();
+	const { id, content, dateTime, uploads } = tweet;
 
 	const handleClick = (menuItem: string) => {
 		switch (menuItem) {
@@ -23,42 +24,31 @@ const SingleTweet = ({ tweet }: Props) => {
 		}
 	};
 
+	const mutation = useDeleteTweet();
 	const handleDelete = async () => {
-		await mutation.mutateAsync(tweet.id);
+		await mutation.mutateAsync(id);
 	};
 
 	const handleEdit = () => {
-		console.log(isEdit);
 		setIsEdit(!isEdit);
 	};
 
-	const tweetDate = dayjs(tweet.scheduledTimeUTC).toDate().toLocaleString();
+	const tweetDate = dayjs(dateTime).toDate().toLocaleString();
 
 	const myTweet = () => {
 		return (
 			<div className="border-b border-slate-200 pb-4 flex justify-between">
 				<div>
 					<small>{tweetDate}</small>
-					<p>{tweet.content}</p>
+					<p>{content}</p>
+					{uploads && <UploadsList uploads={uploads} />}
 				</div>
-				<div>
-					<TweetMenu handleClick={handleClick} />
-				</div>
+				<TweetMenu handleClick={handleClick} />
 			</div>
 		);
 	};
 
-	return isEdit ? (
-		<CreateEditTweet
-			isEdit={true}
-			setIsEdit={setIsEdit}
-			editContent={tweet.content}
-			editDateTime={tweet.scheduledTimeUTC.toString()}
-			tweet={tweet}
-		/>
-	) : (
-		myTweet()
-	);
+	return isEdit ? <TweetForm isEdit={isEdit} setIsEdit={setIsEdit} initTweet={tweet} /> : myTweet();
 };
 
 export default SingleTweet;
