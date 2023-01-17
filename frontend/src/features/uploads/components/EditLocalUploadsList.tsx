@@ -24,9 +24,9 @@ const EditLocalUploadsList = ({ media, setMedia }: Props) => {
 		media?.map((medium: File) => {
 			const url = URL.createObjectURL(medium);
 			return (
-				<Box key={uuid()} position="relative">
+				<Box key={uuid()} position="relative" display="flex" justifyContent="center" height="178px">
 					<DeleteLocalUploadButton handleClick={() => removeFile(medium)} />
-					<Image objectFit="cover" borderRadius="1rem" minHeight="100%" src={url} />
+					<Image objectFit="cover" borderRadius="1rem" width="100%" src={url} />
 				</Box>
 			);
 		});
