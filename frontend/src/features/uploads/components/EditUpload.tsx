@@ -6,33 +6,42 @@ import DeleteUploadButton from './ui/DeleteUploadButton';
 import ConfirmDeleteUploadButton from './ui/ConfirmDeleteUploadButton';
 
 interface Props {
-	upload: Upload;
-	handleDelete: (upload: Upload, undoDelete: boolean) => void;
+	upload: Upload | File;
+	handleDelete: ((upload: Upload, confirmDelete: boolean) => void) | ((file: File, confirmDelete: boolean) => void);
 }
 
 const EditUpload = ({ upload, handleDelete }: Props) => {
 	const [isDelete, setIsDelete] = useState(false);
 
-	const handleClick = () => {
-		setIsDelete(!isDelete);
-		handleDelete(upload, isDelete);
-	};
+	let url = '';
+	if (upload instanceof File) {
+		url = URL.createObjectURL(upload);
+	} else {
+		url = upload.url;
+	}
+
+	let test: any;
+	if (upload instanceof File) {
+		test = upload;
+	} else {
+		test = upload;
+	}
 
 	return (
 		<Box position="relative">
 			{isDelete ? (
-				<RevertDeleteButton handleClick={handleClick} />
+				<RevertDeleteButton handleClick={() => setIsDelete(false)} />
 			) : (
-				<DeleteUploadButton handleClick={handleClick} />
+				<DeleteUploadButton handleClick={() => setIsDelete(true)} />
 			)}
 			<Image
 				objectFit="cover"
 				borderRadius="1rem"
 				minHeight="100%"
-				src={upload.url}
+				src={url}
 				filter={isDelete ? 'grayscale(100%)' : ''}
 			/>
-			{isDelete && <ConfirmDeleteUploadButton handleClick={() => handleDelete(upload, false)} />}
+			{isDelete && <ConfirmDeleteUploadButton handleClick={() => handleDelete(test, true)} />}
 		</Box>
 	);
 };

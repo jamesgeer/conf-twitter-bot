@@ -16,8 +16,8 @@ interface Props {
 }
 
 const EditUploadsList = ({ media, setMedia, uploads, setUploads, uploadsToDelete }: Props) => {
-	const handleDelete = async (upload: Upload, undoDelete: boolean) => {
-		if (undoDelete && uploadsToDelete.includes(upload)) {
+	const handleDelete = (upload: Upload, confirmDelete: boolean): void => {
+		if (confirmDelete && uploadsToDelete.includes(upload)) {
 			// delete and remove from array
 			uploadsToDelete = uploadsToDelete.filter((u) => u !== upload);
 			return;
@@ -33,8 +33,9 @@ const EditUploadsList = ({ media, setMedia, uploads, setUploads, uploadsToDelete
 		if (uploadsToDelete.includes(upload)) {
 			// delete and remove from array
 			uploadsToDelete = uploadsToDelete.filter((u) => u !== upload);
-			await handleDeleteNow(upload);
-			return;
+			(async () => {
+				await handleDeleteNow(upload);
+			})();
 		}
 	};
 
@@ -46,12 +47,23 @@ const EditUploadsList = ({ media, setMedia, uploads, setUploads, uploadsToDelete
 		});
 	};
 
+	const handleLocalDelete = (file: File, confirmDelete: boolean): void => {
+		if (confirmDelete) {
+			// set new file array without the selected attached media, if media array empty then set to undefined
+			media
+				? setMedia((existing) => existing?.filter((existingFile) => existingFile !== file))
+				: setMedia(undefined);
+		}
+	};
+
 	return (
 		<SimpleGrid columns={4} spacing={10} paddingTop="1rem" paddingBottom="1rem">
 			{uploads?.map((upload: Upload) => (
 				<EditUpload key={uuid()} upload={upload} handleDelete={handleDelete} />
 			))}
-			{media && <EditLocalUploadsList media={media} setMedia={setMedia} />}
+			{media?.map((media: File) => (
+				<EditUpload key={uuid()} upload={media} handleDelete={handleLocalDelete} />
+			))}
 		</SimpleGrid>
 	);
 };
