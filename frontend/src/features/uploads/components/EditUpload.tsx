@@ -36,7 +36,7 @@ const EditUpload = ({ upload, handleDelete }: Props) => {
 	};
 
 	return (
-		<Box position="relative">
+		<Box position="relative" display="flex" justifyContent="center" height="178px">
 			{isDelete ? (
 				<RevertDeleteButton handleClick={() => handleClick()} />
 			) : upload instanceof File ? (
@@ -47,7 +47,7 @@ const EditUpload = ({ upload, handleDelete }: Props) => {
 			<Image
 				objectFit="cover"
 				borderRadius="1rem"
-				minHeight="100%"
+				width="100%"
 				src={url}
 				filter={isDelete ? 'grayscale(100%)' : ''}
 			/>
