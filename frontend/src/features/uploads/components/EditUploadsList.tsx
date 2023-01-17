@@ -9,11 +9,10 @@ import { deleteUpload } from '../api/deleteUpload';
 interface Props {
 	uploads: Uploads;
 	setUploads: React.Dispatch<React.SetStateAction<Tweet>>;
+	uploadsToDelete: Uploads;
 }
 
-const EditUploadsList = ({ uploads, setUploads }: Props) => {
-	let uploadsToDelete: Uploads = [];
-
+const EditUploadsList = ({ uploads, setUploads, uploadsToDelete }: Props) => {
 	const handleDelete = async (upload: Upload, undoDelete: boolean) => {
 		if (undoDelete && uploadsToDelete.includes(upload)) {
 			// delete and remove from array
@@ -24,7 +23,6 @@ const EditUploadsList = ({ uploads, setUploads }: Props) => {
 		// empty array or does not contain upload so add
 		if (uploadsToDelete === [] || !uploadsToDelete.includes(upload)) {
 			uploadsToDelete.push(upload);
-			console.log(uploadsToDelete);
 			return;
 		}
 

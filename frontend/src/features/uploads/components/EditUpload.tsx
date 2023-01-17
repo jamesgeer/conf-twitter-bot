@@ -4,7 +4,6 @@ import { Upload } from '../types';
 import RevertDeleteButton from './ui/RevertDeleteButton';
 import DeleteUploadButton from './ui/DeleteUploadButton';
 import ConfirmDeleteUploadButton from './ui/ConfirmDeleteUploadButton';
-import axios from 'axios';
 
 interface Props {
 	upload: Upload;
@@ -18,10 +17,6 @@ const EditUpload = ({ upload, handleDelete }: Props) => {
 		setIsDelete(!isDelete);
 		handleDelete(upload, isDelete);
 	};
-
-	// const handleDeleteNow = async () => {
-	// 	await axios.delete('/api/uploads/' + upload.id);
-	// };
 
 	return (
 		<Box position="relative">

@@ -14,6 +14,8 @@ import HttpStatus from 'http-status';
 import { useCreateTweetWithUpload } from '../../../uploads/api/createUpload';
 import EditLocalUploadsList from '../../../uploads/components/EditLocalUploadsList';
 import EditUploadsList from '../../../uploads/components/EditUploadsList';
+import { Upload, Uploads } from '../../../uploads/types';
+import { deleteUpload } from '../../../uploads/api/deleteUpload';
 
 interface Props {
 	isEdit: boolean;
@@ -42,6 +44,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 
 	let initContent = '';
 	let initDateTime = '';
+	let uploadsToDelete: Uploads = [];
 	if (isEdit) {
 		initContent = tweet.content;
 		initDateTime = tweet.dateTime.toString();
@@ -108,27 +111,12 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 
 	const submitTweet = async (): Promise<void> => {
 		try {
-			// tweet was edited
 			if (isEdit) {
-				await editTweetMutation.mutateAsync(tweetPayload()).then(() => setIsEdit && setIsEdit(false));
-			} else {
-				// new tweet with just content, no media to upload
-				if (!media) {
-					await createTweetMutation.mutateAsync(tweetPayload()).then(() => {
-						// @ts-ignore
-						contentRef.current.value = ''; // clear content
-					});
-					return;
-				}
-
-				// new tweet with media attached
-				const payload = { tweetPayload: tweetPayload(), mediaPayload: mediaPayload() };
-				await createTweetWithUploadMutation.mutateAsync(payload).then(() => {
-					// @ts-ignore
-					contentRef.current.value = ''; // clear content
-					setMedia(undefined); // clear uploads
-				});
+				await submitEdit();
+				return;
 			}
+
+			await submitNewTweet();
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
 				switch (e.response?.status) {
@@ -142,6 +130,37 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 				}
 			}
 		}
+	};
+
+	const submitEdit = async (): Promise<void> => {
+		// delete selected uploads
+		if (uploadsToDelete.length > 0) {
+			uploadsToDelete.map(async (upload: Upload) => {
+				await deleteUpload(upload.id);
+			});
+			uploadsToDelete = [];
+		}
+
+		await editTweetMutation.mutateAsync(tweetPayload()).then(() => setIsEdit && setIsEdit(false));
+	};
+
+	const submitNewTweet = async (): Promise<void> => {
+		// new tweet with just content, no media to upload
+		if (!media) {
+			await createTweetMutation.mutateAsync(tweetPayload()).then(() => {
+				// @ts-ignore
+				contentRef.current.value = ''; // clear content
+			});
+			return;
+		}
+
+		// new tweet with media attached
+		const payload = { tweetPayload: tweetPayload(), mediaPayload: mediaPayload() };
+		await createTweetWithUploadMutation.mutateAsync(payload).then(() => {
+			// @ts-ignore
+			contentRef.current.value = ''; // clear content
+			setMedia(undefined); // clear uploads
+		});
 	};
 
 	const formError = (message: string): void => {
@@ -173,7 +192,11 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 				<div className="text-xl mt-2 w-full">
 					<TweetContent contentRef={contentRef} initContent={initContent} />
 					{isEdit && tweet.uploads ? (
-						<EditUploadsList uploads={tweet.uploads} setUploads={setTweet} />
+						<EditUploadsList
+							uploads={tweet.uploads}
+							setUploads={setTweet}
+							uploadsToDelete={uploadsToDelete}
+						/>
 					) : (
 						<EditLocalUploadsList media={media} setMedia={setMedia} />
 					)}
