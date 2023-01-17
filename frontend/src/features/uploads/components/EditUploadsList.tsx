@@ -5,7 +5,6 @@ import EditUpload from './EditUpload';
 import uuid from 'react-uuid';
 import { Tweet } from '../../tweets/types';
 import { deleteUpload } from '../api/deleteUpload';
-import EditLocalUploadsList from './EditLocalUploadsList';
 
 interface Props {
 	media: File[] | undefined;
@@ -16,21 +15,22 @@ interface Props {
 }
 
 const EditUploadsList = ({ media, setMedia, uploads, setUploads, uploadsToDelete }: Props) => {
-	const handleDelete = (upload: Upload, confirmDelete: boolean): void => {
-		if (confirmDelete && uploadsToDelete.includes(upload)) {
+	const handleDelete = (upload: Upload, selectDelete: boolean, confirmDelete: boolean): void => {
+		// was set to delete but reverted by user so remove from to be deleted array
+		if (!selectDelete && uploadsToDelete.includes(upload)) {
 			// delete and remove from array
 			uploadsToDelete = uploadsToDelete.filter((u) => u !== upload);
 			return;
 		}
 
-		// empty array or does not contain upload so add
+		// user wants to delete upload so add to array for deletion
 		if (uploadsToDelete === [] || !uploadsToDelete.includes(upload)) {
 			uploadsToDelete.push(upload);
 			return;
 		}
 
-		// already in the array so user wants to delete it now
-		if (uploadsToDelete.includes(upload)) {
+		// user wants to delete upload now
+		if (confirmDelete && uploadsToDelete.includes(upload)) {
 			// delete and remove from array
 			uploadsToDelete = uploadsToDelete.filter((u) => u !== upload);
 			(async () => {
@@ -47,7 +47,7 @@ const EditUploadsList = ({ media, setMedia, uploads, setUploads, uploadsToDelete
 		});
 	};
 
-	const handleLocalDelete = (file: File, confirmDelete: boolean): void => {
+	const handleLocalDelete = (file: File, selectDelete: boolean, confirmDelete: boolean): void => {
 		if (confirmDelete) {
 			// set new file array without the selected attached media, if media array empty then set to undefined
 			media

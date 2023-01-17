@@ -7,7 +7,9 @@ import ConfirmDeleteUploadButton from './ui/ConfirmDeleteUploadButton';
 
 interface Props {
 	upload: Upload | File;
-	handleDelete: ((upload: Upload, confirmDelete: boolean) => void) | ((file: File, confirmDelete: boolean) => void);
+	handleDelete:
+		| ((upload: Upload, selectDelete: boolean, confirmDelete: boolean) => void)
+		| ((file: File, selectDelete: boolean, confirmDelete: boolean) => void);
 }
 
 const EditUpload = ({ upload, handleDelete }: Props) => {
@@ -20,19 +22,24 @@ const EditUpload = ({ upload, handleDelete }: Props) => {
 		url = upload.url;
 	}
 
-	let test: any;
+	let mediaToDelete: any;
 	if (upload instanceof File) {
-		test = upload;
+		mediaToDelete = upload;
 	} else {
-		test = upload;
+		mediaToDelete = upload;
 	}
+
+	const handleClick = () => {
+		setIsDelete(!isDelete);
+		handleDelete(mediaToDelete, isDelete, false);
+	};
 
 	return (
 		<Box position="relative">
 			{isDelete ? (
-				<RevertDeleteButton handleClick={() => setIsDelete(false)} />
+				<RevertDeleteButton handleClick={() => handleClick()} />
 			) : (
-				<DeleteUploadButton handleClick={() => setIsDelete(true)} />
+				<DeleteUploadButton handleClick={() => handleClick()} />
 			)}
 			<Image
 				objectFit="cover"
@@ -41,7 +48,7 @@ const EditUpload = ({ upload, handleDelete }: Props) => {
 				src={url}
 				filter={isDelete ? 'grayscale(100%)' : ''}
 			/>
-			{isDelete && <ConfirmDeleteUploadButton handleClick={() => handleDelete(test, true)} />}
+			{isDelete && <ConfirmDeleteUploadButton handleClick={() => handleDelete(mediaToDelete, true, true)} />}
 		</Box>
 	);
 };
