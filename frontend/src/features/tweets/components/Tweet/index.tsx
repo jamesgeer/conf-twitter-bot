@@ -16,6 +16,7 @@ import EditLocalUploadsList from '../../../uploads/components/EditLocalUploadsLi
 import EditUploadsList from '../../../uploads/components/EditUploadsList';
 import { Upload, Uploads } from '../../../uploads/types';
 import { deleteUpload } from '../../../uploads/api/deleteUpload';
+import { useEditTweetWithUpload } from '../../../uploads/api/editUpload';
 
 interface Props {
 	isEdit: boolean;
@@ -41,6 +42,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 	const createTweetMutation = useCreateTweet();
 	const createTweetWithUploadMutation = useCreateTweetWithUpload();
 	const editTweetMutation = useEditTweet();
+	const editTweetWithUploadMutation = useEditTweetWithUpload();
 
 	let initContent = '';
 	let initDateTime = '';
@@ -141,7 +143,15 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 			uploadsToDelete = [];
 		}
 
-		await editTweetMutation.mutateAsync(tweetPayload()).then(() => setIsEdit && setIsEdit(false));
+		// edit tweet with just content, no media to upload
+		if (!media) {
+			await editTweetMutation.mutateAsync(tweetPayload()).then(() => setIsEdit && setIsEdit(false));
+			return;
+		}
+
+		// edit tweet with media attached
+		const payload = { tweetPayload: tweetPayload(), mediaPayload: mediaPayload() };
+		await editTweetWithUploadMutation.mutateAsync(payload).then(() => setIsEdit && setIsEdit(false));
 	};
 
 	const submitNewTweet = async (): Promise<void> => {
