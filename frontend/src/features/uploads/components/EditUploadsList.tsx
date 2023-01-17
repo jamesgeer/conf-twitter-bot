@@ -1,18 +1,21 @@
 import { SimpleGrid } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React from 'react';
 import { Upload, Uploads } from '../types';
 import EditUpload from './EditUpload';
 import uuid from 'react-uuid';
 import { Tweet } from '../../tweets/types';
 import { deleteUpload } from '../api/deleteUpload';
+import EditLocalUploadsList from './EditLocalUploadsList';
 
 interface Props {
-	uploads: Uploads;
+	media: File[] | undefined;
+	setMedia: React.Dispatch<React.SetStateAction<File[] | undefined>>;
+	uploads: Uploads | undefined;
 	setUploads: React.Dispatch<React.SetStateAction<Tweet>>;
 	uploadsToDelete: Uploads;
 }
 
-const EditUploadsList = ({ uploads, setUploads, uploadsToDelete }: Props) => {
+const EditUploadsList = ({ media, setMedia, uploads, setUploads, uploadsToDelete }: Props) => {
 	const handleDelete = async (upload: Upload, undoDelete: boolean) => {
 		if (undoDelete && uploadsToDelete.includes(upload)) {
 			// delete and remove from array
@@ -38,7 +41,7 @@ const EditUploadsList = ({ uploads, setUploads, uploadsToDelete }: Props) => {
 	// case where user wants to delete upload without clicking the "update" button
 	const handleDeleteNow = async (upload: Upload) => {
 		await deleteUpload(upload.id).then(() => {
-			const filteredUploads = uploads.filter((tweetUpload) => tweetUpload !== upload);
+			const filteredUploads = uploads?.filter((tweetUpload) => tweetUpload !== upload);
 			setUploads((tweet) => ({ ...tweet, uploads: filteredUploads }));
 		});
 	};
@@ -48,6 +51,7 @@ const EditUploadsList = ({ uploads, setUploads, uploadsToDelete }: Props) => {
 			{uploads?.map((upload: Upload) => (
 				<EditUpload key={uuid()} upload={upload} handleDelete={handleDelete} />
 			))}
+			{media && <EditLocalUploadsList media={media} setMedia={setMedia} />}
 		</SimpleGrid>
 	);
 };

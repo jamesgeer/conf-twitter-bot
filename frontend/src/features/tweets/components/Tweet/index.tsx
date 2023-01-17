@@ -34,7 +34,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 	const scheduleRef = useRef<DateTimeHandle>();
 
 	const [tweet, setTweet] = useState<Tweet>(initTweet);
-	const [media, setMedia] = useState<File[]>();
+	const [media, setMedia] = useState<File[] | undefined>(undefined);
 	const [isError, setIsError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
@@ -191,8 +191,10 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 				</div>
 				<div className="text-xl mt-2 w-full">
 					<TweetContent contentRef={contentRef} initContent={initContent} />
-					{isEdit && tweet.uploads ? (
+					{isEdit ? (
 						<EditUploadsList
+							media={media}
+							setMedia={setMedia}
 							uploads={tweet.uploads}
 							setUploads={setTweet}
 							uploadsToDelete={uploadsToDelete}
