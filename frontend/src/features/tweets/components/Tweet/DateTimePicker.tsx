@@ -1,21 +1,21 @@
 import dayjs, { Dayjs } from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import { DateTimeHandle } from './index';
 
 interface Props {
-	dateTime: string;
-	setDateTime: React.Dispatch<React.SetStateAction<string>>;
+	initDateTime: string;
 }
 
-const ScheduleTweet = ({ dateTime, setDateTime }: Props) => {
+const DateTimePicker = forwardRef<DateTimeHandle | undefined, Props>(({ initDateTime }, ref) => {
 	// new date time object containing temporal information for -> now <-
 	const currentDateTime = dayjs();
 	let defaultDateTime: Dayjs;
 
-	if (dateTime === '') {
+	if (initDateTime === '') {
 		// three days from now
 		defaultDateTime = currentDateTime.add(3, 'day');
 	} else {
-		defaultDateTime = dayjs(dateTime);
+		defaultDateTime = dayjs(initDateTime);
 	}
 
 	const [day, setDay] = useState(defaultDateTime.date().toString());
@@ -80,15 +80,19 @@ const ScheduleTweet = ({ dateTime, setDateTime }: Props) => {
 		});
 	};
 
-	// set date time once component has fully loaded otherwise an error will occur
-	useEffect(() => {
-		// add one to the months as "dayjs" treats months as zero-based, but ISO 86001 treats them as one-based
-		// so when "dayjs" parses a ISO string it converts it back to zero-based, removing a month
-		// also months are strings so must be parsed before +/-, otherwise you'll do something like "8" + 1 = "81"
-		const oneBasedMonth = (parseInt(month) + 1).toString();
-		const enteredDateTime = dayjs(`${year}-${oneBasedMonth}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
-		setDateTime(enteredDateTime.toISOString());
-	}, [day, month, year, hour, minute, setDateTime]);
+	// get value from this component when required,
+	// preventing this component from re-rendering the parent when any value is changed
+	useImperativeHandle(ref, () => ({
+		getDateTime: () => {
+			// add one to the months as "dayjs" treats months as zero-based, but ISO 86001 treats them as one-based
+			// so when "dayjs" parses a ISO string it converts it back to zero-based, removing a month
+			// also months are strings so must be parsed before +/-, otherwise you'll do something like "8" + 1 = "81"
+			const oneBasedMonth = (parseInt(month) + 1).toString();
+			const enteredDateTime = dayjs(`${year}-${oneBasedMonth}-${day} ${hour}:${minute}`, 'YYYY-M-D H:m');
+
+			return enteredDateTime.toISOString();
+		},
+	}));
 
 	return (
 		<div className="grid grid-flow-col gap-x-4">
@@ -174,6 +178,6 @@ const ScheduleTweet = ({ dateTime, setDateTime }: Props) => {
 			</div>
 		</div>
 	);
-};
+});
 
-export default ScheduleTweet;
+export default DateTimePicker;

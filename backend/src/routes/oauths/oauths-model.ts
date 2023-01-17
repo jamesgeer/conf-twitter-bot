@@ -1,10 +1,11 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import HttpStatus from 'http-status';
-import { TwitterOAuthRequestToken, TwitterAccount } from './oauths';
+import { TwitterOAuthRequestToken, TwitterUserOAuth } from './oauths';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
-import { TWITTER_API_KEY, TWITTER_API_SECRET } from '../../keys';
+import { TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_CALLBACK_URL } from '../../keys';
 import { logToFile } from '../../logging/logging';
+import { TwitterUser } from '../accounts/accounts';
 
 export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | ServerError> => {
 	const client = new TwitterApi({
@@ -12,9 +13,7 @@ export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequest
 		appSecret: <string>TWITTER_API_SECRET,
 	});
 
-	// TODO: replace callbackUrl with an env variable
-	const callbackUrl = 'http://localhost:3000/twitter-oauth-callback';
-	const authLink = await client.generateAuthLink(callbackUrl);
+	const authLink = await client.generateAuthLink(TWITTER_CALLBACK_URL);
 
 	if (authLink && authLink.oauth_token.length > 0) {
 		return {
@@ -39,7 +38,7 @@ export const getTwitterAccountByRequestToken = async (
 	tempAuthDetails: TwitterOAuthRequestToken,
 	oauthToken: string,
 	oauthVerifier: string,
-): Promise<TwitterAccount | ServerError> => {
+): Promise<TwitterUserOAuth | ServerError> => {
 	if (oauthToken !== tempAuthDetails.oauthToken) {
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'oAuth Tokens do not match.');
 	}
@@ -62,12 +61,16 @@ export const getTwitterAccountByRequestToken = async (
 		// get the user's profile image, may be better to perform this task later
 		const { name, profile_image_url_https: profileImageUrl } = await getAdditionalUserFields(userId);
 
-		// return TwitterAccount
-		return {
-			userId,
+		const twitterUser: TwitterUser = {
+			id: BigInt(userId),
 			name,
 			screenName,
 			profileImageUrl,
+		};
+
+		// return TwitterAccount
+		return {
+			twitterUser,
 			oauth: {
 				accessToken,
 				accessSecret,

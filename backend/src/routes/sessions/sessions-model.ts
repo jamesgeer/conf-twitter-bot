@@ -11,11 +11,12 @@ export const validSessionCookie = (requestCookie: string, sessionCookie: string)
 		// if the confTwBot cookie is missing, then the variable will contain an empty string
 		if (confTwBotCookie.length > 0) {
 			// verify browser cookie matches existing session cookie
-			if (confTwBotCookie === sessionCookie) {
+			if (confTwBotCookie === `ConfTwBot=${sessionCookie}`) {
 				return true;
 			}
 		}
 	}
+
 	return false;
 };
 

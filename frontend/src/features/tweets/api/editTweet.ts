@@ -1,14 +1,8 @@
 import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Tweet } from '../types';
+import { HTTPTweet, Tweet } from '../types';
 
-interface EditTweetPayload {
-	tweetId: number;
-	content: string;
-	scheduledTimeUTC: string;
-}
-
-const editTweet = async (payload: EditTweetPayload): Promise<Tweet> => {
+const editTweet = async (payload: HTTPTweet): Promise<Tweet> => {
 	return await axios.patch('/api/tweets/' + payload.tweetId, payload);
 };
 
@@ -21,13 +15,13 @@ export const useEditTweet = () => {
 		onMutate: async (newTweet) => {
 			// Cancel any outgoing refetches
 			// (so they don't overwrite our optimistic update)
-			await queryClient.cancelQueries({ queryKey: ['tweets', newTweet.tweetId] });
+			await queryClient.cancelQueries({ queryKey: ['tweets'] });
 
 			// Snapshot the previous value
-			const previousTweet = queryClient.getQueryData(['tweets', newTweet.tweetId]);
+			const previousTweet = queryClient.getQueryData(['tweets']);
 
 			// Optimistically update to the new value
-			queryClient.setQueryData(['tweets', newTweet.tweetId], newTweet);
+			queryClient.setQueryData(['tweets'], newTweet);
 
 			// Return a context with the previous and new todo
 			return { previousTweet, newTweet };
@@ -35,12 +29,13 @@ export const useEditTweet = () => {
 
 		// If the mutation fails, use the context we returned above
 		onError: (err, newTweet, context) => {
-			queryClient.setQueryData(['tweets', context!.newTweet.tweetId], context!.previousTweet);
+			// @ts-ignore
+			queryClient.setQueryData(['tweets'], context!.previousTweet);
 		},
 
 		// Always refetch after error or success:
 		onSettled: (newTweet) => {
-			queryClient.invalidateQueries({ queryKey: ['tweets', newTweet!.id] });
+			queryClient.invalidateQueries({ queryKey: ['tweets'] });
 		},
 	});
 };

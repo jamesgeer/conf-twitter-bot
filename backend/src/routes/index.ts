@@ -7,6 +7,7 @@ import twitterUsersRouter from './twitter-users/twitter-users.route';
 import tweetsRouter from './tweets/tweets.route';
 import papersRouter from './papers/papers.route';
 import scraperRouter from './scraper/scraper.route';
+import uploadsRouter from './uploads/uploads.route';
 
 // routes located in ./api will be prefixed with /api
 const router = new Router({ prefix: '/api' });
@@ -21,6 +22,7 @@ const routes = [
 	tweetsRouter,
 	papersRouter,
 	scraperRouter,
+	uploadsRouter,
 ];
 
 // loop over routes to enable them
