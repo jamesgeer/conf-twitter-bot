@@ -25,3 +25,11 @@ export interface PaperForTemplate extends Paper {
 }
 
 export type Papers = Array<Paper>;
+
+export interface PaperSearch {
+	search?: string;
+	year?: string;
+	conference?: string;
+}
+
+export type PaperSearches = Array<PaperSearch>;

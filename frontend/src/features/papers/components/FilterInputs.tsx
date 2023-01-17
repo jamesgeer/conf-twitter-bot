@@ -1,23 +1,39 @@
 import { InputGroup, InputLeftElement, Input, Icon, Select, Box } from '@chakra-ui/react';
 import { IconSearch } from '@tabler/icons';
-import { useState } from 'react';
+import React from 'react';
 
-const FilterInputs = () => {
-	const [searchInput, setSearchInput] = useState('');
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value);
+interface Props {
+	searchInput: { search: string; conference: string; year: string };
+	setSearchInput: React.Dispatch<React.SetStateAction<{ search: string; conference: string; year: string }>>;
+}
+
+const FilterInputs = ({ searchInput, setSearchInput }: Props) => {
+	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+		const value = e.target.value;
+		setSearchInput({ ...searchInput, [e.target.name]: value });
+		//call api method here? but access to result needs to be in Papers.tsx
+	};
+
 	return (
-		<div className="mb-4">
+		<div className="mb-4 mt-3">
 			<InputGroup>
 				<InputLeftElement pointerEvents="none" children={<IconSearch />} />
-				<Input onChange={handleChange} variant="outline" placeholder="Title or keyword" />
+				<Input name="search" onChange={handleSearchChange} variant="outline" placeholder="Title or keyword" />
 			</InputGroup>
 
 			<div className="mt-4 flex flex-row gap-6">
 				<Box w="20%">
-					<Select placeholder="Conference"></Select>
+					<Select name="conference" onChange={handleSearchChange} placeholder="Conference">
+						<option value="SPLASH">SPLASH</option>
+						<option value="MPLR">MPLR</option>
+					</Select>
 				</Box>
 				<Box w="20%">
-					<Select placeholder="Year"></Select>
+					<Select name="year" onChange={handleSearchChange} placeholder="Year">
+						<option value="2019">2019</option>
+						<option value="2020">2020</option>
+						<option value="2021">2021</option>
+					</Select>
 				</Box>
 			</div>
 		</div>

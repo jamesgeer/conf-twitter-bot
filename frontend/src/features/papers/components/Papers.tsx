@@ -3,12 +3,18 @@ import { usePapers } from '../api/getPapers';
 import { createColumnHelper } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
 import FilterInputs from './FilterInputs';
+import { useState } from 'react';
 
 interface Props {
 	isList: { activeLayout: string };
 }
 
 const Papers = ({ isList }: Props) => {
+	const [searchInput, setSearchInput] = useState({
+		search: '',
+		conference: '',
+		year: '',
+	});
 	const { isLoading, error, data: papers } = usePapers();
 
 	if (isLoading) {
@@ -83,7 +89,7 @@ const Papers = ({ isList }: Props) => {
 			{papers.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
-						<FilterInputs />
+						<FilterInputs searchInput={searchInput} setSearchInput={setSearchInput} />
 						<DataTable columns={columns} data={defaultData} />
 					</>
 				) : (
