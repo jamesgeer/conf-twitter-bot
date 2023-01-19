@@ -1,20 +1,23 @@
-import { Paper } from '../types';
-import { usePapers } from '../api/getPapers';
+import { Paper as PaperType, Papers } from '../types';
+import { getPapers, usePapers, useSearchPapers } from '../api/getPapers';
 import { createColumnHelper } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
-import FilterInputs from './FilterInputs';
-import { useState } from 'react';
+import FilterPapers from './FilterPapers';
+import React, { useState } from 'react';
+import Paper from './Paper';
+import uuid from 'react-uuid';
 
 interface Props {
 	isList: { activeLayout: string };
 }
 
-const Papers = ({ isList }: Props) => {
+const PapersList = ({ isList }: Props) => {
 	const [searchInput, setSearchInput] = useState({
 		search: '',
 		conference: '',
 		year: '',
 	});
+
 	const { isLoading, error, data: papers } = usePapers();
 
 	if (isLoading) {
@@ -24,20 +27,6 @@ const Papers = ({ isList }: Props) => {
 	if (error) {
 		return <div>An error occurred: {error.message}</div>;
 	}
-
-	const displayPapers = papers.map((paper: Paper, index) => {
-		return (
-			<div key={index} className="border-b border-slate-200 pb-4">
-				<header>
-					<h5 className="font-bold">{paper.title}</h5>
-					<small className="text-slate-700 dark:text-slate-400">{paper.authors.join(', ')}</small>
-				</header>
-				<div className="content pt-4">
-					<p>{paper.shortAbstract}</p>
-				</div>
-			</div>
-		);
-	});
 
 	//move to types folder?
 	type PaperRowData = {
@@ -89,11 +78,15 @@ const Papers = ({ isList }: Props) => {
 			{papers.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
-						<FilterInputs searchInput={searchInput} setSearchInput={setSearchInput} />
+						<FilterPapers searchInput={searchInput} setSearchInput={setSearchInput} />
 						<DataTable columns={columns} data={defaultData} />
 					</>
 				) : (
-					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{displayPapers}</div>
+					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{papers.map((paper: PaperType) => (
+							<Paper key={uuid()} paper={paper} />
+						))}
+					</div>
 				)
 			) : (
 				<p>No papers to display.</p>
@@ -102,4 +95,4 @@ const Papers = ({ isList }: Props) => {
 	);
 };
 
-export default Papers;
+export default PapersList;

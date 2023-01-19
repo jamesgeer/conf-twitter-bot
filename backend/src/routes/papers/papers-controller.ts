@@ -11,7 +11,13 @@ export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
-	const { search, year, conference }: PaperSearch = ctx.request.query;
+	// @ts-ignore
+	const {
+		payload: { search, year, conference },
+	}: PaperSearch = ctx.request.query;
+
+	console.log(ctx.request.query);
+	console.log(ctx.request.query.payload);
 
 	console.log(`current: ${search} + ${year} + ${conference}`);
 

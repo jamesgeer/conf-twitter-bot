@@ -13,8 +13,20 @@ export const usePapers = () => {
 	});
 };
 
-const searchPapers = async (payload: PaperSearch): Promise<Papers> => {
-	const response = await axios.get('/api/papers/search', { params: { payload } });
+export const searchPapers = async (payload: PaperSearch): Promise<Papers> => {
+	let searchParams = {};
+
+	for (const [key, value] of Object.entries(payload)) {
+		console.log(key, value);
+		if (value) {
+			searchParams = { ...searchParams, [key]: value };
+		}
+	}
+
+	const response = await axios.get('/api/papers/search', {
+		params: searchParams,
+	});
+
 	return response.data;
 };
 
