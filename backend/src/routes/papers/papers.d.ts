@@ -32,4 +32,8 @@ export interface PaperSearch {
 	conference?: string;
 }
 
-export type PaperSearches = Array<PaperSearch>;
+export interface PaperSearchDB {
+	title?: string;
+	monthYear?: string;
+	conference?: string;
+}

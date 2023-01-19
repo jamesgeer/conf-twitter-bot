@@ -1,6 +1,7 @@
 import { InputGroup, InputLeftElement, Input, Icon, Select, Box } from '@chakra-ui/react';
 import { IconSearch } from '@tabler/icons';
 import React from 'react';
+import { useSearchPapers } from '../api/getPapers';
 
 interface Props {
 	searchInput: { search: string; conference: string; year: string };
@@ -8,14 +9,19 @@ interface Props {
 }
 
 const FilterInputs = ({ searchInput, setSearchInput }: Props) => {
+	const { isLoading, error, data: papers } = useSearchPapers(searchInput);
+	console.log(papers);
+
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
 		const value = e.target.value;
 		setSearchInput({ ...searchInput, [e.target.name]: value });
-		//call api method here? but access to result needs to be in Papers.tsx
 	};
 
 	return (
 		<div className="mb-4 mt-3">
+			<p>{searchInput.search}</p>
+			<p>{searchInput.year}</p>
+			<p>{searchInput.conference}</p>
 			<InputGroup>
 				<InputLeftElement pointerEvents="none" children={<IconSearch />} />
 				<Input name="search" onChange={handleSearchChange} variant="outline" placeholder="Title or keyword" />

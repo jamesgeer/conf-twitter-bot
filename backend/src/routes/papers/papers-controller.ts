@@ -1,7 +1,7 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getPapers } from './papers-model';
-import { PaperSearch } from './papers';
+import { getPapers, getSearchedPapers } from './papers-model';
+import { PaperSearch, PaperSearchDB } from './papers';
 
 export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 	const papers = await getPapers();
@@ -11,13 +11,18 @@ export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
-	// const params = ctx.request.query;
-	// const params2 = ctx.request.query.payload;
-	console.log('brandon was here!');
-	console.log(ctx);
-	// const papers = await getSearchedPapers(params);
+	const { search, year, conference }: PaperSearch = ctx.request.query;
+
+	console.log(`current: ${search} + ${year} + ${conference}`);
+
+	// const { search: title, year: monthYear, conference }: PaperSearch = query;
+	// console.log(`vars: + ${title} + ${monthYear} + ${conference}`);
+	// const queryForDb: PaperSearchDB = { title: search, monthYear: year, conference };
+	// console.log(`queryForDb: + ${queryForDb.title} + ${queryForDb.monthYear} + ${queryForDb.conference}`);
+	// const papers = await getSearchedPapers(queryForDb);
 
 	ctx.status = HttpStatus.OK;
+	ctx.body = papers;
 };
 /*
 export const paper = async (ctx: ParameterizedContext): Promise<void> => {

@@ -28,5 +28,3 @@ export interface PaperSearch {
 	year?: string;
 	conference?: string;
 }
-
-export type PaperSearches = Array<PaperSearch>;
