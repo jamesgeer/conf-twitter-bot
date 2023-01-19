@@ -13,7 +13,7 @@ export const usePapers = () => {
 	});
 };
 
-export const searchPapers = async (payload: PaperSearch): Promise<Papers> => {
+export const getFilteredPapers = async (payload: PaperSearch): Promise<Papers> => {
 	let searchParams = {};
 
 	for (const [key, value] of Object.entries(payload)) {
@@ -31,7 +31,7 @@ export const searchPapers = async (payload: PaperSearch): Promise<Papers> => {
 };
 
 export const useSearchPapers = (payload: PaperSearch) => {
-	return useQuery<Papers, Error>(['search-results'], () => searchPapers(payload), {
+	return useQuery<Papers, Error>(['search-results'], () => getFilteredPapers(payload), {
 		initialData: [],
 	});
 };

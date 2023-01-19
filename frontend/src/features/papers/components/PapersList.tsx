@@ -1,9 +1,9 @@
 import { Paper as PaperType, Papers } from '../types';
-import { getPapers, usePapers, useSearchPapers } from '../api/getPapers';
+import { getFilteredPapers, usePapers } from '../api/getPapers';
 import { createColumnHelper } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
 import FilterPapers from './FilterPapers';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from './Paper';
 import uuid from 'react-uuid';
 
@@ -12,13 +12,19 @@ interface Props {
 }
 
 const PapersList = ({ isList }: Props) => {
+	const [papers, setPapers] = useState<Papers>();
+	const [results, setResults] = useState<Papers>();
 	const [searchInput, setSearchInput] = useState({
 		search: '',
 		conference: '',
 		year: '',
 	});
 
-	const { isLoading, error, data: papers } = usePapers();
+	const { isLoading, error, data } = usePapers();
+
+	useEffect(() => {
+		setPapers(data);
+	}, [data]);
 
 	if (isLoading) {
 		return <div>Loading Papers...</div>;
@@ -27,6 +33,14 @@ const PapersList = ({ isList }: Props) => {
 	if (error) {
 		return <div>An error occurred: {error.message}</div>;
 	}
+
+	const handleFilter = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target;
+		setSearchInput({ ...searchInput, [name]: value });
+
+		const results = await getFilteredPapers(searchInput);
+		setResults(results);
+	};
 
 	//move to types folder?
 	type PaperRowData = {
@@ -75,15 +89,15 @@ const PapersList = ({ isList }: Props) => {
 
 	return (
 		<>
-			{papers.length > 0 ? (
+			{papers && papers.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
-						<FilterPapers searchInput={searchInput} setSearchInput={setSearchInput} />
+						<FilterPapers searchInput={searchInput} handleFilter={handleFilter} />
 						<DataTable columns={columns} data={defaultData} />
 					</>
 				) : (
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{papers.map((paper: PaperType) => (
+						{papers?.map((paper: PaperType) => (
 							<Paper key={uuid()} paper={paper} />
 						))}
 					</div>
