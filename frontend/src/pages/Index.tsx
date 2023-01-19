@@ -55,7 +55,7 @@ export default function Index() {
 				<Route path="select-account" element={<SelectAccount />} />
 				<Route path="twitter-oauth-callback" element={<LoginSuccess />} />
 				<Route path="/" element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />} />
-				<Route path="*" element={<PageNotFound />} />
+				{/*<Route path="*" element={<PageNotFound />} />*/}
 			</Routes>
 		</>
 	);

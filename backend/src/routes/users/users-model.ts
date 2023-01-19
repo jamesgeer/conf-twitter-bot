@@ -4,16 +4,26 @@ import prisma from '../../../lib/prisma';
 import { ServerError, User } from '../types';
 import { logToFile } from '../../logging/logging';
 
-export const getUser = (userId: string): Promise<User | null> =>
-	prisma.user.findUnique({
-		where: {
-			id: +userId,
-		},
-		select: {
-			id: true,
-			username: true,
-		},
-	});
+export const getUser = async (userId: string): Promise<User | ServerError> => {
+	try {
+		const result = await prisma.user.findUnique({
+			where: {
+				id: +userId,
+			},
+			select: {
+				id: true,
+				username: true,
+			},
+		});
+		if (result) {
+			return result;
+		}
+		return new ServerError(HttpStatus.NOT_FOUND, `User with ID ${userId} not found.`);
+	} catch (e) {
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get user due to server problem.');
+	}
+};
 
 // counts users with username, 0 === no users exist
 export const userExists = async (username: string): Promise<boolean> => {

@@ -49,27 +49,38 @@ export const getAccount = async (accountId: string): Promise<Account | null> =>
 export const accountExists = async (userId: number, twitterUserId: bigint): Promise<boolean> => {
 	const result = await prisma.account.count({
 		where: {
-			userId: +userId,
-			twitterUserId: BigInt(twitterUserId),
+			userId,
+			twitterUserId,
 		},
 	});
 
 	return result > 0;
 };
 
-export const insertAccount = async (userId: number, twitterUserId: bigint): Promise<number | ServerError> => {
+export const insertAccount = async (userId: number, twitterUserId: bigint): Promise<Account | ServerError> => {
 	if (await accountExists(userId, twitterUserId)) {
 		return new ServerError(HttpStatus.CONFLICT, 'Account already exists.');
 	}
 
 	try {
-		const result = await prisma.account.create({
+		return await prisma.account.create({
 			data: {
 				userId,
 				twitterUserId,
 			},
+			select: {
+				id: true,
+				userId: true,
+				twitterUser: {
+					select: {
+						id: true,
+						name: true,
+						screenName: true,
+						profileImageUrl: true,
+					},
+				},
+			},
 		});
-		return result.id;
 	} catch (e) {
 		console.log(e);
 		console.log(logToFile(e));

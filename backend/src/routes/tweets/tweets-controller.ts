@@ -7,14 +7,49 @@ import {
 	updateTweetScheduledTime,
 	updateTweetContent,
 	getTweet,
+	getTwitterUserTweets,
+	insertTwitterUserTweet,
 } from './tweets-model';
 import { ServerError } from '../types';
 import { HTTPTweet, Tweet } from './tweets';
 import { handleServerError } from '../util';
 
+export const twitterUserTweets = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+	const twitterUserId = BigInt(id);
+
+	const result = await getTwitterUserTweets(twitterUserId);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
+};
+
+export const createTwitterUserTweet = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+	const twitterUserId = BigInt(id);
+	const httpTweet: HTTPTweet = ctx.request.body;
+
+	const result = await insertTwitterUserTweet(twitterUserId, httpTweet);
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
+		return;
+	}
+
+	// success
+	ctx.status = HttpStatus.CREATED;
+	ctx.body = result;
+};
+
 export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
-	const { id } = ctx.params;
-	const result = await getTweet(id);
+	const { id }: { id: string } = ctx.params;
+	const tweetId = +id;
+
+	const result = await getTweet(tweetId);
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
@@ -25,12 +60,7 @@ export const tweet = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
-	if (!ctx.session) {
-		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-		return;
-	}
-
-	const result = await getTweets(ctx.session.twitterUserId);
+	const result = await getTweets();
 	if (result instanceof ServerError) {
 		handleServerError(ctx, result);
 		return;
@@ -38,16 +68,6 @@ export const tweets = async (ctx: ParameterizedContext): Promise<void> => {
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = result;
-};
-
-export const scheduledTweets = async (ctx: ParameterizedContext): Promise<void> => {
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Not implemented.' };
-};
-
-export const sentTweets = async (ctx: ParameterizedContext): Promise<void> => {
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Not implemented.' };
 };
 
 export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
@@ -62,22 +82,22 @@ export const createTweet = async (ctx: ParameterizedContext): Promise<void> => {
 
 	// success
 	ctx.status = HttpStatus.CREATED;
-	ctx.body = result.id;
+	ctx.body = result;
 };
 
 export const updateTweet = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id } = ctx.params;
-	const { scheduledTimeUTC, content } = ctx.request.body;
+	const { dateTime, content } = ctx.request.body;
 
-	if (!scheduledTimeUTC && !content) {
+	if (!dateTime && !content) {
 		ctx.status = HttpStatus.BAD_REQUEST;
 		return;
 	}
 
 	let updatedTweet = {} as Tweet;
 
-	if (scheduledTimeUTC) {
-		const result = await updateTweetScheduledTime(id, scheduledTimeUTC);
+	if (dateTime) {
+		const result = await updateTweetScheduledTime(id, dateTime);
 		if (result instanceof ServerError) {
 			handleServerError(ctx, result);
 			return;

@@ -2,14 +2,27 @@ import HttpStatus from 'http-status';
 import { TwitterUser } from '../accounts/accounts';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
-import { TwitterAccount } from '../oauths/oauths';
 import { logToFile } from '../../logging/logging';
+import { accountExists } from '../accounts/accounts-model';
 
-export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser | ServerError> => {
+/**
+ * returns true if the Twitter user exists, false otherwise
+ * @param twitterUserId
+ */
+export const twitterUserExists = async (twitterUserId: bigint): Promise<boolean> => {
+	const result = await prisma.twitterUser.count({
+		where: {
+			id: twitterUserId,
+		},
+	});
+	return result > 0;
+};
+
+export const getTwitterUser = async (twitterUserId: bigint): Promise<TwitterUser | ServerError> => {
 	try {
 		const result = await prisma.twitterUser.findUnique({
 			where: {
-				id: BigInt(twitterUserId),
+				id: twitterUserId,
 			},
 		});
 		if (result) {
@@ -22,18 +35,33 @@ export const getTwitterUser = async (twitterUserId: string): Promise<TwitterUser
 	}
 };
 
-export const insertTwitterUser = async (twitterAccount: TwitterAccount): Promise<bigint | ServerError> => {
-	const { userId, name, screenName, profileImageUrl } = twitterAccount;
+export const insertTwitterUser = async (
+	userId: number,
+	twitterUser: TwitterUser,
+): Promise<TwitterUser | ServerError> => {
+	// user is attempting to add a Twitter account that they already control
+	if (await accountExists(userId, twitterUser.id)) {
+		console.log('conflict');
+		return new ServerError(HttpStatus.CONFLICT, 'You already have access to this Twitter user.');
+	}
+
+	// another user is trying to add an existing account so just use existing value
+	if (await twitterUserExists(twitterUser.id)) {
+		console.log('exists');
+		return twitterUser;
+	}
+
+	console.log('new');
+	const { id, name, screenName, profileImageUrl } = twitterUser;
 	try {
-		const result = await prisma.twitterUser.create({
+		return await prisma.twitterUser.create({
 			data: {
-				id: BigInt(userId),
+				id,
 				name,
 				screenName,
 				profileImageUrl,
 			},
 		});
-		return result.id;
 	} catch (e) {
 		console.log(e);
 		console.log(logToFile(e));

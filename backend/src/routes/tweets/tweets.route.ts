@@ -1,28 +1,64 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { tweet, tweets, scheduledTweets, sentTweets, createTweet, updateTweet, removeTweet } from './tweets-controller';
+import {
+	tweet,
+	tweets,
+	createTweet,
+	updateTweet,
+	removeTweet,
+	twitterUserTweets,
+	createTwitterUserTweet,
+} from './tweets-controller';
 
-const tweetsRouter = new Router({ prefix: '/tweets' });
+const tweetsRouter = new Router();
 
-// GET: /api/tweets
-tweetsRouter.get('/:id', tweet);
+/**
+ * Get all Twitter User's tweets
+ *
+ * GET: /api/twitter-users/:id/tweets
+ */
+tweetsRouter.get('/twitter-users/:id/tweets', twitterUserTweets);
 
-// GET: /api/tweets/:id
-tweetsRouter.get('/', tweets);
+/**
+ * Create Tweet for Twitter User
+ *
+ * POST: /api/twitter-users/:id/tweets
+ */
+tweetsRouter.post('/twitter-users/:id/tweets', koaBody(), createTwitterUserTweet);
 
-// GET: /api/tweets/scheduled
-tweetsRouter.get('/scheduled', scheduledTweets);
+/**
+ * Get tweet with ID
+ *
+ * GET: /api/tweets/:id
+ */
+tweetsRouter.get('/tweets/:id', tweet);
 
-// GET: /api/tweets/sent
-tweetsRouter.get('/sent', sentTweets);
+/**
+ * Get all Tweets
+ *
+ * GET /api/tweets
+ */
+tweetsRouter.get('/tweets', tweets);
 
-// POST: /api/tweets
-tweetsRouter.post('/', koaBody(), createTweet);
+/**
+ * Create Tweet
+ *
+ * POST /api/tweets
+ */
+tweetsRouter.post('/tweets', koaBody(), createTweet);
 
-// PATCH: /api/tweets/:id
-tweetsRouter.patch('/:id', koaBody(), updateTweet);
+/**
+ * Update Tweet with ID
+ *
+ * PATCH: /api/tweets/:id
+ */
+tweetsRouter.patch('/tweets/:id', koaBody(), updateTweet);
 
-// DELETE: /api/tweets/:id
-tweetsRouter.delete('/:id', removeTweet);
+/**
+ * Delete Tweet with ID
+ *
+ * DELETE: /api/tweets/:id
+ */
+tweetsRouter.delete('/tweets/:id', removeTweet);
 
 export default tweetsRouter;

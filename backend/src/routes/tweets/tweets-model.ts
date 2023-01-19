@@ -7,13 +7,52 @@ import { HTTPTweet, Tweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 import { logToFile } from '../../logging/logging';
-import { getTwitterUser } from '../twitter-users/twitter-users-model';
 
-export const getTweet = async (tweetId: string): Promise<Tweet | ServerError> => {
+export const getTwitterUserTweets = async (twitterUserId: bigint): Promise<Tweets | ServerError> => {
+	try {
+		return await prisma.tweet.findMany({
+			where: {
+				twitterUserId,
+			},
+			include: {
+				uploads: true,
+			},
+		});
+	} catch (e) {
+		console.log(e);
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get tweets due to server problem.');
+	}
+};
+
+export const insertTwitterUserTweet = async (
+	twitterUserId: bigint,
+	httpTweet: HTTPTweet,
+): Promise<Tweet | ServerError> => {
+	console.log(httpTweet);
+	const { accountId, dateTime, content } = httpTweet;
+
+	try {
+		return await prisma.tweet.create({
+			data: {
+				accountId: +accountId,
+				twitterUserId,
+				dateTime: new Date(dateTime),
+				content,
+			},
+		});
+	} catch (e) {
+		console.log(e);
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to create account due to server problem.');
+	}
+};
+
+export const getTweet = async (tweetId: number): Promise<Tweet | ServerError> => {
 	try {
 		const result = await prisma.tweet.findUnique({
 			where: {
-				id: +tweetId,
+				id: tweetId,
 			},
 		});
 		if (result) {
@@ -26,44 +65,41 @@ export const getTweet = async (tweetId: string): Promise<Tweet | ServerError> =>
 	}
 };
 
-export const getTweets = async (twitterUserId: string): Promise<Tweets | ServerError> => {
-	const twitterUserExists = await getTwitterUser(twitterUserId);
-	if (twitterUserExists instanceof ServerError) {
-		return twitterUserExists;
-	}
-
+export const getTweets = async (): Promise<Tweets | ServerError> => {
 	try {
 		return await prisma.tweet.findMany({
-			where: {
-				twitterUserId: BigInt(twitterUserId),
+			include: {
+				uploads: true,
 			},
 		});
 	} catch (e) {
+		console.log(e);
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get tweets due to server problem.');
 	}
 };
 
 export const insertTweet = async (httpTweet: HTTPTweet): Promise<Tweet | ServerError> => {
-	const { accountId, twitterUserId, scheduledTimeUTC, content } = httpTweet;
+	const { accountId, twitterUserId, dateTime, content } = httpTweet;
+	console.log(httpTweet);
 
-	if (!accountId || !twitterUserId || !scheduledTimeUTC || !content) {
+	if (!accountId || !twitterUserId || !dateTime || !content) {
 		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');
 	}
 
 	// temp, need a better check
-	if (accountId.length === 0 || twitterUserId.length === 0 || scheduledTimeUTC.length === 0 || content.length === 0) {
+	if (accountId.length === 0 || twitterUserId.length === 0 || dateTime.length === 0 || content.length === 0) {
 		return new ServerError(HttpStatus.UNAUTHORIZED, 'Tweet missing required fields.');
 	}
 
-	const isoDate = new Date(scheduledTimeUTC);
+	const isoDate = new Date(dateTime);
 
 	try {
 		return await prisma.tweet.create({
 			data: {
 				accountId: +accountId,
 				twitterUserId: BigInt(twitterUserId),
-				scheduledTimeUTC: isoDate,
+				dateTime: isoDate,
 				content,
 			},
 		});
@@ -94,7 +130,7 @@ export const updateTweetContent = async (tweetId: string, content: string): Prom
 
 export const updateTweetScheduledTime = async (
 	tweetId: string,
-	scheduledTimeUTC: Date | string,
+	dateTime: Date | string,
 ): Promise<Tweet | ServerError> => {
 	try {
 		return await prisma.tweet.update({
@@ -102,7 +138,7 @@ export const updateTweetScheduledTime = async (
 				id: +tweetId,
 			},
 			data: {
-				scheduledTimeUTC,
+				dateTime,
 			},
 		});
 	} catch (e) {
