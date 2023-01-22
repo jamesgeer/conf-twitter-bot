@@ -106,19 +106,20 @@ export const insertTwitterOAuth = async (
 	}
 };
 
-// export const getTwitterUserOAuth = async (twitterUserId: number) => {
-// 	try {
-// 		const result = await prisma.twitterOAuth.create({
-// 			data: {
-// 				accountId,
-// 				accessToken,
-// 				accessSecret,
-// 			},
-// 		});
-// 		return result.accountId;
-// 	} catch (e) {
-// 		console.log(e);
-// 		console.log(logToFile(e));
-// 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
-// 	}
-// };
+export const getTwitterUserOAuth = async (twitterUserId: bigint): Promise<TwitterOAuth | ServerError> => {
+	try {
+		const result = await prisma.twitterOAuth.findUnique({
+			where: {
+				twitterUserId,
+			},
+		});
+		if (result) {
+			return result;
+		}
+		return new ServerError(HttpStatus.NOT_FOUND, 'Incorrect or invalid user id.');
+	} catch (e) {
+		console.log(e);
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
+	}
+};

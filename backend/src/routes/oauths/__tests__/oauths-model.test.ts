@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status';
 import { TestHarness } from '../../../tests/TestHarness';
 import { TwitterUser } from '../../accounts/accounts';
-import { insertTwitterOAuth } from '../oauths-model';
+import { getTwitterUserOAuth, insertTwitterOAuth } from '../oauths-model';
 import { TwitterOAuth } from '../oauths';
 import { ServerError } from '../../types';
 
@@ -45,4 +45,26 @@ it('inserting an oauth for the same twitter user should return server error', as
 
 	expect(result).toBeInstanceOf(ServerError);
 	expect(result.getStatusCode()).toEqual(HttpStatus.CONFLICT);
+});
+
+it('get existing oauth should return oauth', async () => {
+	const result = <TwitterOAuth>await getTwitterUserOAuth(twitterUser.id);
+
+	expect(result.id).toBeGreaterThan(0);
+	expect(result).toEqual(
+		expect.objectContaining({
+			id: expect.any(Number),
+			twitterUserId: twitterUser.id,
+			accessToken: 'token',
+			accessSecret: 'secret',
+			createdAt: expect.any(Date),
+			updatedAt: expect.any(Date),
+		}),
+	);
+});
+
+it('get non-existing oauth should return server error', async () => {
+	const result = <ServerError>await getTwitterUserOAuth(BigInt(999));
+
+	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
 });
