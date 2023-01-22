@@ -19,6 +19,19 @@ export interface Paper {
 	downloads?: number;
 }
 
+export interface RschrPaper {
+	title: string;
+	authors: string[];
+	fullAuthors?: string;
+
+	doi?: string;
+	url: string;
+	preprint?: string;
+
+	shortAbstract: string;
+	fullAbstract?: string;
+}
+
 export interface PaperForTemplate extends Paper {
 	abstract: string;
 	fullAuthors: string;
