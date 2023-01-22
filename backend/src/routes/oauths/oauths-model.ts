@@ -7,7 +7,6 @@ import prisma from '../../../lib/prisma';
 import { TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_CALLBACK_URL } from '../../keys';
 import { logToFile } from '../../logging/logging';
 import { TwitterUser } from '../accounts/accounts';
-import { twitterUser } from '../twitter-users/twitter-users-controller';
 
 export const getTwitterOAuthRequestToken = async (): Promise<TwitterOAuthRequestToken | ServerError> => {
 	const client = new TwitterApi({
