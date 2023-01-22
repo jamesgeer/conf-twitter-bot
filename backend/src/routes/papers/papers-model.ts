@@ -6,7 +6,7 @@ let papers: Papers;
 
 export async function getPapers(): Promise<Papers> {
 	try {
-		papers = await prisma.paper.findMany().then((paperArray) => <Papers>paperArray);
+		// papers = await prisma.paper.findMany().then((paperArray) => <Papers>paperArray);
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));
