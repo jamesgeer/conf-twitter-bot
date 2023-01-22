@@ -78,6 +78,7 @@ export class TestHarness {
 	}
 
 	static async deleteAll(): Promise<void> {
+		await prisma.twitterOAuth.deleteMany({});
 		await prisma.upload.deleteMany({});
 		await prisma.tweet.deleteMany({});
 		await prisma.account.deleteMany({});

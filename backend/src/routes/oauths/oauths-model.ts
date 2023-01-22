@@ -1,6 +1,6 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import HttpStatus from 'http-status';
-import { TwitterOAuthRequestToken, TwitterUserOAuth } from './oauths';
+import { TwitterOAuth, TwitterOAuthRequestToken, TwitterUserOAuth } from './oauths';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
 import { TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_CALLBACK_URL } from '../../keys';
@@ -84,18 +84,19 @@ export const getTwitterAccountByRequestToken = async (
 
 export const insertTwitterOAuth = async (
 	accountId: number,
+	twitterUserId: bigint,
 	accessToken: string,
 	accessSecret: string,
-): Promise<number | ServerError> => {
+): Promise<TwitterOAuth | ServerError> => {
 	try {
-		const result = await prisma.twitterOAuth.create({
+		return await prisma.twitterOAuth.create({
 			data: {
 				accountId,
+				twitterUserId,
 				accessToken,
 				accessSecret,
 			},
 		});
-		return result.accountId;
 	} catch (e) {
 		console.log(e);
 		console.log(logToFile(e));
@@ -103,19 +104,19 @@ export const insertTwitterOAuth = async (
 	}
 };
 
-export const getTwitterUserOAuth = async (twitterUserId: number) => {
-	try {
-		const result = await prisma.twitterOAuth.create({
-			data: {
-				accountId,
-				accessToken,
-				accessSecret,
-			},
-		});
-		return result.accountId;
-	} catch (e) {
-		console.log(e);
-		console.log(logToFile(e));
-		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
-	}
-};
+// export const getTwitterUserOAuth = async (twitterUserId: number) => {
+// 	try {
+// 		const result = await prisma.twitterOAuth.create({
+// 			data: {
+// 				accountId,
+// 				accessToken,
+// 				accessSecret,
+// 			},
+// 		});
+// 		return result.accountId;
+// 	} catch (e) {
+// 		console.log(e);
+// 		console.log(logToFile(e));
+// 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
+// 	}
+// };
