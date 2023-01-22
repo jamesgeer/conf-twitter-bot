@@ -36,16 +36,17 @@ model Account {
     twitterUser   TwitterUser   @relation(fields: [twitterUserId], references: [id])
     twitterUserId BigInt
     tweet         Tweet[]
-    twitterOAuth  TwitterOAuth?
+    TwitterOAuth  TwitterOAuth?
 }
 
 model TwitterUser {
-    id              BigInt    @id @unique
+    id              BigInt        @id @unique
     name            String
     screenName      String
     profileImageUrl String
     accounts        Account[]
     tweets          Tweet[]
+    TwitterOAuth    TwitterOAuth?
 }
 
 model Tweet {
@@ -73,12 +74,17 @@ model Upload {
 }
 
 model TwitterOAuth {
-    account      Account   @relation(fields: [accountId], references: [id])
-    accountId    Int       @id @unique
-    accessToken  String
-    accessSecret String
-    createdAt    DateTime  @default(now())
-    updatedAt    DateTime?
+    id            Int         @id @default(autoincrement())
+    account       Account     @relation(fields: [accountId], references: [id])
+    accountId     Int         @unique
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt      @unique
+    accessToken   String
+    accessSecret  String
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime?
+
+    @@unique([accountId, twitterUserId])
 }
 
 model Paper {
