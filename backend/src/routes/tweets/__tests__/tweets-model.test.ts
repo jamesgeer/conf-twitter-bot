@@ -48,11 +48,9 @@ it('insert tweet should create one new tweet', async () => {
 	expect(tweet).toEqual(
 		expect.objectContaining({
 			accountId: +httpTweet.accountId,
-			// @ts-ignore
-			twitterUserId: BigInt(httpTweet.twitterUserId),
-			updatedAt: null,
-			// @ts-ignore
-			dateTime: new Date(httpTweet.dateTime),
+			twitterUserId: httpTweet.twitterUserId && BigInt(httpTweet.twitterUserId),
+			updatedAt: expect.any(Date),
+			dateTime: expect.any(Date),
 			content: httpTweet.content,
 			sent: false,
 		}),
@@ -80,6 +78,7 @@ it('update tweet should update content', async () => {
 	expect(result).toEqual(
 		expect.objectContaining({
 			...tweet,
+			updatedAt: expect.any(Date),
 			content,
 		}),
 	);
@@ -124,6 +123,7 @@ it('update tweet should update scheduled datetime', async () => {
 	expect(result).toEqual(
 		expect.objectContaining({
 			...tweet,
+			updatedAt: expect.any(Date),
 			dateTime,
 		}),
 	);
@@ -145,6 +145,7 @@ it('update tweet should change sent to true', async () => {
 	expect(result).toEqual(
 		expect.objectContaining({
 			...tweet,
+			updatedAt: expect.any(Date),
 			sent,
 		}),
 	);

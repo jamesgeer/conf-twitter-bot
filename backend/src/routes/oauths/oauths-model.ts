@@ -84,7 +84,6 @@ export const getTwitterAccountByRequestToken = async (
 };
 
 export const insertTwitterOAuth = async (
-	accountId: number,
 	twitterUserId: bigint,
 	accessToken: string,
 	accessSecret: string,
@@ -92,18 +91,17 @@ export const insertTwitterOAuth = async (
 	try {
 		return await prisma.twitterOAuth.create({
 			data: {
-				accountId,
 				twitterUserId,
 				accessToken,
 				accessSecret,
 			},
 		});
 	} catch (e) {
-		console.log(e);
-		console.log(logToFile(e));
 		if (e instanceof PrismaClientKnownRequestError) {
 			if (e.code === 'P2002') return new ServerError(HttpStatus.CONFLICT, 'OAuth already exists.');
 		}
+		console.log(e);
+		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to add Twitter user due to server problem.');
 	}
 };

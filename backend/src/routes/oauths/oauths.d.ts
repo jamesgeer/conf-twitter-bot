@@ -17,10 +17,9 @@ export interface TwitterUserOAuth {
 
 export interface TwitterOAuth {
 	id: number;
-	accountId: number;
 	twitterUserId: bigint;
 	accessToken: string;
 	accessSecret: string;
 	createdAt: Date | string;
-	updatedAt?: Date | null;
+	updatedAt: Date | string;
 }
