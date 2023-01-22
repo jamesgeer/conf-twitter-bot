@@ -46,7 +46,7 @@ model TwitterUser {
     profileImageUrl String
     accounts        Account[]
     tweets          Tweet[]
-    TwitterOAuth    TwitterOAuth?
+    oauth           TwitterOAuth?
 }
 
 model Tweet {

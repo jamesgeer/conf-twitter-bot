@@ -106,7 +106,7 @@ export class TestHarness {
 			accountId: this.getAccount().id.toString(),
 			twitterUserId: this.getTwitterUser().id.toString(),
 			dateTime: new Date().toString(),
-			content: 'My test tweet',
+			content: faker.lorem.lines(1),
 		};
 
 		return this.httpTweet;
