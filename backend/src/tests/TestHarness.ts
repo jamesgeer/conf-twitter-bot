@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from '@faker-js/faker';
 import { User } from '../routes/types';
-import { TwitterUserOAuth } from '../routes/oauths/oauths';
+import { TwitterOAuth } from '../routes/oauths/oauths';
 import { Account, TwitterUser } from '../routes/accounts/accounts';
 import { HTTPTweet, Tweet } from '../routes/tweets/tweets';
 import { insertUser } from '../routes/users/users-model';
@@ -9,11 +9,12 @@ import { insertTwitterUser } from '../routes/twitter-users/twitter-users-model';
 import { insertAccount } from '../routes/accounts/accounts-model';
 import { insertTweet } from '../routes/tweets/tweets-model';
 import prisma from '../../lib/prisma';
+import { insertTwitterOAuth } from '../routes/oauths/oauths-model';
 
 export class TestHarness {
 	user: User;
 	twitterUser: TwitterUser;
-	twitterUserOAuth: TwitterUserOAuth;
+	twitterOAuth: TwitterOAuth;
 	account: Account;
 	httpTweet: HTTPTweet;
 
@@ -28,11 +29,6 @@ export class TestHarness {
 			name: '',
 			screenName: '',
 			profileImageUrl: '',
-		};
-
-		this.twitterUserOAuth = {
-			twitterUser: this.twitterUser,
-			oauth: {},
 		};
 
 		this.account = {
@@ -61,6 +57,11 @@ export class TestHarness {
 	public async createTwitterUser(user: User, twitterUser: TwitterUser): Promise<TwitterUser> {
 		this.twitterUser = <TwitterUser>await insertTwitterUser(user.id, twitterUser);
 		return this.twitterUser;
+	}
+
+	public async createTwitterOAuth(twitterUser: TwitterUser): Promise<TwitterOAuth> {
+		this.twitterOAuth = <TwitterOAuth>await insertTwitterOAuth(twitterUser.id, 'token', 'secret');
+		return this.twitterOAuth;
 	}
 
 	public async createAccount(user: User, twitterUser: TwitterUser): Promise<Account> {
@@ -93,6 +94,10 @@ export class TestHarness {
 
 	public getTwitterUser(): TwitterUser {
 		return this.twitterUser;
+	}
+
+	public getTwitterOAuth(): TwitterOAuth {
+		return this.twitterOAuth;
 	}
 
 	public getAccount(): Account {
