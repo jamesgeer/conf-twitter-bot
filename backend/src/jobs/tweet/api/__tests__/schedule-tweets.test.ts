@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { TestHarness } from '../../../../tests/TestHarness';
 import { getScheduledTweets } from '../schedule-tweets-model';
-import { insertTweet } from '../../../../routes/tweets/tweets-model';
+import { insertTweet, updateTweetSent } from '../../../../routes/tweets/tweets-model';
 import { Tweet, Tweets } from '../../../../routes/tweets/tweets';
 
 const testData1 = new TestHarness();
@@ -21,6 +21,49 @@ afterAll(async () => {
 	await TestHarness.deleteAll();
 });
 
+describe('scheduled tweets should be an empty array', () => {
+	it('no tweets scheduled', async () => {
+		const result = await getScheduledTweets();
+
+		expect(result).toEqual([]);
+	});
+
+	it('tweet scheduled in the future', async () => {
+		const result = await getScheduledTweets();
+
+		const futureDate = new Date();
+		futureDate.setDate(futureDate.getDate() + 14);
+
+		// this tweet should not be in the results
+		const futureTweet = {
+			accountId: testData1.getAccount().id.toString(),
+			twitterUserId: testData1.getTwitterUser().id.toString(),
+			dateTime: futureDate.toString(),
+			content: faker.lorem.lines(2),
+		};
+
+		await insertTweet(futureTweet);
+
+		expect(result).toEqual([]);
+	});
+
+	it('tweet marked as sent', async () => {
+		const result = await getScheduledTweets();
+
+		const httpTweet = {
+			accountId: testData1.getAccount().id.toString(),
+			twitterUserId: testData1.getTwitterUser().id.toString(),
+			dateTime: new Date().toString(),
+			content: faker.lorem.lines(2),
+		};
+
+		const tweet = <Tweet>await insertTweet(httpTweet);
+		await updateTweetSent(tweet.id, true);
+
+		expect(result).toEqual([]);
+	});
+});
+
 it('get scheduled tweets', async () => {
 	const expectedResult = [
 		{
@@ -35,11 +78,13 @@ it('get scheduled tweets', async () => {
 		},
 	];
 
+	const now = new Date();
+
 	for (let i = 0; i < 3; i++) {
 		const httpTweet = {
 			accountId: testData1.getAccount().id.toString(),
 			twitterUserId: testData1.getTwitterUser().id.toString(),
-			dateTime: new Date().toString(),
+			dateTime: now.toString(),
 			content: faker.lorem.lines(1),
 		};
 
@@ -51,7 +96,7 @@ it('get scheduled tweets', async () => {
 		const httpTweet = {
 			accountId: testData2.getAccount().id.toString(),
 			twitterUserId: testData2.getTwitterUser().id.toString(),
-			dateTime: new Date().toString(),
+			dateTime: now.toString(),
 			content: faker.lorem.lines(2),
 		};
 
@@ -59,6 +104,26 @@ it('get scheduled tweets', async () => {
 		expectedResult[1].tweets.push(tweet);
 	}
 
+	const futureDate = new Date();
+	futureDate.setDate(futureDate.getDate() + 14);
+
+	// this tweet should not be in the results
+	const futureTweet = {
+		accountId: testData2.getAccount().id.toString(),
+		twitterUserId: testData2.getTwitterUser().id.toString(),
+		dateTime: futureDate.toString(),
+		content: faker.lorem.lines(2),
+	};
+	await insertTweet(futureTweet);
+
 	const result = await getScheduledTweets();
 	expect(result).toEqual(expectedResult);
+
+	for (let i = 0; i < result.length; i++) {
+		if (result[i].tweets) {
+			for (let j = 0; j < result[i].tweets.length; j++) {
+				expect(result[i].tweets[j].sent).toBe(false);
+			}
+		}
+	}
 });

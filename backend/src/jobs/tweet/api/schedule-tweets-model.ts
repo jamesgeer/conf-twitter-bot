@@ -1,26 +1,35 @@
-import { Tweet, Tweets } from '../../../routes/tweets/tweets';
 import prisma from '../../../../lib/prisma';
-import { TwitterUserOAuth } from '../../../routes/oauths/oauths';
 
-interface ScheduleTweet {
-	twitterUserOAuth: TwitterUserOAuth;
-	tweets: Tweets;
-}
+/**
+ * Return all scheduled tweets that have not been sent and have a dateTime
+ * set to a timestamp before "now". now being the current datetime that this
+ * method is run.
+ */
+export const getScheduledTweets = async (): Promise<any> => {
+	const now = new Date();
 
-type ScheduledTweets = Array<ScheduleTweet>;
-
-export const getScheduledTweets = async (): Promise<any> =>
-	prisma.twitterUser.findMany({
+	return prisma.twitterUser.findMany({
+		where: {
+			tweets: {
+				some: {
+					sent: false,
+					dateTime: {
+						lte: now,
+					},
+				},
+			},
+		},
 		select: {
 			id: true,
 			tweets: {
 				where: {
 					sent: false,
 					dateTime: {
-						lte: new Date(),
+						lte: now,
 					},
 				},
 			},
 			oauth: true,
 		},
 	});
+};

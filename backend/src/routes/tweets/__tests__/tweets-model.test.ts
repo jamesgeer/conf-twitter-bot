@@ -102,7 +102,7 @@ describe('update non-existent tweet content should return not found', () => {
 	});
 
 	it('sent', async () => {
-		const result = <ServerError>await updateTweetSent('101', true);
+		const result = <ServerError>await updateTweetSent(101, true);
 
 		expect(result).toBeInstanceOf(ServerError);
 		expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
@@ -140,7 +140,7 @@ it('get tweet should return tweet with updated scheduled datetime', async () => 
 
 it('update tweet should change sent to true', async () => {
 	const sent = true;
-	const result = await updateTweetSent(tweet.id.toString(), sent);
+	const result = await updateTweetSent(tweet.id, sent);
 
 	expect(result).toEqual(
 		expect.objectContaining({

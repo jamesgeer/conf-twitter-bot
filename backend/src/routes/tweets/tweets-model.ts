@@ -150,11 +150,11 @@ export const updateTweetScheduledTime = async (
 	}
 };
 
-export const updateTweetSent = async (tweetId: string, sent: boolean): Promise<Tweet | ServerError> => {
+export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<Tweet | ServerError> => {
 	try {
 		return await prisma.tweet.update({
 			where: {
-				id: +tweetId,
+				id: tweetId,
 			},
 			data: {
 				sent,
