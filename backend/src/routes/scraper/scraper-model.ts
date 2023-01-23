@@ -12,9 +12,10 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 			// eslint-disable-next-line no-await-in-loop
 			if (await isAcmUrl(url.trim())) {
 				// TODO: for testing purposes just console log now
+				// logs out true if the scraping was succesful, false otherwise
 				await scrapeListOfAcmPapers(url.trim()).then((r) => console.log(r));
 			} else if (await isRschrUrl(url.trim())) {
-				// scrapeListOfRschrPapers(url.trim()).then((r) => console.log(r));
+				await scrapeListOfRschrPapers(url.trim()).then((r) => console.log(r));
 			}
 		}
 		return true;
@@ -52,12 +53,16 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 
 		const paperTypes = await page.$$('.issue-heading');
 		const paperTitleHTags = await page.$$('.issue-item__title');
-		// try to click the + button for all papers, timeout after 1 millisecond
-		for (let i = 0; i < paperTypes.length; i++) {
+
+		const authorPlusButtons = await page.$$('.removed-items-count').then((v) => v.length);
+		for (let i = 0; i < authorPlusButtons; i++) {
 			try {
-				await page.click('.removed-items-count', { timeout: 1 });
+				await page.click('.removed-items-count', { timeout: 1000 });
 			} catch (error) {
-				if (error instanceof playwright.errors.TimeoutError) console.log('Didnt find +');
+				if (error instanceof playwright.errors.TimeoutError) {
+					console.log('Expand authors button could not be clicked...');
+					console.log(logToFile(error));
+				}
 			}
 		}
 		const authorContainers = await page.$$('[aria-label=authors]');
@@ -140,7 +145,7 @@ async function extractAcmPaper(
 	};
 }
 // returns true if successfully scraped, false otherwise
-/*
+
 async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 	// there's also playwright.firefox , we'll need to compare them at a later date for performance/memory
 	const browser = await playwright.chromium.launch({
@@ -152,8 +157,40 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 
 		// goes to that URL | TODO: error catching
 		await page.goto(url);
+		// get how many papers there are on the page
+		const paperRows = await page.$$('#event-overview tbody tr').then((v) => v.length);
+		const links: string[] = [];
+		// then open them and copy the link to their page
+		for (let i = 0; i < paperRows; i++) {
+			try {
+				// open the modal
+				await page.click(`div#event-overview tbody tr:nth-child(${i + 1}) td:nth-child(2) a`, {
+					timeout: 1000,
+					force: true,
+				});
+				// copy url from All Details
+				const urlContainer = page.locator(
+					`#event-modals .appended:nth-child(${i + 1}) .modal-footer .pull-left a`,
+				);
+				await urlContainer.waitFor({ timeout: 500 });
+				let link = await urlContainer.getAttribute('href');
+				if (link == null) link = ''; // TODO: behaviour for when a link to paper not found
+				links.push(link);
 
-		for (let i = 0; i < numPapers; i += 1) {
+				// close the modal and continue
+				await page.click(`#event-modals .appended:nth-child(${i + 1}) .modal-header a`, {
+					timeout: 1000,
+					force: true,
+				});
+			} catch (error) {
+				if (error instanceof playwright.errors.TimeoutError) {
+					console.log('Some error');
+					console.log(logToFile(error));
+				}
+			}
+		}
+		const papers: Papers = [];
+		for (let i = 0; i < paperRows; i += 1) {
 			try {
 				papers.push(
 					// eslint-disable-next-line no-await-in-loop
@@ -172,13 +209,14 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 				// ignore entry
 			}
 		}
-		return await uploadPapersToDatabase(papers);
+		return true;
+		// return await uploadPapersToDatabase(papers);
 	} catch (error) {
 		return false;
 	} finally {
 		await browser.close();
 	}
-} */
+}
 async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 	if (papers.length === 0) {
 		return false;
