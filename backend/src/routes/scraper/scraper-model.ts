@@ -156,7 +156,7 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		const page = await browser.newPage();
 
 		// goes to that URL | TODO: error catching
-		await page.goto(url);
+		await page.goto(url, { timeout: 100000 });
 		// get how many papers there are on the page
 		const paperRows = await page.$$('#event-overview tbody tr').then((v) => v.length);
 		const links: string[] = [];
@@ -207,6 +207,8 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		return true;
 		// return await uploadPapersToDatabase(papers);
 	} catch (error) {
+		console.error(error);
+		console.log(logToFile(error));
 		return false;
 	} finally {
 		await browser.close();
@@ -215,7 +217,7 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 
 async function extractRschrPaper(link: string, page: Page): Promise<RschrPaper> {
 	// go to the paper page for full scraping
-	await page.goto(link);
+	await page.goto(link, { timeout: 100000 });
 	let paperTitle = await page.locator('h2').textContent();
 	if (paperTitle == null) paperTitle = '';
 
@@ -228,6 +230,17 @@ async function extractRschrPaper(link: string, page: Page): Promise<RschrPaper> 
 		});
 		return data;
 	});
+	// console.log('i got here');
+	const doiRow = await page.locator('div', { has: page.locator('text="DOI"') });
+	// console.log('i got here2');
+	const doiObject = await doiRow.locator('.col-sm-10 > a');
+	// console.log('i got here3');
+	let doi = await doiObject.getAttribute('href', { timeout: 100 });
+	// console.log('i got here4');
+	if (doi == null) doi = '';
+
+	// build full authors as a formatted string
+	const fullAuthors = authors.join(',');
 	// const spans = await dateAndPages[i].$$('span');
 	// const monthYear = await spans[0].textContent().then((data) => data?.replace(', ', ''));
 	// const href = await paperTitleHTags[i].$eval('a', (hrefElm) => hrefElm.href);
@@ -238,10 +251,10 @@ async function extractRschrPaper(link: string, page: Page): Promise<RschrPaper> 
 	return {
 		title: paperTitle,
 		authors,
-		fullAuthors: '',
+		fullAuthors,
 
-		doi: '',
-		url: '',
+		doi,
+		url: link,
 		preprint: '',
 
 		shortAbstract: '',
