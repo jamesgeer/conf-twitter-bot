@@ -1,14 +1,15 @@
-export interface Paper {
+export interface AcmPaper {
 	type: string;
+
 	title: string;
 	authors: string[];
 	fullAuthors?: string;
 
-	doi?: string;
-	url?: string;
+	doi: string;
+	url: string;
 	preprint?: string;
 
-	shortAbstract?: string;
+	shortAbstract: string;
 	fullAbstract?: string;
 
 	monthYear?: string;
@@ -16,9 +17,19 @@ export interface Paper {
 
 	citations?: number;
 	downloads?: number;
-
-	id?: number;
-	proceedingsId?: number;
 }
 
-export type Papers = Array<Paper>;
+export interface RschrPaper {
+	title: string;
+	authors: string[];
+	fullAuthors?: string;
+
+	doi?: string;
+	url: string;
+	preprint?: string;
+
+	shortAbstract: string;
+	fullAbstract?: string;
+}
+
+export type Papers = Array<AcmPaper | RschrPaper>;

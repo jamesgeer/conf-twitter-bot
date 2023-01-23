@@ -1,4 +1,4 @@
-import { Paper } from '../types';
+import { AcmPaper, RschrPaper } from '../types';
 import { usePapers } from '../api/getPapers';
 
 interface Props {
@@ -16,7 +16,7 @@ const Papers = ({ isList }: Props) => {
 		return <div>An error occurred: {error.message}</div>;
 	}
 
-	const displayPapers = papers.map((paper: Paper, index) => {
+	const displayPapers = papers.map((paper: AcmPaper | RschrPaper, index) => {
 		return (
 			<div key={index} className="border-b border-slate-200 pb-4">
 				<header>
