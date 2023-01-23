@@ -7,6 +7,7 @@ import { ScheduledTweets } from '../schedule-tweets';
 
 const testData1 = new TestHarness();
 const testData2 = new TestHarness();
+const testData3 = new TestHarness();
 
 // before any tests are run
 beforeAll(async () => {
@@ -15,6 +16,8 @@ beforeAll(async () => {
 
 	await testData2.createStandard();
 	await testData2.createTwitterOAuth(testData2.getTwitterUser());
+
+	await testData3.createStandard();
 });
 
 // after all tests complete
@@ -30,8 +33,6 @@ describe('scheduled tweets should be an empty array', () => {
 	});
 
 	it('tweet scheduled in the future', async () => {
-		const result = await getScheduledTweets();
-
 		const futureDate = new Date();
 		futureDate.setDate(futureDate.getDate() + 14);
 
@@ -45,12 +46,11 @@ describe('scheduled tweets should be an empty array', () => {
 
 		await insertTweet(futureTweet);
 
+		const result = await getScheduledTweets();
 		expect(result).toEqual([]);
 	});
 
 	it('tweet marked as sent', async () => {
-		const result = await getScheduledTweets();
-
 		const httpTweet = {
 			accountId: testData1.getAccount().id.toString(),
 			twitterUserId: testData1.getTwitterUser().id.toString(),
@@ -61,6 +61,20 @@ describe('scheduled tweets should be an empty array', () => {
 		const tweet = <Tweet>await insertTweet(httpTweet);
 		await updateTweetSent(tweet.id, true);
 
+		const result = await getScheduledTweets();
+		expect(result).toEqual([]);
+	});
+
+	it('twitter user missing oauth', async () => {
+		const httpTweet = {
+			accountId: testData3.getAccount().id.toString(),
+			twitterUserId: testData3.getTwitterUser().id.toString(),
+			dateTime: new Date().toString(),
+			content: faker.lorem.lines(2),
+		};
+
+		await insertTweet(httpTweet);
+		const result = await getScheduledTweets();
 		expect(result).toEqual([]);
 	});
 });

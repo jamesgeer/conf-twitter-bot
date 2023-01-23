@@ -9,6 +9,7 @@ import { ScheduledTweets } from './schedule-tweets';
 export const getScheduledTweets = async (): Promise<ScheduledTweets> => {
 	const now = new Date();
 
+	// @ts-ignore
 	return prisma.twitterUser.findMany({
 		where: {
 			tweets: {
@@ -18,6 +19,9 @@ export const getScheduledTweets = async (): Promise<ScheduledTweets> => {
 						lte: now,
 					},
 				},
+			},
+			oauth: {
+				isNot: null,
 			},
 		},
 		select: {
