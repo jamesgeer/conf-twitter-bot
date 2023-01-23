@@ -3,6 +3,7 @@ import { TestHarness } from '../../../../tests/TestHarness';
 import { getScheduledTweets } from '../schedule-tweets-model';
 import { insertTweet, updateTweetSent } from '../../../../routes/tweets/tweets-model';
 import { Tweet, Tweets } from '../../../../routes/tweets/tweets';
+import { ScheduledTweets } from '../schedule-tweets';
 
 const testData1 = new TestHarness();
 const testData2 = new TestHarness();
@@ -65,7 +66,7 @@ describe('scheduled tweets should be an empty array', () => {
 });
 
 it('get scheduled tweets', async () => {
-	const expectedResult = [
+	const expectedResult: ScheduledTweets = [
 		{
 			id: testData1.getTwitterUser().id,
 			tweets: <Tweets>[],
