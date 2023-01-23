@@ -1,4 +1,4 @@
-import playwright, { ElementHandle } from 'playwright';
+import playwright, { ElementHandle, Page } from 'playwright';
 import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
@@ -189,26 +189,21 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 				}
 			}
 		}
+
 		const papers: Papers = [];
 		for (let i = 0; i < paperRows; i += 1) {
 			try {
 				papers.push(
 					// eslint-disable-next-line no-await-in-loop
-					await extractRschrPaper(
-						authorContainers,
-						i,
-						dateAndPages,
-						paperTypes,
-						paperTitleHTags,
-						shortAbstracts,
-						citations,
-						downloads,
-					),
+					await extractRschrPaper(links[i], page),
 				);
 			} catch (e) {
 				// ignore entry
 			}
 		}
+		console.log(papers[0]);
+		console.log(papers[1]);
+		console.log(papers.length);
 		return true;
 		// return await uploadPapersToDatabase(papers);
 	} catch (error) {
@@ -217,6 +212,43 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		await browser.close();
 	}
 }
+
+async function extractRschrPaper(link: string, page: Page): Promise<RschrPaper> {
+	// go to the paper page for full scraping
+	await page.goto(link);
+	let paperTitle = await page.locator('h2').textContent();
+	if (paperTitle == null) paperTitle = '';
+
+	const authorsRow = await page.locator('div', { has: page.locator('text="Who"') });
+	const authorsObjects = await authorsRow.locator('.col-sm-10 > em');
+	const authors = await authorsObjects.evaluateAll((elements) => {
+		const data: string[] = [];
+		elements.forEach((elm) => {
+			if (elm.textContent != null) data.push(elm.textContent);
+		});
+		return data;
+	});
+	// const spans = await dateAndPages[i].$$('span');
+	// const monthYear = await spans[0].textContent().then((data) => data?.replace(', ', ''));
+	// const href = await paperTitleHTags[i].$eval('a', (hrefElm) => hrefElm.href);
+
+	// let pages = await spans[0].textContent();
+	// if (pages == null) pages = '';
+
+	return {
+		title: paperTitle,
+		authors,
+		fullAuthors: '',
+
+		doi: '',
+		url: '',
+		preprint: '',
+
+		shortAbstract: '',
+		fullAbstract: '',
+	};
+}
+
 async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 	if (papers.length === 0) {
 		return false;
@@ -281,39 +313,3 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 	// TODO: add some kind of check in case some papers were not actually created, maybe in the try catch above
 	return true;
 }
-
-/*
-async function extractRschrPaper(
-	authorContainers: ElementHandle<SVGElement | HTMLElement>[],
-	i: number,
-	dateAndPages: ElementHandle<SVGElement | HTMLElement>[],
-	paperTypes: ElementHandle<SVGElement | HTMLElement>[],
-	paperTitleHTags: ElementHandle<SVGElement | HTMLElement>[],
-	shortAbstracts: ElementHandle<SVGElement | HTMLElement>[],
-): Promise<RschrPaper> {
-	// GRAB AUTHORS
-	const authors = await authorContainers[i].$$eval('li a', (authorElm) => {
-		const data: string[] = [];
-		authorElm.forEach((elm) => {
-			if (elm.textContent != null) data.push(elm.textContent);
-		});
-		return data;
-	});
-
-	const spans = await dateAndPages[i].$$('span');
-	// const monthYear = await spans[0].textContent().then((data) => data?.replace(', ', ''));
-	const href = await paperTitleHTags[i].$eval('a', (hrefElm) => hrefElm.href);
-	let title = await paperTitleHTags[i].textContent();
-	if (title == null) title = '';
-	let pages = await spans[0].textContent();
-	if (pages == null) pages = '';
-
-	return {
-		title,
-		url: href,
-		doi: href?.replace('https://dl.acm.org/doi', ''),
-		authors,
-		// monthYear,
-		shortAbstract: (await shortAbstracts[i].innerText()).trim(),
-	};
-} */
