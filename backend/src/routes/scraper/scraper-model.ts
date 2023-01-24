@@ -2,7 +2,10 @@ import playwright, { ElementHandle, Page } from 'playwright';
 import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
-
+/*
+	testing: https://2022.splashcon.org/track/splash-2022-oopsla?#event-overview
+https://dl.acm.org/doi/proceedings/10.1145/3475738
+ */
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
 		const urlsArray = urls.trim().split('\n');
@@ -165,12 +168,8 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		for (let i = 0; i < paperRows; i++) {
 			papers.push(await extractRschrPaper(i, page));
 		}
-
-		console.log(papers[0]);
-		console.log(papers[1]);
 		console.log(papers.length);
-		return true;
-		// return await uploadPapersToDatabase(papers);
+		return await uploadPapersToDatabase(papers);
 	} catch (error) {
 		console.error(error);
 		console.log(logToFile(error));
@@ -343,8 +342,21 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 				});
 			} else {
 				// eslint-disable-next-line no-await-in-loop
-				await prisma.researchrPaper.create({
-					data: {
+				await prisma.researchrPaper.upsert({
+					where: {
+						title: thisPaper.title,
+					},
+					update: {
+						title: thisPaper.title,
+						authors: thisPaper.authors,
+						fullAuthors: thisPaper.fullAuthors,
+						doi: thisPaper.doi,
+						url: thisPaper.url,
+						preprint: thisPaper.preprint,
+						shortAbstract: thisPaper.shortAbstract,
+						fullAbstract: thisPaper.fullAbstract,
+					},
+					create: {
 						title: thisPaper.title,
 						authors: thisPaper.authors,
 						fullAuthors: thisPaper.fullAuthors,

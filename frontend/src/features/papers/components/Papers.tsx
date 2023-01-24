@@ -24,7 +24,7 @@ const Papers = ({ isList }: Props) => {
 					<small className="text-slate-700 dark:text-slate-400">{paper.authors.join(', ')}</small>
 				</header>
 				<div className="content pt-4">
-					<p>{paper.shortAbstract}</p>
+					<p>{paper.shortAbstract.length > 270 ? paper.shortAbstract.substring(0,270) + '...' : paper.shortAbstract}</p>
 				</div>
 			</div>
 		);

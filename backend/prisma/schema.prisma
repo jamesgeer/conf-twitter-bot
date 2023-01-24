@@ -103,7 +103,7 @@ model AcmPaper {
 model ResearchrPaper {
   id            Int      @id @default(autoincrement())
   doi           String?  @unique
-  title         String
+  title         String   @unique
   authors       String[]
   fullAuthors   String?
   url           String
