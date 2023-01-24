@@ -1,6 +1,6 @@
 import { AcmPaper, RschrPaper } from '../types';
 import { usePapers } from '../api/getPapers';
-import { IconFileDescription } from '@tabler/icons';
+import {IconFileDescription, IconCircleLetterR, IconCircleLetterA} from '@tabler/icons';
 import { Button } from '@chakra-ui/react';
 
 interface Props {
@@ -32,6 +32,12 @@ const Papers = ({ isList }: Props) => {
 					<a href={paper.url} target="_blank" rel="noreferrer">
 						<Button>
 							<IconFileDescription />
+						</Button>
+						<Button hidden={paper.url.includes('dl.acm.org')}>
+							<IconCircleLetterR />
+						</Button>
+						<Button hidden={!paper.url.includes('dl.acm.org')}>
+							<IconCircleLetterA />
 						</Button>
 					</a>
 				</div>
