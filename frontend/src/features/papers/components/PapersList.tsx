@@ -12,7 +12,7 @@ interface Props {
 }
 
 const PapersList = ({ isList }: Props) => {
-	const [papers, setPapers] = useState<Papers>();
+	// const [papers, setPapers] = useState<Papers>();
 	const [results, setResults] = useState<Papers>();
 	const [searchInput, setSearchInput] = useState({
 		search: '',
@@ -22,9 +22,19 @@ const PapersList = ({ isList }: Props) => {
 
 	const { isLoading, error, data } = usePapers();
 
+	// useEffect(() => {
+	//	setPapers(data);
+	//  }, [data]);
+
 	useEffect(() => {
-		setPapers(data);
-	}, [data]);
+		const getData = async () => {
+			const filteredPaperData = await getFilteredPapers(searchInput);
+			setResults(filteredPaperData);
+		};
+		if (searchInput.search !== '' || searchInput.year !== '' || searchInput.conference !== '') {
+			getData().catch(console.error);
+		}
+	}, [searchInput]);
 
 	if (isLoading) {
 		return <div>Loading Papers...</div>;
@@ -34,12 +44,11 @@ const PapersList = ({ isList }: Props) => {
 		return <div>An error occurred: {error.message}</div>;
 	}
 
+	console.count('Rerender: ');
+
 	const handleFilter = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 		setSearchInput({ ...searchInput, [name]: value });
-
-		const results = await getFilteredPapers(searchInput);
-		setResults(results);
 	};
 
 	//move to types folder?
@@ -67,7 +76,7 @@ const PapersList = ({ isList }: Props) => {
 		},
 	];
 
-	const columnHelper = createColumnHelper<PaperRowData>();
+	const columnHelper = createColumnHelper<PaperType>();
 
 	const columns = [
 		columnHelper.accessor('title', {
@@ -75,29 +84,31 @@ const PapersList = ({ isList }: Props) => {
 			header: 'Title',
 			sortingFn: 'alphanumeric',
 		}),
-		columnHelper.accessor('conference', {
+		columnHelper.accessor('monthYear', {
 			cell: (info) => info.getValue(),
-			header: 'Conference',
-			sortingFn: 'alphanumeric',
-		}),
-		columnHelper.accessor('year', {
-			cell: (info) => info.getValue(),
-			header: 'Title',
+			header: 'Year',
 			sortingFn: 'alphanumeric',
 		}),
 	];
 
 	return (
 		<>
-			{papers && papers.length > 0 ? (
+			{data && data.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
 						<FilterPapers searchInput={searchInput} handleFilter={handleFilter} />
-						<DataTable columns={columns} data={defaultData} />
+						<DataTable
+							columns={columns}
+							data={
+								searchInput.search === '' && searchInput.conference === '' && searchInput.year === ''
+									? data
+									: results!
+							}
+						/>
 					</>
 				) : (
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{papers?.map((paper: PaperType) => (
+						{data?.map((paper: PaperType) => (
 							<Paper key={uuid()} paper={paper} />
 						))}
 					</div>

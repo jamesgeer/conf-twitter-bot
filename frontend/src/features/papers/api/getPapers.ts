@@ -15,15 +15,15 @@ export const usePapers = () => {
 
 export const getFilteredPapers = async (payload: PaperSearch): Promise<Papers> => {
 	let searchParams = {};
-
+	console.log(payload);
 	for (const [key, value] of Object.entries(payload)) {
-		console.log(key, value);
+		//console.log(key, value);
 		if (value) {
 			searchParams = { ...searchParams, [key]: value };
 		}
 	}
 
-	const response = await axios.get('/api/papers/search', {
+	const response = await axios.get('/api/papers/', {
 		params: searchParams,
 	});
 

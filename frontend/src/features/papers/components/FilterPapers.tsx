@@ -10,9 +10,6 @@ interface Props {
 const FilterPapers = ({ searchInput, handleFilter }: Props) => {
 	return (
 		<div className="mb-4 mt-3">
-			<p>{searchInput.search}</p>
-			<p>{searchInput.year}</p>
-			<p>{searchInput.conference}</p>
 			<InputGroup>
 				<InputLeftElement pointerEvents="none" children={<IconSearch />} />
 				<Input

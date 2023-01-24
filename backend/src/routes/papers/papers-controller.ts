@@ -16,16 +16,15 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 		payload: { search, year, conference },
 	}: PaperSearch = ctx.request.query;
 
-	console.log(ctx.request.query);
-	console.log(ctx.request.query.payload);
+	// console.log(ctx.request.query);
+	// console.log(ctx.request.query.payload);
 
-	console.log(`current: ${search} + ${year} + ${conference}`);
-
-	// const { search: title, year: monthYear, conference }: PaperSearch = query;
+	// console.log(`current: ${search} + ${year} + ${conference}`);
+	const params: PaperSearchDB = { title: search, monthYear: year, conference };
 	// console.log(`vars: + ${title} + ${monthYear} + ${conference}`);
 	// const queryForDb: PaperSearchDB = { title: search, monthYear: year, conference };
 	// console.log(`queryForDb: + ${queryForDb.title} + ${queryForDb.monthYear} + ${queryForDb.conference}`);
-	// const papers = await getSearchedPapers(queryForDb);
+	const papers = await getSearchedPapers(params);
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = papers;
