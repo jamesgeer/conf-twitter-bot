@@ -159,48 +159,13 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		await page.goto(url, { timeout: 100000 });
 		// get how many papers there are on the page
 		const paperRows = await page.$$('#event-overview tbody tr').then((v) => v.length);
-		const links: string[] = [];
+
 		// then open them and copy the link to their page
-		for (let i = 0; i < paperRows; i++) {
-			try {
-				// open the modal
-				await page.click(`div#event-overview tbody tr:nth-child(${i + 1}) td:nth-child(2) a`, {
-					timeout: 1000,
-					force: true,
-				});
-				// copy url from All Details
-				const urlContainer = page.locator(
-					`#event-modals .appended:nth-child(${i + 1}) .modal-footer .pull-left a`,
-				);
-				await urlContainer.waitFor({ timeout: 500 });
-				let link = await urlContainer.getAttribute('href');
-				if (link == null) link = ''; // TODO: behaviour for when a link to paper not found
-				links.push(link);
-
-				// close the modal and continue
-				await page.click(`#event-modals .appended:nth-child(${i + 1}) .modal-header a`, {
-					timeout: 1000,
-					force: true,
-				});
-			} catch (error) {
-				if (error instanceof playwright.errors.TimeoutError) {
-					console.log('Some error');
-					console.log(logToFile(error));
-				}
-			}
-		}
-
 		const papers: Papers = [];
-		for (let i = 0; i < paperRows; i += 1) {
-			try {
-				papers.push(
-					// eslint-disable-next-line no-await-in-loop
-					await extractRschrPaper(links[i], page),
-				);
-			} catch (e) {
-				// ignore entry
-			}
+		for (let i = 0; i < paperRows; i++) {
+			papers.push(await extractRschrPaper(i, page));
 		}
+
 		console.log(papers[0]);
 		console.log(papers[1]);
 		console.log(papers.length);
@@ -215,49 +180,121 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 	}
 }
 
-async function extractRschrPaper(link: string, page: Page): Promise<RschrPaper> {
-	// go to the paper page for full scraping
-	await page.goto(link, { timeout: 100000 });
-	let paperTitle = await page.locator('h2').textContent();
-	if (paperTitle == null) paperTitle = '';
-
-	const authorsRow = await page.locator('div', { has: page.locator('text="Who"') });
-	const authorsObjects = await authorsRow.locator('.col-sm-10 > em');
-	const authors = await authorsObjects.evaluateAll((elements) => {
-		const data: string[] = [];
-		elements.forEach((elm) => {
-			if (elm.textContent != null) data.push(elm.textContent);
-		});
-		return data;
+async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper> {
+	// open the modal
+	await page.click(`div#event-overview tbody tr:nth-child(${index + 1}) td:nth-child(2) a`, {
+		timeout: 1000,
+		force: true,
 	});
-	// console.log('i got here');
-	const doiRow = await page.locator('div', { has: page.locator('text="DOI"') });
-	// console.log('i got here2');
-	const doiObject = await doiRow.locator('.col-sm-10 > a');
-	// console.log('i got here3');
-	let doi = await doiObject.getAttribute('href', { timeout: 100 });
-	// console.log('i got here4');
-	if (doi == null) doi = '';
 
+	// scrape url from "All Details"
+	let link = '';
+	try {
+		const urlContainer = page.locator(`#event-modals .appended:nth-child(${index + 1}) .modal-footer .pull-left a`);
+		await urlContainer.waitFor({ timeout: 500 });
+		const aux: string | null = await urlContainer.getAttribute('href');
+		link = aux == null ? '' : aux;
+	} catch (e) {
+		if (e instanceof playwright.errors.TimeoutError) {
+			link = '';
+		}
+	}
+	console.log('i scraped url');
+	// scrape title
+	let title = '';
+	try {
+		const titleContainer = page.locator(`.appended:nth-child(${index + 1}) .event-title strong`);
+		await titleContainer.waitFor({ timeout: 500 });
+		const aux: string | null = await titleContainer.textContent();
+		title = aux == null ? '' : aux;
+	} catch (e) {
+		if (e instanceof playwright.errors.TimeoutError) {
+			title = '';
+		}
+	}
+	console.log('i scraped title');
+	// scrape abstract
+	let abstract = '';
+	try {
+		const abstractContainer = page.locator(`.appended:nth-child(${index + 1}) .event-description p`).nth(0);
+		await abstractContainer.waitFor({ timeout: 500 });
+		const aux: string | null = await abstractContainer.textContent();
+		abstract = aux == null ? '' : aux;
+	} catch (e) {
+		if (e instanceof playwright.errors.TimeoutError) {
+			abstract = '';
+		}
+	}
+	console.log('i scraped abstract');
+	// scrape DOI
+	let doi = '';
+	try {
+		const doiContainer = page.locator(`.appended:nth-child(${index + 1}) .event-description a`, {
+			has: page.locator('text=" DOI"'),
+		});
+		await doiContainer.waitFor({ timeout: 500 });
+		const aux: string | null = await doiContainer.getAttribute('href');
+		doi = aux == null ? '' : aux;
+	} catch (e) {
+		if (e instanceof playwright.errors.TimeoutError) {
+			doi = '';
+		}
+	}
+	console.log('i scraped doi');
+	// scrape preprint
+	let preprint = '';
+	try {
+		const preprintContainer = page.locator(`.appended:nth-child(${index + 1}) .event-description a`, {
+			has: page.locator('text=" Pre-print"'),
+		});
+		await preprintContainer.waitFor({ timeout: 500 });
+		const aux: string | null = await preprintContainer.getAttribute('href');
+		preprint = aux == null ? '' : aux;
+	} catch (e) {
+		if (e instanceof playwright.errors.TimeoutError) {
+			preprint = '';
+		}
+	}
+	console.log('i scraped preprint');
+	// scrape authors
+	let authors: string[] = [];
+	try {
+		const authorsContainer = page
+			.locator(`.appended:nth-child(${index + 1}) .event-description .media-body h5`)
+			.nth(0);
+		await authorsContainer.waitFor({ timeout: 500 });
+		authors = await authorsContainer.evaluateAll((elements) => {
+			const data: string[] = [];
+			elements.forEach((elm) => {
+				if (elm.textContent != null) data.push(elm.textContent);
+			});
+			return data;
+		});
+		if (authors == null) authors = [];
+	} catch (e) {
+		if (e instanceof playwright.errors.TimeoutError) {
+			authors = [];
+		}
+	}
+	console.log('i scraped authors');
 	// build full authors as a formatted string
 	const fullAuthors = authors.join(',');
-	// const spans = await dateAndPages[i].$$('span');
-	// const monthYear = await spans[0].textContent().then((data) => data?.replace(', ', ''));
-	// const href = await paperTitleHTags[i].$eval('a', (hrefElm) => hrefElm.href);
-
-	// let pages = await spans[0].textContent();
-	// if (pages == null) pages = '';
-
+	// close the modal and continue
+	await page.click(`#event-modals .appended:nth-child(${index + 1}) .modal-header a`, {
+		timeout: 1000,
+		force: true,
+	});
+	console.log('done!!!');
 	return {
-		title: paperTitle,
+		title,
 		authors,
 		fullAuthors,
 
 		doi,
 		url: link,
-		preprint: '',
+		preprint,
 
-		shortAbstract: '',
+		shortAbstract: abstract,
 		fullAbstract: '',
 	};
 }
