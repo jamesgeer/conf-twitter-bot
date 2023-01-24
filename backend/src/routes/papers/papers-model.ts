@@ -1,4 +1,4 @@
-import { Papers, PaperSearchDB } from './papers';
+import { Paper, Papers, PaperSearchDB } from './papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
 
@@ -6,6 +6,8 @@ let papers: Papers;
 let searchedPapers: Papers;
 
 export async function getPapers(): Promise<Papers> {
+	console.log('all papers');
+	console.log('pineapple');
 	try {
 		papers = await prisma.paper.findMany().then((paperArray) => <Papers>paperArray);
 	} catch (e) {
@@ -16,21 +18,39 @@ export async function getPapers(): Promise<Papers> {
 	return papers;
 }
 
-export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers> {
+export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
+	console.log('bananas');
 	console.log(params);
 	try {
-		searchedPapers = await prisma.paper
-			.findMany({
-				where: params,
-			})
-			.then((paperArray) => <Papers>paperArray);
+		// @ts-ignore
+		return await prisma.paper.findMany({
+			where: {
+				title: {
+					contains: params.title,
+				},
+			},
+		});
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));
-		searchedPapers = [];
+		return [];
 	}
-	return searchedPapers;
 }
+
+export interface TestPaper {
+	type: string;
+	title: string;
+	authors: string;
+	doi: string;
+	url: string;
+	shortAbstract: string;
+}
+
+export const insertTestPaper = async (testPaper: TestPaper): Promise<Paper> =>
+	// @ts-ignore
+	prisma.paper.create({
+		data: testPaper,
+	});
 
 /*
 export const getPaper = (paperId: number): Paper => {

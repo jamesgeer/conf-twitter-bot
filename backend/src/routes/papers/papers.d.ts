@@ -3,7 +3,7 @@ export interface Paper {
 
 	title: string;
 	authors: string[];
-	fullAuthors?: string;
+	fullAuthors: string;
 
 	doi: string;
 	url: string;

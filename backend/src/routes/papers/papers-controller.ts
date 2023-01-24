@@ -11,6 +11,7 @@ export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
+	console.log('cheesecake');
 	// @ts-ignore
 	const {
 		payload: { search, year, conference },
