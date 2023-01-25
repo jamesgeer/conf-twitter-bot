@@ -6,8 +6,6 @@ let papers: Papers;
 let searchedPapers: Papers;
 
 export async function getPapers(): Promise<Papers> {
-	console.log('all papers');
-	console.log('pineapple');
 	try {
 		papers = await prisma.paper.findMany().then((paperArray) => <Papers>paperArray);
 	} catch (e) {
@@ -19,8 +17,6 @@ export async function getPapers(): Promise<Papers> {
 }
 
 export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
-	console.log('bananas');
-	console.log(params);
 	try {
 		// @ts-ignore
 		return await prisma.paper.findMany({

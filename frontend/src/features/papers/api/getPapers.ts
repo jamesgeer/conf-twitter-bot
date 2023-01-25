@@ -23,7 +23,7 @@ export const getFilteredPapers = async (payload: PaperSearch): Promise<Papers> =
 		}
 	}
 
-	const response = await axios.get('/api/papers/', {
+	const response = await axios.get('/api/papers/filter/', {
 		params: searchParams,
 	});
 
