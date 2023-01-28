@@ -7,7 +7,7 @@ import appRoot from 'app-root-path';
 import router from './routes';
 import { logToFile, initLogToFile } from './logging/logging';
 import { APP_URL } from './keys';
-// import cronJobs from './jobs';
+import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
 	key: 'ConfTwBot',
@@ -55,4 +55,4 @@ app.use(router.allowedMethods());
 app.use(serve(path.join(appRoot.path, 'public')));
 
 // run cron jobs
-// cronJobs();
+cronJobs().then();
