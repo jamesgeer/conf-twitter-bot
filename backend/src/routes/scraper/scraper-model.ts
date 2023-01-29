@@ -168,7 +168,7 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		for (let i = 0; i < paperRows; i++) {
 			papers.push(await extractRschrPaper(i, page));
 		}
-		console.log(papers.length);
+
 		return await uploadPapersToDatabase(papers);
 	} catch (error) {
 		console.error(error);
@@ -198,7 +198,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 			link = '';
 		}
 	}
-	console.log('i scraped url');
+
 	// scrape title
 	let title = '';
 	try {
@@ -211,7 +211,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 			title = '';
 		}
 	}
-	console.log('i scraped title');
+
 	// scrape abstract
 	let abstract = '';
 	try {
@@ -224,7 +224,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 			abstract = '';
 		}
 	}
-	console.log('i scraped abstract');
+
 	// scrape DOI
 	let doi = '';
 	try {
@@ -239,7 +239,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 			doi = '';
 		}
 	}
-	console.log('i scraped doi');
+
 	// scrape preprint
 	let preprint = '';
 	try {
@@ -254,7 +254,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 			preprint = '';
 		}
 	}
-	console.log('i scraped preprint');
+
 	// scrape authors
 	let authors: string[] = [];
 	try {
@@ -275,7 +275,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 			authors = [];
 		}
 	}
-	console.log('i scraped authors');
+
 	// build full authors as a formatted string
 	const fullAuthors = authors.join(',');
 	// close the modal and continue
@@ -283,7 +283,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		timeout: 1000,
 		force: true,
 	});
-	console.log('done!!!');
+
 	return {
 		title,
 		authors,
@@ -341,6 +341,10 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 					},
 				});
 			} else {
+				// doi is unique and some pages don't actually have it
+				if (thisPaper.doi === '') {
+					thisPaper.doi = null;
+				}
 				// eslint-disable-next-line no-await-in-loop
 				await prisma.researchrPaper.upsert({
 					where: {

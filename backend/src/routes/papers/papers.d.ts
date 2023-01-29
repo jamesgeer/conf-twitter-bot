@@ -24,7 +24,7 @@ export interface RschrPaper {
 	authors: string[];
 	fullAuthors?: string;
 
-	doi?: string;
+	doi?: string | null;
 	url: string;
 	preprint?: string;
 
