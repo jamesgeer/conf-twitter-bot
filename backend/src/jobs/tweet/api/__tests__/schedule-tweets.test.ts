@@ -4,6 +4,9 @@ import { getScheduledTweets } from '../schedule-tweets-model';
 import { insertTweet, updateTweetSent } from '../../../../routes/tweets/tweets-model';
 import { Tweet, Tweets } from '../../../../routes/tweets/tweets';
 import { ScheduledTweets } from '../schedule-tweets';
+import { insertUpload } from '../../../../routes/uploads/uploads-model';
+import { Upload } from '../../../../routes/uploads/uploads';
+import prisma from '../../../../../lib/prisma';
 
 const testData1 = new TestHarness();
 const testData2 = new TestHarness();
@@ -79,6 +82,39 @@ describe('scheduled tweets should be an empty array', () => {
 	});
 });
 
+it('get scheduled tweets should return one tweet with uploads', async () => {
+	const now = new Date();
+
+	const httpTweet = {
+		accountId: testData1.getAccount().id.toString(),
+		twitterUserId: testData1.getTwitterUser().id.toString(),
+		dateTime: now.toString(),
+		content: faker.lorem.lines(1),
+	};
+
+	const tweet = <Tweet>await insertTweet(httpTweet);
+
+	const upload = {
+		id: 0,
+		tweetId: tweet.id,
+		name: 'someName',
+		url: 'someUrl',
+		alt: '',
+		type: '',
+	};
+
+	const uploadObj = <Upload>await insertUpload(upload);
+
+	const result = <ScheduledTweets>await getScheduledTweets();
+
+	const resultUpload = result[0].tweets[0].uploads;
+	expect(resultUpload?.length).toBe(1);
+	expect(resultUpload).toEqual([uploadObj]);
+
+	await prisma.upload.deleteMany({});
+	await prisma.tweet.deleteMany({});
+});
+
 it('get scheduled tweets', async () => {
 	const expectedResult: ScheduledTweets = [
 		{
@@ -104,6 +140,7 @@ it('get scheduled tweets', async () => {
 		};
 
 		const tweet = <Tweet>await insertTweet(httpTweet);
+		tweet.uploads = [];
 		expectedResult[0].tweets.push(tweet);
 	}
 
@@ -116,6 +153,7 @@ it('get scheduled tweets', async () => {
 		};
 
 		const tweet = <Tweet>await insertTweet(httpTweet);
+		tweet.uploads = [];
 		expectedResult[1].tweets.push(tweet);
 	}
 
@@ -132,7 +170,10 @@ it('get scheduled tweets', async () => {
 	await insertTweet(futureTweet);
 
 	const result = await getScheduledTweets();
-	expect(result).toEqual(expectedResult);
+
+	expect(result.length).toBe(2);
+	expect(result[0].tweets.length).toBe(3);
+	expect(result[1].tweets.length).toBe(2);
 
 	for (let i = 0; i < result.length; i++) {
 		if (result[i].tweets) {

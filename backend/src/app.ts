@@ -6,7 +6,7 @@ import path from 'path';
 import appRoot from 'app-root-path';
 import router from './routes';
 import { logToFile, initLogToFile } from './logging/logging';
-import { APP_URL } from './keys';
+import { APP_URL, TEST } from './keys';
 import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
@@ -55,4 +55,6 @@ app.use(router.allowedMethods());
 app.use(serve(path.join(appRoot.path, 'public')));
 
 // run cron jobs
-cronJobs().then();
+if (!TEST) {
+	cronJobs().then();
+}

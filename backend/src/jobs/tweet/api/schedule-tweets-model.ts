@@ -33,6 +33,9 @@ export const getScheduledTweets = async (): Promise<ScheduledTweets> => {
 						lte: now,
 					},
 				},
+				include: {
+					uploads: true,
+				},
 			},
 			oauth: true,
 		},
