@@ -1,6 +1,6 @@
 import { Textarea } from '@chakra-ui/react';
 import axios from "axios";
-import React, {useState} from "react";
+import React, { useState} from "react";
 
 interface urls {
 	urls: string,
@@ -31,11 +31,19 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 * */
 const Scraper = () => {
 	const [urls, setUrls] = useState<urls>(initialState);
+	const [isScraping, setIsScraping] = useState(false);
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		// todo: Use the returned status to show success / failure
-		axios.post('/api/scraper/', urls);
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		try {
+			e.preventDefault();
+			setIsScraping(true);
+			await axios.post('/api/scraper/', urls);
+			setIsScraping(false);
+		} catch (error){
+			setIsScraping(false);
+			console.error(error);
+		}
+
 
 	};
 
@@ -48,7 +56,7 @@ const Scraper = () => {
 	return (
 		<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
 			<Textarea rows={15} placeholder='Paste your links here. Please put each link on a new line!' onChange={(e) => onChangeHandler(e.target)}/>
-			<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full" type="submit">Scrape</button>
+			<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full" type="submit">{isScraping ? "...Scraping in progress..." : "Start Scraping"}</button>
 		</form>
 	);
 };

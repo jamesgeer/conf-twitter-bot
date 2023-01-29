@@ -1,4 +1,4 @@
-export interface Paper {
+export interface AcmPaper {
 	type: string;
 
 	title: string;
@@ -17,11 +17,27 @@ export interface Paper {
 
 	citations?: number;
 	downloads?: number;
+
+	source: string;
 }
 
-export interface PaperForTemplate extends Paper {
-	abstract: string;
-	fullAuthors: string;
+export interface RschrPaper {
+	title: string;
+	authors: string[];
+	fullAuthors?: string;
+	source: string;
+
+	doi?: string | null;
+	url: string;
+	preprint?: string;
+
+	shortAbstract: string;
+	fullAbstract?: string;
 }
 
-export type Papers = Array<Paper>;
+// export interface PaperForTemplate extends Paper {
+//	abstract: string;
+//	fullAuthors: string;
+// }
+
+export type Papers = Array<AcmPaper | RschrPaper>;
