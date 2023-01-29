@@ -6,7 +6,11 @@ let papers: Papers;
 
 export async function getPapers(): Promise<Papers> {
 	try {
-		papers = await prisma.paper.findMany().then((paperArray) => <Papers>paperArray);
+		// get all Acm papers and all Researchr papers
+		// https://github.com/prisma/prisma/discussions/4136 would be useful, but not possible here :(
+		const acmPapers = await prisma.acmPaper.findMany().then((paperArray) => <Papers>paperArray);
+		const rschrPapers = await prisma.researchrPaper.findMany().then((paperArray) => <Papers>paperArray);
+		papers = acmPapers.concat(rschrPapers);
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));

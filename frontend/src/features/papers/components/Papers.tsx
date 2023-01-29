@@ -1,5 +1,7 @@
-import { Paper } from '../types';
+import { AcmPaper, RschrPaper } from '../types';
 import { usePapers } from '../api/getPapers';
+import {IconFileDescription, IconCircleLetterR, IconCircleLetterA} from '@tabler/icons';
+import { Button } from '@chakra-ui/react';
 
 interface Props {
 	isList: { activeLayout: string };
@@ -16,7 +18,7 @@ const Papers = ({ isList }: Props) => {
 		return <div>An error occurred: {error.message}</div>;
 	}
 
-	const displayPapers = papers.map((paper: Paper, index) => {
+	const displayPapers = papers.map((paper: AcmPaper | RschrPaper, index) => {
 		return (
 			<div key={index} className="border-b border-slate-200 pb-4">
 				<header>
@@ -24,7 +26,20 @@ const Papers = ({ isList }: Props) => {
 					<small className="text-slate-700 dark:text-slate-400">{paper.authors.join(', ')}</small>
 				</header>
 				<div className="content pt-4">
-					<p>{paper.shortAbstract}</p>
+					<p>{paper.shortAbstract.length > 270 ? paper.shortAbstract.substring(0,270) + '...' : paper.shortAbstract}</p>
+				</div>
+				<div>
+					<a href={paper.url} target="_blank" rel="noreferrer">
+						<Button>
+							<IconFileDescription />
+						</Button>
+						<Button hidden={paper.source === 'acm'}>
+							<IconCircleLetterR />
+						</Button>
+						<Button hidden={paper.source !== 'acm'}>
+							<IconCircleLetterA />
+						</Button>
+					</a>
 				</div>
 			</div>
 		);
