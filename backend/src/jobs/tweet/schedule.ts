@@ -1,7 +1,7 @@
 import { TwitterApi } from 'twitter-api-v2';
 import path from 'path';
 import appRoot from 'app-root-path';
-import { getScheduledTweets } from './api/schedule-tweets-model';
+import { getScheduledTweets } from './schedule-tweets-model';
 import { TWITTER_API_KEY, TWITTER_API_SECRET } from '../../keys';
 import { TwitterOAuth } from '../../routes/oauths/oauths';
 import { updateTweetSent } from '../../routes/tweets/tweets-model';
