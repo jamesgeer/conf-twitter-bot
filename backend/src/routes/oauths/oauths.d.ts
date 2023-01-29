@@ -14,3 +14,12 @@ export interface TwitterUserOAuth {
 	twitterUser: TwitterUser;
 	oauth: TwitterOAuthAccessToken;
 }
+
+export interface TwitterOAuth {
+	id: number;
+	twitterUserId: bigint;
+	accessToken: string;
+	accessSecret: string;
+	createdAt: Date | string;
+	updatedAt: Date | string;
+}
