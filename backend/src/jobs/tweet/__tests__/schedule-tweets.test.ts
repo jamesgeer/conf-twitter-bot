@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
-import { TestHarness } from '../../../../tests/TestHarness';
+import { TestHarness } from '../../../tests/TestHarness';
 import { getScheduledTweets } from '../schedule-tweets-model';
-import { insertTweet, updateTweetSent } from '../../../../routes/tweets/tweets-model';
-import { Tweet, Tweets } from '../../../../routes/tweets/tweets';
+import { insertTweet, updateTweetSent } from '../../../routes/tweets/tweets-model';
+import { Tweet, Tweets } from '../../../routes/tweets/tweets';
 import { ScheduledTweets } from '../schedule-tweets';
-import { insertUpload } from '../../../../routes/uploads/uploads-model';
-import { Upload } from '../../../../routes/uploads/uploads';
-import prisma from '../../../../../lib/prisma';
+import { insertUpload } from '../../../routes/uploads/uploads-model';
+import { Upload } from '../../../routes/uploads/uploads';
+import prisma from '../../../../lib/prisma';
 
 const testData1 = new TestHarness();
 const testData2 = new TestHarness();
