@@ -17,6 +17,7 @@ export interface AcmPaper {
 
 	citations?: number;
 	downloads?: number;
+	source: string;
 }
 
 export interface RschrPaper {
@@ -30,6 +31,7 @@ export interface RschrPaper {
 
 	shortAbstract: string;
 	fullAbstract?: string;
+	source: string;
 }
 
 export type Papers = Array<AcmPaper | RschrPaper>;

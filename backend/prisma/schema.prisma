@@ -97,6 +97,7 @@ model AcmPaper {
   pages         String?
   citations     Int?
   downloads     Int?
+  source        String
 }
 
 // data model not complete yet, will be complete once scrapping starts
@@ -110,4 +111,5 @@ model ResearchrPaper {
   preprint      String?
   shortAbstract String
   fullAbstract  String?
+  source        String
 }

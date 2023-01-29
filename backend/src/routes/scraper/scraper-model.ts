@@ -145,6 +145,7 @@ async function extractAcmPaper(
 		shortAbstract: (await shortAbstracts[i].innerText()).trim(),
 		citations: Number(await citations[i].textContent()),
 		downloads: Number(await downloads[i].textContent()),
+		source: 'acm',
 	};
 }
 // returns true if successfully scraped, false otherwise
@@ -288,7 +289,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		title,
 		authors,
 		fullAuthors,
-
+		source: 'rschr',
 		doi,
 		url: link,
 		preprint,
@@ -323,6 +324,7 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 						pages: thisPaper.pages,
 						citations: thisPaper.citations,
 						downloads: thisPaper.downloads,
+						source: thisPaper.source,
 					},
 					create: {
 						type: thisPaper.type,
@@ -338,6 +340,7 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 						pages: thisPaper.pages,
 						citations: thisPaper.citations,
 						downloads: thisPaper.downloads,
+						source: thisPaper.source,
 					},
 				});
 			} else {
@@ -359,6 +362,7 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 						preprint: thisPaper.preprint,
 						shortAbstract: thisPaper.shortAbstract,
 						fullAbstract: thisPaper.fullAbstract,
+						source: thisPaper.source,
 					},
 					create: {
 						title: thisPaper.title,
@@ -369,6 +373,7 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 						preprint: thisPaper.preprint,
 						shortAbstract: thisPaper.shortAbstract,
 						fullAbstract: thisPaper.fullAbstract,
+						source: thisPaper.source,
 					},
 				});
 			}

@@ -33,10 +33,10 @@ const Papers = ({ isList }: Props) => {
 						<Button>
 							<IconFileDescription />
 						</Button>
-						<Button hidden={paper.url.includes('dl.acm.org')}>
+						<Button hidden={paper.source === 'acm'}>
 							<IconCircleLetterR />
 						</Button>
-						<Button hidden={!paper.url.includes('dl.acm.org')}>
+						<Button hidden={paper.source !== 'acm'}>
 							<IconCircleLetterA />
 						</Button>
 					</a>

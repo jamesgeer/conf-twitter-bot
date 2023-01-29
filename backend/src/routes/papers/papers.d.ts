@@ -17,12 +17,15 @@ export interface AcmPaper {
 
 	citations?: number;
 	downloads?: number;
+
+	source: string;
 }
 
 export interface RschrPaper {
 	title: string;
 	authors: string[];
 	fullAuthors?: string;
+	source: string;
 
 	doi?: string | null;
 	url: string;
