@@ -3,7 +3,7 @@ import { IconSearch } from '@tabler/icons';
 import React from 'react';
 
 interface Props {
-	searchInput: { search: string; conference: string; year: string };
+	searchInput: { search: string; type: string; year: string };
 	handleFilter: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 	handleReset: () => void;
 }
@@ -26,13 +26,13 @@ const FilterPapers = ({ searchInput, handleFilter, handleReset }: Props) => {
 				<Flex gap={6}>
 					<Box>
 						<Select
-							name="conference"
-							value={searchInput.conference}
+							name="type"
+							value={searchInput.type}
 							onChange={(e) => handleFilter(e)}
-							placeholder="Conference"
+							placeholder="Type"
 						>
-							<option value="SPLASH">SPLASH</option>
-							<option value="MPLR">MPLR</option>
+							<option value="research-article">research-article</option>
+							<option value="invited-talk">invited-talk</option>
 						</Select>
 					</Box>
 					<Box>

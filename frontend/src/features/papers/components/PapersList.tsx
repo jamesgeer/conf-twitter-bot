@@ -16,7 +16,7 @@ const PapersList = ({ isList }: Props) => {
 	const [results, setResults] = useState<Papers>();
 	const [searchInput, setSearchInput] = useState({
 		search: '',
-		conference: '',
+		type: '',
 		year: '',
 	});
 
@@ -32,7 +32,7 @@ const PapersList = ({ isList }: Props) => {
 			setResults(filteredPaperData);
 		};
 
-		if (searchInput.search !== '' || searchInput.year !== '' || searchInput.conference !== '') {
+		if (searchInput.search !== '' || searchInput.year !== '' || searchInput.type !== '') {
 			getData().catch(console.error);
 		}
 	}, [searchInput]);
@@ -53,7 +53,7 @@ const PapersList = ({ isList }: Props) => {
 	const handleReset = () => {
 		setSearchInput({
 			search: '',
-			conference: '',
+			type: '',
 			year: '',
 		});
 	};
@@ -91,9 +91,9 @@ const PapersList = ({ isList }: Props) => {
 			header: 'Title',
 			sortingFn: 'alphanumeric',
 		}),
-		columnHelper.accessor('monthYear', {
+		columnHelper.accessor('type', {
 			cell: (info) => info.getValue(),
-			header: 'Year',
+			header: 'Type',
 			sortingFn: 'alphanumeric',
 		}),
 	];
@@ -107,7 +107,7 @@ const PapersList = ({ isList }: Props) => {
 						<DataTable
 							columns={columns}
 							data={
-								searchInput.search === '' && searchInput.conference === '' && searchInput.year === ''
+								searchInput.search === '' && searchInput.type === '' && searchInput.year === ''
 									? data
 									: results!
 							}

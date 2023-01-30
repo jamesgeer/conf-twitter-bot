@@ -17,6 +17,8 @@ export async function getPapers(): Promise<Papers> {
 }
 
 export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
+	console.log(params);
+
 	try {
 		// @ts-ignore
 		return await prisma.paper.findMany({
@@ -24,6 +26,9 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers |
 				title: {
 					contains: params.title,
 					mode: 'insensitive',
+				},
+				type: {
+					equals: params.type,
 				},
 			},
 		});

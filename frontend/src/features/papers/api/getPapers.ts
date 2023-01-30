@@ -15,7 +15,7 @@ export const usePapers = () => {
 
 export const getFilteredPapers = async (payload: PaperSearch): Promise<Papers> => {
 	let searchParams = {};
-	console.log(payload);
+	// console.log(payload);
 	for (const [key, value] of Object.entries(payload)) {
 		//console.log(key, value);
 		if (value) {
