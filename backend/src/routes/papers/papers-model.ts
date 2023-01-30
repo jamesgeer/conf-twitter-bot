@@ -23,6 +23,7 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers |
 			where: {
 				title: {
 					contains: params.title,
+					mode: 'insensitive',
 				},
 			},
 		});

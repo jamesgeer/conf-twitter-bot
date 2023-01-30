@@ -31,6 +31,7 @@ const PapersList = ({ isList }: Props) => {
 			const filteredPaperData = await getFilteredPapers(searchInput);
 			setResults(filteredPaperData);
 		};
+
 		if (searchInput.search !== '' || searchInput.year !== '' || searchInput.conference !== '') {
 			getData().catch(console.error);
 		}
@@ -44,11 +45,17 @@ const PapersList = ({ isList }: Props) => {
 		return <div>An error occurred: {error.message}</div>;
 	}
 
-	console.count('Rerender: ');
-
 	const handleFilter = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 		setSearchInput({ ...searchInput, [name]: value });
+	};
+
+	const handleReset = () => {
+		setSearchInput({
+			search: '',
+			conference: '',
+			year: '',
+		});
 	};
 
 	//move to types folder?
@@ -96,7 +103,7 @@ const PapersList = ({ isList }: Props) => {
 			{data && data.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
-						<FilterPapers searchInput={searchInput} handleFilter={handleFilter} />
+						<FilterPapers searchInput={searchInput} handleFilter={handleFilter} handleReset={handleReset} />
 						<DataTable
 							columns={columns}
 							data={
