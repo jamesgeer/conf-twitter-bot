@@ -38,21 +38,21 @@ export interface RschrPaper {
 export interface PaperSearchOld {
 	search?: string;
 	year?: string;
-	type?: string;
+	source?: string;
 }
 
 export interface PaperSearch {
 	payload: {
 		search?: string;
 		year?: string;
-		type?: string;
+		source?: string;
 	};
 }
 
 export interface PaperSearchDB {
 	title?: string;
 	monthYear?: string;
-	type?: string;
+	source?: string;
 }
 
 // export interface PaperForTemplate extends Paper {

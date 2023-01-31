@@ -1,4 +1,4 @@
-import { Paper as PaperType, Papers } from '../types';
+import { AcmPaper, RschrPaper, Papers } from '../types';
 import { getFilteredPapers, usePapers } from '../api/getPapers';
 import { createColumnHelper } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
@@ -16,7 +16,7 @@ const PapersList = ({ isList }: Props) => {
 	const [results, setResults] = useState<Papers>();
 	const [searchInput, setSearchInput] = useState({
 		search: '',
-		type: '',
+		source: '',
 		year: '',
 	});
 
@@ -32,7 +32,7 @@ const PapersList = ({ isList }: Props) => {
 			setResults(filteredPaperData);
 		};
 
-		if (searchInput.search !== '' || searchInput.year !== '' || searchInput.type !== '') {
+		if (searchInput.search !== '' || searchInput.year !== '' || searchInput.source !== '') {
 			getData().catch(console.error);
 		}
 	}, [searchInput]);
@@ -53,37 +53,12 @@ const PapersList = ({ isList }: Props) => {
 	const handleReset = () => {
 		setSearchInput({
 			search: '',
-			type: '',
+			source: '',
 			year: '',
 		});
 	};
 
-	//move to types folder?
-	type PaperRowData = {
-		title: string;
-		conference: string;
-		year: string;
-	};
-
-	const defaultData: PaperRowData[] = [
-		{
-			title: 'A graphical language for flexible inference in robotics and vision (invited talk)',
-			conference: 'SPLASH',
-			year: '2019',
-		},
-		{
-			title: 'trcview: interactive architecture agnostic execution trace analysis',
-			conference: 'MPLR',
-			year: '2020',
-		},
-		{
-			title: 'Using machine learning to predict the code size impact of duplication heuristics in a dynamic compiler',
-			conference: 'MPLR',
-			year: '2021',
-		},
-	];
-
-	const columnHelper = createColumnHelper<PaperType>();
+	const columnHelper = createColumnHelper<AcmPaper | RschrPaper>();
 
 	const columns = [
 		columnHelper.accessor('title', {
@@ -91,9 +66,9 @@ const PapersList = ({ isList }: Props) => {
 			header: 'Title',
 			sortingFn: 'alphanumeric',
 		}),
-		columnHelper.accessor('type', {
+		columnHelper.accessor('source', {
 			cell: (info) => info.getValue(),
-			header: 'Type',
+			header: 'Source',
 			sortingFn: 'alphanumeric',
 		}),
 	];
@@ -107,7 +82,7 @@ const PapersList = ({ isList }: Props) => {
 						<DataTable
 							columns={columns}
 							data={
-								searchInput.search === '' && searchInput.type === '' && searchInput.year === ''
+								searchInput.search === '' && searchInput.source === '' && searchInput.year === ''
 									? data
 									: results!
 							}
@@ -115,7 +90,7 @@ const PapersList = ({ isList }: Props) => {
 					</>
 				) : (
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{data?.map((paper: PaperType) => (
+						{data?.map((paper: AcmPaper | RschrPaper) => (
 							<Paper key={uuid()} paper={paper} />
 						))}
 					</div>

@@ -1,10 +1,10 @@
-import { Paper as PaperType } from '../../types';
-import { IconFileDescription, IconTrash } from '@tabler/icons';
+import { AcmPaper, RschrPaper } from '../../types';
+import { IconFileDescription, IconCircleLetterR, IconCircleLetterA } from '@tabler/icons';
 import { Button } from '@chakra-ui/react';
 import React from 'react';
 
 interface Props {
-	paper: PaperType;
+	paper: AcmPaper | RschrPaper;
 }
 
 const Paper = ({ paper }: Props) => {
@@ -24,6 +24,12 @@ const Paper = ({ paper }: Props) => {
 				<a href={url} target="_blank" rel="noreferrer">
 					<Button>
 						<IconFileDescription />
+					</Button>
+					<Button hidden={paper.source === 'acm'}>
+						<IconCircleLetterR />
+					</Button>
+					<Button hidden={paper.source !== 'acm'}>
+						<IconCircleLetterA />
 					</Button>
 				</a>
 			</div>

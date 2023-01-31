@@ -23,7 +23,7 @@ export interface AcmPaper {
 export interface PaperSearch {
 	search?: string;
 	year?: string;
-	type?: string;
+	source?: string;
 }
 
 export interface RschrPaper {

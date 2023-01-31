@@ -13,22 +13,11 @@ export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
 	console.log('searchedPapers run');
-	// console.log(ctx.request.query);
-	// @ts-ignore
-	// const {
-	//	payload: { search, year, conference },
-	// }: PaperSearch = ctx.request.query;
 	const obj: PaperSearchOld = { ...ctx.request.query };
-	// console.log(`search: ${search}`);
-	// console.log(ctx.request.query);
-	// console.log(ctx.request.query.payload);
 
-	const { search, year, type } = obj;
+	const { search, year, source } = obj;
+	const queryForDb: PaperSearchDB = { title: search, monthYear: year, source };
 
-	// console.log(`current: ${search} + ${year} + ${conference}`);
-	// console.log(`vars: + ${title} + ${monthYear} + ${conference}`);
-	const queryForDb: PaperSearchDB = { title: search, monthYear: year, type };
-	// console.log(`queryForDb: + ${queryForDb.title} + ${queryForDb.monthYear} + ${queryForDb.conference}`);
 	const papers = await getSearchedPapers(queryForDb);
 
 	ctx.status = HttpStatus.OK;
