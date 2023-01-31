@@ -16,6 +16,7 @@ model User {
     username  String    @unique
     password  String
     createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
     account   Account[]
     session   Session?
 }
@@ -27,26 +28,26 @@ model Session {
     key       String
     maxAge    String
     createdAt DateTime @default(now())
-    updatedAt DateTime
+    updatedAt DateTime @updatedAt
 }
 
 model Account {
-    id            Int           @id @default(autoincrement())
-    User          User          @relation(fields: [userId], references: [id])
+    id            Int         @id @default(autoincrement())
+    User          User        @relation(fields: [userId], references: [id])
     userId        Int
-    twitterUser   TwitterUser   @relation(fields: [twitterUserId], references: [id])
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
     twitterUserId BigInt
     tweet         Tweet[]
-    twitterOAuth  TwitterOAuth?
 }
 
 model TwitterUser {
-    id              BigInt    @id @unique
+    id              BigInt        @id @unique
     name            String
     screenName      String
     profileImageUrl String
     accounts        Account[]
     tweets          Tweet[]
+    oauth           TwitterOAuth?
 }
 
 model Tweet {
@@ -56,7 +57,7 @@ model Tweet {
     twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
     twitterUserId BigInt
     createdAt     DateTime    @default(now())
-    updatedAt     DateTime?
+    updatedAt     DateTime?   @updatedAt
     dateTime      DateTime    @db.Timestamptz(3)
     content       String      @db.VarChar(280)
     sent          Boolean     @default(false)
@@ -64,31 +65,35 @@ model Tweet {
 }
 
 model Upload {
-    id      Int     @id @default(autoincrement())
-    tweet   Tweet   @relation(fields: [tweetId], references: [id])
-    tweetId Int
-    name    String
-    url     String  @unique
-    alt     String?
-    type    String
+    id        Int      @id @default(autoincrement())
+    tweet     Tweet    @relation(fields: [tweetId], references: [id])
+    tweetId   Int
+    name      String
+    url       String   @unique
+    alt       String?
+    type      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model TwitterOAuth {
-    account      Account   @relation(fields: [accountId], references: [id])
-    accountId    Int       @id @unique
-    accessToken  String
-    accessSecret String
-    createdAt    DateTime  @default(now())
-    updatedAt    DateTime?
+    id            Int         @id @default(autoincrement())
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt      @unique
+    accessToken   String
+    accessSecret  String
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
 }
 
-model Paper {
+// data model might need some small changes.
+model AcmPaper {
     id            Int      @id @default(autoincrement())
+    doi           String   @unique
     type          String
     title         String
     authors       String[]
     fullAuthors   String?
-    doi           String   @unique
     url           String
     preprint      String?
     shortAbstract String
@@ -97,4 +102,19 @@ model Paper {
     pages         String?
     citations     Int?
     downloads     Int?
+    source        String
+}
+
+// data model not complete yet, will be complete once scrapping starts
+model ResearchrPaper {
+    id            Int      @id @default(autoincrement())
+    doi           String?  @unique
+    title         String   @unique
+    authors       String[]
+    fullAuthors   String?
+    url           String
+    preprint      String?
+    shortAbstract String
+    fullAbstract  String?
+    source        String
 }
