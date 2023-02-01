@@ -1,22 +1,41 @@
 import { InputGroup, InputLeftElement, Input, Select, Box, Button, Flex } from '@chakra-ui/react';
 import { IconSearch } from '@tabler/icons';
-import React from 'react';
+import React, { useRef } from 'react';
 
 interface Props {
 	searchInput: { search: string; source: string; year: string };
-	handleFilter: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-	handleReset: () => void;
+	setSearchInput: React.Dispatch<React.SetStateAction<{ search: string; source: string; year: string }>>;
+	debouncedHandleFilter: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }
 
-const FilterPapers = ({ searchInput, handleFilter, handleReset }: Props) => {
+const FilterPapers = ({ searchInput, setSearchInput, debouncedHandleFilter }: Props) => {
+	const refSearch = useRef<HTMLInputElement>(null);
+	const refSource = useRef<HTMLSelectElement>(null);
+	const refYear = useRef<HTMLSelectElement>(null);
+
+	const handleReset = () => {
+		setSearchInput({
+			search: '',
+			source: '',
+			year: '',
+		});
+
+		if (refSearch.current && refSource.current && refYear.current) {
+			refSearch.current.value = '';
+			refSource.current.value = '';
+			refYear.current.value = '';
+		}
+	};
+
 	return (
 		<div className="mb-8 mt-3">
 			<InputGroup>
 				<InputLeftElement pointerEvents="none" children={<IconSearch />} />
 				<Input
 					name="search"
-					value={searchInput.search}
-					onChange={(e) => handleFilter(e)}
+					ref={refSearch}
+					// value={searchInput.search}
+					onChange={(e) => debouncedHandleFilter(e)}
 					variant="outline"
 					placeholder="Title or keyword"
 				/>
@@ -27,8 +46,9 @@ const FilterPapers = ({ searchInput, handleFilter, handleReset }: Props) => {
 					<Box>
 						<Select
 							name="source"
-							value={searchInput.source}
-							onChange={(e) => handleFilter(e)}
+							ref={refSource}
+							// value={searchInput.source}
+							onChange={(e) => debouncedHandleFilter(e)}
 							placeholder="Source"
 						>
 							<option value="acm">ACM</option>
@@ -38,8 +58,9 @@ const FilterPapers = ({ searchInput, handleFilter, handleReset }: Props) => {
 					<Box>
 						<Select
 							name="year"
-							value={searchInput.year}
-							onChange={(e) => handleFilter(e)}
+							ref={refYear}
+							// value={searchInput.year}
+							onChange={(e) => debouncedHandleFilter(e)}
 							placeholder="Year"
 						>
 							<option value="2019">2019</option>

@@ -6,6 +6,7 @@ import FilterPapers from './FilterPapers';
 import React, { useEffect, useState } from 'react';
 import Paper from './Paper';
 import uuid from 'react-uuid';
+import { debounce } from 'lodash';
 
 interface Props {
 	isList: { activeLayout: string };
@@ -47,16 +48,11 @@ const PapersList = ({ isList }: Props) => {
 
 	const handleFilter = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
+		console.log('Hit');
 		setSearchInput({ ...searchInput, [name]: value });
 	};
 
-	const handleReset = () => {
-		setSearchInput({
-			search: '',
-			source: '',
-			year: '',
-		});
-	};
+	const debouncedHandleFilter = debounce(handleFilter, 300);
 
 	const columnHelper = createColumnHelper<AcmPaper | RschrPaper>();
 
@@ -78,7 +74,11 @@ const PapersList = ({ isList }: Props) => {
 			{data && data.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
-						<FilterPapers searchInput={searchInput} handleFilter={handleFilter} handleReset={handleReset} />
+						<FilterPapers
+							searchInput={searchInput}
+							setSearchInput={setSearchInput}
+							debouncedHandleFilter={debouncedHandleFilter}
+						/>
 						<DataTable
 							columns={columns}
 							data={
