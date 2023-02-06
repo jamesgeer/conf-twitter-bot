@@ -9,6 +9,5 @@ export const handleServerError = (ctx: ParameterizedContext, result: ServerError
 	ctx.body = { message: result.getMessage() };
 };
 
-// const folderName = TEST ? 'test-uploads' : 'uploads';
-const folderName = TEST ? 'uploads' : 'uploads';
+const folderName = TEST ? 'test-uploads' : 'uploads';
 export const uploadFolder = path.join(appRoot.path, 'public', folderName);
