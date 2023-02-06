@@ -57,8 +57,11 @@
     "typescript": "4.5.4"
   },
   "jest": {
+    "roots": ["<rootDir>"],
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "globalSetup": "./jest/global-setup.ts",
+    "globalTeardown": "./jest/global-teardown.ts",
     "testPathIgnorePatterns": [
       "<rootDir>/dist/",
       "<rootDir>/node_modules/"
@@ -66,7 +69,6 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
     ],
-    "roots": ["<rootDir>"],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -80,9 +82,7 @@
       "ts-jest": {
         "diagnostics": false
       }
-    },
-    "globalSetup": "<rootDir>/jest/global-setup.ts",
-    "globalTeardown": "<rootDir>/jest/global-teardown.ts"
+    }
   },
   "scripts": {
     "start": "cd src && nodemon server.ts",
