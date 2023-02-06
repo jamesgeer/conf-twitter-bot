@@ -14,4 +14,6 @@ module.exports = {
 			diagnostics: false,
 		},
 	},
+	globalSetup: './jest/global-setup.ts',
+	globalTeardown: './jest/global-teardown.ts',
 };
