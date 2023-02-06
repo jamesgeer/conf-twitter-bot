@@ -61,6 +61,7 @@ export const insertUpload = async (upload: Upload): Promise<Upload | ServerError
 
 // remove image from database
 export const deleteUploadDb = async (imageId: number): Promise<Upload | ServerError> => {
+	console.log(imageId);
 	try {
 		return await prisma.upload.delete({
 			where: {
@@ -68,6 +69,7 @@ export const deleteUploadDb = async (imageId: number): Promise<Upload | ServerEr
 			},
 		});
 	} catch (e) {
+		console.log(e);
 		if (e instanceof PrismaClientKnownRequestError) {
 			return new ServerError(
 				HttpStatus.NOT_FOUND,
