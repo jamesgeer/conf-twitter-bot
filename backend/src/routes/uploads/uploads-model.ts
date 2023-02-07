@@ -89,3 +89,22 @@ export const deleteUploadFile = async (fileName: string): Promise<void> =>
 // check uploaded file exists
 export const uploadFileExists = async (fileName: string): Promise<boolean> =>
 	existsSync(path.join(uploadFolder, fileName));
+
+export const updateUploadUrl = async (uploadId: number, newUrl: string): Promise<Upload | ServerError> => {
+	try {
+		return await prisma.upload.update({
+			where: {
+				id: uploadId,
+			},
+			data: {
+				url: newUrl,
+			},
+		});
+	} catch (e) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			return new ServerError(HttpStatus.NOT_FOUND, `Upload with ID ${uploadId} not found.`);
+		}
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete image due to server problem.');
+	}
+};

@@ -45,6 +45,7 @@ const user = {
 	username: faker.internet.userName(),
 	password: faker.internet.password(),
 	createdAt: faker.date.past(),
+	updatedAt: faker.date.past(),
 };
 
 test('login to non-existent account should return unauthorised error', async () => {
