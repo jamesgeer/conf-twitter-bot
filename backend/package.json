@@ -87,7 +87,7 @@
   "scripts": {
     "start": "cd src && nodemon server.ts",
     "build": "npx tsc",
-    "github-actions-test": "TEST=true npx prisma migrate deploy && jest --forceExit --detectOpenHandles",
+    "github-actions-test": "npx prisma migrate deploy && jest --forceExit --detectOpenHandles",
     "docker-test:up": "docker-compose -f docker-compose.test.yml up -d",
     "docker-test:down": "docker-compose -f docker-compose.test.yml down",
     "test:env": "cross-env TEST=true DATABASE_URL=postgresql://prisma:prisma@localhost:5433/tests",
