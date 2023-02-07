@@ -1,4 +1,4 @@
-import { Textarea } from '@chakra-ui/react';
+import {Box,Textarea, Table, Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer, Button,} from '@chakra-ui/react';
 import axios from "axios";
 import React, { useState} from "react";
 
@@ -54,10 +54,36 @@ const Scraper = () => {
 		});
 	}
 	return (
-		<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
-			<Textarea rows={15} placeholder='Paste your links here. Please put each link on a new line!' onChange={(e) => onChangeHandler(e.target)}/>
-			<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full" type="submit">{isScraping ? "...Scraping in progress..." : "Start Scraping"}</button>
-		</form>
+		<Box>
+			<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
+				<Textarea rows={5} placeholder='Paste your links here. Please put each link on a new line!' onChange={(e) => onChangeHandler(e.target)}/>
+				<Button isLoading={isScraping} loadingText='Scraping' colorScheme='twitter' variant='solid' type="submit">Start Scraping</Button>
+			</form>
+			<TableContainer>
+				<Table variant='simple' colorScheme='twitter'>
+					<TableCaption placement='top'>Web Scraping History</TableCaption>
+					<Thead>
+						<Tr>
+							<Th>Links</Th>
+							<Th>Errors</Th>
+							<Th>Date</Th>
+							<Th>Re-scrape</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						<Tr>
+							<Td>https://dl.acm.org/doi/proceedings/10.1145/3475738</Td>
+							<Td>Could not scrape preprint for researchr.<br/>
+								Could not scrape preprint for researchr.<br/>
+								Could not scrape preprint for researchr.<br/>
+							</Td>
+							<Td>2023-01-29 18:44:53.091</Td>
+							<Td><Button colorScheme='twitter' variant='solid'>Re-scrape</Button></Td>
+						</Tr>
+					</Tbody>
+				</Table>
+			</TableContainer>
+		</Box>
 	);
 };
 
