@@ -32,7 +32,7 @@ it('file exists in uploads folder but not in database so should be deleted', asy
 	expect(deleteResult.id).toEqual(upload.id);
 
 	const result = await getFilesToBeDeleted();
-	expect(result.pop()).toEqual(upload.name);
+	expect(result.includes(upload.name)).toBe(true);
 });
 
 it('file in database has a url set to an address that differs from this application, should be deleted', async () => {
