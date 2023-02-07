@@ -54,6 +54,10 @@ app.use(router.allowedMethods());
 // serve static assets from within the public directory, for example GET /uploads/some_file.png
 app.use(serve(path.join(appRoot.path, 'public')));
 
+if (TEST) {
+	console.log('RUNNING IN TEST MODE');
+}
+
 // run cron jobs
 if (!TEST) {
 	cronJobs().then();
