@@ -28,6 +28,10 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
 		},
 	});
 
+	if (data === undefined || data.length === 0) {
+		return <p>No results found.</p>;
+	}
+
 	return (
 		<Table>
 			<Thead>

@@ -35,23 +35,13 @@ export interface RschrPaper {
 	fullAbstract?: string;
 }
 
-export interface PaperSearchOld {
-	search?: string;
-	year?: string;
-	source?: string;
-}
-
 export interface PaperSearch {
-	payload: {
-		search?: string;
-		year?: string;
-		source?: string;
-	};
+	search?: string;
+	source?: string;
 }
 
 export interface PaperSearchDB {
 	title?: string;
-	monthYear?: string;
 	source?: string;
 }
 

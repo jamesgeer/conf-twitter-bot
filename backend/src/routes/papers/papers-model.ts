@@ -24,8 +24,6 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers |
 	console.log(params);
 
 	try {
-		// @ts-ignore
-
 		const acmPapers = await prisma.acmPaper
 			.findMany({
 				where: {

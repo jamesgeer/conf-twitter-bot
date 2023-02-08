@@ -13,19 +13,13 @@ interface Props {
 }
 
 const PapersList = ({ isList }: Props) => {
-	// const [papers, setPapers] = useState<Papers>();
 	const [results, setResults] = useState<Papers>();
 	const [searchInput, setSearchInput] = useState({
 		search: '',
 		source: '',
-		year: '',
 	});
 
 	const { isLoading, error, data } = usePapers();
-
-	// useEffect(() => {
-	//	setPapers(data);
-	//  }, [data]);
 
 	useEffect(() => {
 		const getData = async () => {
@@ -33,7 +27,7 @@ const PapersList = ({ isList }: Props) => {
 			setResults(filteredPaperData);
 		};
 
-		if (searchInput.search !== '' || searchInput.year !== '' || searchInput.source !== '') {
+		if (searchInput.search !== '' || searchInput.source !== '') {
 			getData().catch(console.error);
 		}
 	}, [searchInput]);
@@ -48,7 +42,6 @@ const PapersList = ({ isList }: Props) => {
 
 	const handleFilter = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
-		console.log('Hit');
 		setSearchInput({ ...searchInput, [name]: value });
 	};
 
@@ -74,18 +67,10 @@ const PapersList = ({ isList }: Props) => {
 			{data && data.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
-						<FilterPapers
-							searchInput={searchInput}
-							setSearchInput={setSearchInput}
-							debouncedHandleFilter={debouncedHandleFilter}
-						/>
+						<FilterPapers setSearchInput={setSearchInput} debouncedHandleFilter={debouncedHandleFilter} />
 						<DataTable
 							columns={columns}
-							data={
-								searchInput.search === '' && searchInput.source === '' && searchInput.year === ''
-									? data
-									: results!
-							}
+							data={searchInput.search === '' && searchInput.source === '' ? data : results!}
 						/>
 					</>
 				) : (

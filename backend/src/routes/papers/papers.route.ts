@@ -6,8 +6,8 @@ const papersRouter = new Router({ prefix: '/papers' });
 // GET /api/papers
 papersRouter.get('/', papers);
 
-// GET /api/papers/:search?/:source?/:year?
-papersRouter.get('/filter/:search?/:source?/:year?', searchedPapers);
+// GET /api/papers/:search?/:source?
+papersRouter.get('/filter/:search?/:source?', searchedPapers);
 
 // GET /api/papers/:paperId
 // papersRouter.get('/:paperId', paper);

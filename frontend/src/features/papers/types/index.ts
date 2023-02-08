@@ -22,7 +22,6 @@ export interface AcmPaper {
 
 export interface PaperSearch {
 	search?: string;
-	year?: string;
 	source?: string;
 }
 
