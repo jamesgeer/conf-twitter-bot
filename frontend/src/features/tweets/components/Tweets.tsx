@@ -1,6 +1,7 @@
 import { Tweet } from '../types';
 import { useTweets } from '../api/getTweets';
 import SingleTweet from './SingleTweet';
+import TweetToggles from './TweetToggles';
 
 interface Props {
 	isList: { activeLayout: string };
@@ -19,11 +20,19 @@ const Tweets = ({ isList }: Props) => {
 
 	const displayTweets = () => {
 		return (
-			<div className={isList.activeLayout === 'list' ? 'grid gap-4' : 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'}>
-				{tweets.map((tweet: Tweet) => (
-					<SingleTweet key={tweet.id} tweet={tweet} />
-				))}
-			</div>
+			<>
+				{/* temporary*/}
+				<TweetToggles />
+				<div
+					className={
+						isList.activeLayout === 'list' ? 'grid gap-4' : 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'
+					}
+				>
+					{tweets.map((tweet: Tweet) => (
+						<SingleTweet key={tweet.id} tweet={tweet} />
+					))}
+				</div>
+			</>
 		);
 	};
 
