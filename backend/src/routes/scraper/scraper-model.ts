@@ -1,5 +1,4 @@
 import playwright, { ElementHandle, Page } from 'playwright';
-import { options } from 'jest-cli/build/cli/args';
 import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
@@ -43,11 +42,13 @@ async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
 	if (errors === '') {
 		errors = 'No errors.';
 	}
+	const errorsArray = errors.split('\n');
+	const errorsSet: Set<string> = new Set(errorsArray);
 	try {
 		await prisma.scrapeHistory.create({
 			data: {
 				links: urls,
-				errors,
+				errors: Array.from(errorsSet).toString(),
 			},
 		});
 		errors = '';
@@ -289,7 +290,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await preprintContainer.getAttribute('href');
 		preprint = aux == null ? '' : aux;
 	} catch (e) {
-		errors += 'Could not scrape preprint for researchr.\n';
+		errors += `Could not scrape preprint for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			preprint = '';
 		}
