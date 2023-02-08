@@ -57,20 +57,37 @@
     "typescript": "4.5.4"
   },
   "jest": {
+    "roots": ["<rootDir>"],
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "globalSetup": "./jest/global-setup.ts",
+    "globalTeardown": "./jest/global-teardown.ts",
     "testPathIgnorePatterns": [
       "<rootDir>/dist/",
       "<rootDir>/node_modules/"
     ],
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
-    ]
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
+    "moduleFileExtensions": ["ts", "js", "json", "node"],
+    "collectCoverage": true,
+    "clearMocks": true,
+    "coverageDirectory": "coverage",
+    "maxWorkers": 1,
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
   },
   "scripts": {
     "start": "cd src && nodemon server.ts",
     "build": "npx tsc",
-    "github-actions-test": "cross-env TEST=true && npx prisma migrate deploy && jest --forceExit --detectOpenHandles",
+    "github-actions-test": "npx prisma migrate deploy && jest --forceExit --detectOpenHandles",
     "docker-test:up": "docker-compose -f docker-compose.test.yml up -d",
     "docker-test:down": "docker-compose -f docker-compose.test.yml down",
     "test:env": "cross-env TEST=true DATABASE_URL=postgresql://prisma:prisma@localhost:5433/tests",
