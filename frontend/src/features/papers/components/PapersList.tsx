@@ -40,7 +40,7 @@ const PapersList = ({ isList }: Props) => {
 		return <div>An error occurred: {error.message}</div>;
 	}
 
-	const handleFilter = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const handleFilter = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 		setSearchInput({ ...searchInput, [name]: value });
 	};
