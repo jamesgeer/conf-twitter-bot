@@ -3,7 +3,7 @@ export interface AcmPaper {
 
 	title: string;
 	authors: string[];
-	fullAuthors?: string;
+	fullAuthors: string;
 
 	doi: string;
 	url: string;
@@ -33,6 +33,16 @@ export interface RschrPaper {
 
 	shortAbstract: string;
 	fullAbstract?: string;
+}
+
+export interface PaperSearch {
+	search?: string;
+	source?: string;
+}
+
+export interface PaperSearchDB {
+	title?: string;
+	source?: string;
 }
 
 // export interface PaperForTemplate extends Paper {

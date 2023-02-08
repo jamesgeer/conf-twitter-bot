@@ -2,12 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["debian-openssl-1.1.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
@@ -87,33 +88,33 @@ model TwitterOAuth {
 
 // data model might need some small changes.
 model AcmPaper {
-  id            Int      @id @default(autoincrement())
-  doi           String   @unique
-  type          String
-  title         String
-  authors       String[]
-  fullAuthors   String?
-  url           String
-  preprint      String?
-  shortAbstract String
-  fullAbstract  String?
-  monthYear     String?
-  pages         String?
-  citations     Int?
-  downloads     Int?
-  source        String
+    id            Int      @id @default(autoincrement())
+    doi           String   @unique
+    type          String
+    title         String
+    authors       String[]
+    fullAuthors   String?
+    url           String
+    preprint      String?
+    shortAbstract String
+    fullAbstract  String?
+    monthYear     String?
+    pages         String?
+    citations     Int?
+    downloads     Int?
+    source        String
 }
 
 // data model not complete yet, will be complete once scrapping starts
 model ResearchrPaper {
-  id            Int      @id @default(autoincrement())
-  doi           String?  @unique
-  title         String   @unique
-  authors       String[]
-  fullAuthors   String?
-  url           String
-  preprint      String?
-  shortAbstract String
-  fullAbstract  String?
-  source        String
+    id            Int      @id @default(autoincrement())
+    doi           String?  @unique
+    title         String   @unique
+    authors       String[]
+    fullAuthors   String?
+    url           String
+    preprint      String?
+    shortAbstract String
+    fullAbstract  String?
+    source        String
 }
