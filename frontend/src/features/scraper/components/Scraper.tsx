@@ -49,22 +49,33 @@ const Scraper = () => {
 
 	};
 
-
-
 	const onChangeHandler = (event: HTMLTextAreaElement) => {
 		const val = event.value;
 		setUrls(prevState => {
 			return { ...prevState, urls: val }
 		});
 	}
+	const handleClick = async (e: React.MouseEvent<HTMLButtonElement>, links: string) => {
+		try {
+			e.preventDefault();
+			setIsScraping(true);
+			const payload = { urls:links }
+			await axios.post('/api/scraper/', payload);
+			setIsScraping(false);
+		} catch (error){
+			setIsScraping(false);
+			console.error(error);
+		}
 
+
+	};
 	const displayHistory = historyData.map((history: ScrapeHistoryElm, index) => {
 		return (
 			<Tr key={index} style={{whiteSpace: "pre-line"}}>
 				<Td>{history.links}</Td>
 				<Td>{history.errors}</Td>
-				<Td>{history.scrapeDate.toString()}</Td>
-				<Td><Button colorScheme='twitter' variant='solid'>Re-scrape</Button></Td>
+				<Td>{history.scrapeDate.toLocaleString()}</Td>
+				<Td><Button isLoading={isScraping} loadingText='Scraping' colorScheme='twitter' variant='solid' onClick={(e) => handleClick(e, history.links)}>Re-scrape</Button></Td>
 			</Tr>
 		);
 	});
@@ -77,7 +88,7 @@ const Scraper = () => {
 			</form>
 			<TableContainer>
 				<Table variant='simple' colorScheme='twitter'>
-					<TableCaption placement='top'>Web Scraping History</TableCaption>
+					<TableCaption placement='top'>Web Scraping History (Last 10)</TableCaption>
 					<Thead>
 						<Tr>
 							<Th>Links</Th>
