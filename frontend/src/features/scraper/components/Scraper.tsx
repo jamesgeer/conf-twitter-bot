@@ -1,6 +1,8 @@
 import {Box,Textarea, Table, Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer, Button,} from '@chakra-ui/react';
 import axios from "axios";
 import React, { useState} from "react";
+import {useScrapeHistory} from "../api/getScrapeHistory";
+import {ScrapeHistoryElm} from "../types";
 
 interface urls {
 	urls: string,
@@ -32,7 +34,7 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 const Scraper = () => {
 	const [urls, setUrls] = useState<urls>(initialState);
 	const [isScraping, setIsScraping] = useState(false);
-
+	let { data: historyData } = useScrapeHistory();
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		try {
 			e.preventDefault();
@@ -47,12 +49,26 @@ const Scraper = () => {
 
 	};
 
+
+
 	const onChangeHandler = (event: HTMLTextAreaElement) => {
 		const val = event.value;
 		setUrls(prevState => {
 			return { ...prevState, urls: val }
 		});
 	}
+
+	const displayHistory = historyData.map((history: ScrapeHistoryElm, index) => {
+		return (
+			<Tr key={index} style={{whiteSpace: "pre-line"}}>
+				<Td>{history.links}</Td>
+				<Td>{history.errors}</Td>
+				<Td>{history.scrapeDate.toString()}</Td>
+				<Td><Button colorScheme='twitter' variant='solid'>Re-scrape</Button></Td>
+			</Tr>
+		);
+	});
+
 	return (
 		<Box>
 			<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
@@ -71,15 +87,7 @@ const Scraper = () => {
 						</Tr>
 					</Thead>
 					<Tbody>
-						<Tr>
-							<Td>https://dl.acm.org/doi/proceedings/10.1145/3475738</Td>
-							<Td>Could not scrape preprint for researchr.<br/>
-								Could not scrape preprint for researchr.<br/>
-								Could not scrape preprint for researchr.<br/>
-							</Td>
-							<Td>2023-01-29 18:44:53.091</Td>
-							<Td><Button colorScheme='twitter' variant='solid'>Re-scrape</Button></Td>
-						</Tr>
+						{displayHistory}
 					</Tbody>
 				</Table>
 			</TableContainer>

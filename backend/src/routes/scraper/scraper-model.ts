@@ -1,7 +1,10 @@
 import playwright, { ElementHandle, Page } from 'playwright';
+import { options } from 'jest-cli/build/cli/args';
 import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
+import { ScrapeHistory } from './scraper';
+
 /*
 	testing: https://2022.splashcon.org/track/splash-2022-oopsla?#event-overview
 https://dl.acm.org/doi/proceedings/10.1145/3475738
@@ -421,4 +424,23 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 	}
 	// TODO: add some kind of check in case some papers were not actually created, maybe in the try catch above
 	return true;
+}
+
+export async function getHistory(): Promise<ScrapeHistory> {
+	let history: ScrapeHistory;
+	try {
+		history = await prisma.scrapeHistory
+			.findMany({
+				orderBy: {
+					scrapeDate: 'desc',
+				},
+				take: 10,
+			})
+			.then((historyArray) => <ScrapeHistory>historyArray);
+	} catch (e) {
+		console.error(e);
+		console.log(logToFile(e));
+		history = [];
+	}
+	return history;
 }
