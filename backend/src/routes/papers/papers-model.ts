@@ -1,4 +1,4 @@
-import { AcmPaper, RschrPaper, Papers, PaperSearchDB } from './papers';
+import { AcmPaper, Papers, PaperSearchDB } from './papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
 
@@ -61,19 +61,10 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers |
 	return searchedPapers;
 }
 
-export interface TestPaper {
-	type: string;
-	title: string;
-	authors: string;
-	doi: string;
-	url: string;
-	shortAbstract: string;
-}
-
-export const insertTestPaper = async (testPaper: TestPaper): Promise<AcmPaper | RschrPaper> =>
+export const insertTestPaper = async (acmPaper: AcmPaper): Promise<AcmPaper> =>
 	// @ts-ignore
-	prisma.paper.create({
-		data: testPaper,
+	prisma.acmPaper.create({
+		data: acmPaper,
 	});
 
 /*

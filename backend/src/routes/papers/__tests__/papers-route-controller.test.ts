@@ -2,23 +2,25 @@ import supertest from 'supertest';
 import http from 'http';
 import HttpStatus from 'http-status';
 import { app } from '../../../app';
-import { insertTestPaper, TestPaper } from '../papers-model';
-import { Paper } from '../papers';
+import { insertTestPaper } from '../papers-model';
+import { AcmPaper } from '../papers';
 import prisma from '../../../../lib/prisma';
 
 const request = supertest(http.createServer(app.callback()));
 
 const papersEndpoint = '/api/papers';
 
-let paper: Paper;
-
 beforeAll(async () => {
-	await prisma.paper.deleteMany({});
+	await prisma.acmPaper.deleteMany({});
+	await prisma.researchrPaper.deleteMany({});
 });
 
 afterAll(async () => {
-	await prisma.paper.deleteMany({});
+	await prisma.acmPaper.deleteMany({});
+	await prisma.researchrPaper.deleteMany({});
 });
+
+let paper: AcmPaper;
 
 it('GET papers should return an empty array', async () => {
 	const response = await request.get(papersEndpoint);
@@ -28,13 +30,15 @@ it('GET papers should return an empty array', async () => {
 });
 
 it('GET papers should return an array with one paper', async () => {
-	const testPaper: TestPaper = {
+	const testPaper: AcmPaper = {
 		type: 'type',
 		title: 'javascript rocks',
-		authors: 'authors',
+		authors: ['authors'],
+		fullAuthors: 'author',
 		doi: 'doi',
 		url: 'url',
 		shortAbstract: 'blah blah blah',
+		source: 'source',
 	};
 	paper = await insertTestPaper(testPaper);
 
@@ -53,7 +57,7 @@ it('GET search paper should return paper matching result', async () => {
 });
 
 it('GET search paper should return an empty array as no results match query', async () => {
-	const response = await request.get(papersEndpoint).query({ search: 'beans' });
+	const response = await request.get(`${papersEndpoint}/filter`).query({ search: 'beans' });
 
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body).toEqual([]);
