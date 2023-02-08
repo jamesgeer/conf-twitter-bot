@@ -11,74 +11,78 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  username  String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  account   Account[]
-  session   Session?
+    id        Int       @id @default(autoincrement())
+    username  String    @unique
+    password  String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    account   Account[]
+    session   Session?
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
-  User      User     @relation(fields: [userId], references: [id])
-  userId    Int      @unique
-  key       String
-  maxAge    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime
+    id        Int      @id @default(autoincrement())
+    User      User     @relation(fields: [userId], references: [id])
+    userId    Int      @unique
+    key       String
+    maxAge    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Account {
-  id            Int           @id @default(autoincrement())
-  User          User          @relation(fields: [userId], references: [id])
-  userId        Int
-  twitterUser   TwitterUser   @relation(fields: [twitterUserId], references: [id])
-  twitterUserId BigInt
-  tweet         Tweet[]
-  twitterOAuth  TwitterOAuth?
+    id            Int         @id @default(autoincrement())
+    User          User        @relation(fields: [userId], references: [id])
+    userId        Int
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt
+    tweet         Tweet[]
 }
 
 model TwitterUser {
-  id              BigInt    @id @unique
-  name            String
-  screenName      String
-  profileImageUrl String
-  accounts        Account[]
-  tweets          Tweet[]
+    id              BigInt        @id @unique
+    name            String
+    screenName      String
+    profileImageUrl String
+    accounts        Account[]
+    tweets          Tweet[]
+    oauth           TwitterOAuth?
 }
 
 model Tweet {
-  id            Int         @id @default(autoincrement())
-  account       Account     @relation(fields: [accountId], references: [id])
-  accountId     Int
-  twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
-  twitterUserId BigInt
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime?
-  dateTime      DateTime    @db.Timestamptz(3)
-  content       String      @db.VarChar(280)
-  sent          Boolean     @default(false)
-  uploads       Upload[]
+    id            Int         @id @default(autoincrement())
+    account       Account     @relation(fields: [accountId], references: [id])
+    accountId     Int
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime?   @updatedAt
+    dateTime      DateTime    @db.Timestamptz(3)
+    content       String      @db.VarChar(280)
+    sent          Boolean     @default(false)
+    uploads       Upload[]
 }
 
 model Upload {
-  id      Int     @id @default(autoincrement())
-  tweet   Tweet   @relation(fields: [tweetId], references: [id])
-  tweetId Int
-  name    String
-  url     String  @unique
-  alt     String?
-  type    String
+    id        Int      @id @default(autoincrement())
+    tweet     Tweet    @relation(fields: [tweetId], references: [id])
+    tweetId   Int
+    name      String
+    url       String   @unique
+    alt       String?
+    type      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model TwitterOAuth {
-  account      Account   @relation(fields: [accountId], references: [id])
-  accountId    Int       @id @unique
-  accessToken  String
-  accessSecret String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime?
+    id            Int         @id @default(autoincrement())
+    twitterUser   TwitterUser @relation(fields: [twitterUserId], references: [id])
+    twitterUserId BigInt      @unique
+    accessToken   String
+    accessSecret  String
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
 }
 
 // data model might need some small changes.

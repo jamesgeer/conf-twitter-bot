@@ -107,13 +107,14 @@ export const deleteAccount = async (accountId: string): Promise<boolean | Server
 			},
 		});
 
-		const deleteTwitterOAuth = prisma.twitterOAuth.deleteMany({
-			where: {
-				accountId: +accountId,
-			},
-		});
+		// const deleteTwitterOAuth = prisma.twitterOAuth.deleteMany({
+		// 	where: {
+		// 		accountId: +accountId,
+		// 	},
+		// });
 
-		await prisma.$transaction([deleteTwitterOAuth, deleteTweets, deleteTwitterAccount]);
+		// await prisma.$transaction([deleteTwitterOAuth, deleteTweets, deleteTwitterAccount]);
+		await prisma.$transaction([deleteTweets, deleteTwitterAccount]);
 		return true;
 	} catch (e) {
 		console.log(e);

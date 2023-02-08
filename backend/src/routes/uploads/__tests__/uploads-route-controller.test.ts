@@ -78,7 +78,7 @@ describe('single upload crud operation', () => {
 		const upload: Upload = response.body;
 
 		// upload.url won't work for this test as the connection will be refused
-		const uploadResponse = await request.get(`/uploads/${upload.name}`);
+		const uploadResponse = await request.get(`/test-uploads/${upload.name}`);
 		expect(uploadResponse.status).toEqual(HttpStatus.OK);
 
 		// compare uploaded image to test image, they should be the same
@@ -89,7 +89,7 @@ describe('single upload crud operation', () => {
 	it('GET uploaded image should not equal different image', async () => {
 		const response = await request.get(`${uploadsEndpoint}/${uploadId}`);
 		const upload: Upload = response.body;
-		const uploadResponse = await request.get(`/uploads/${upload.name}`);
+		const uploadResponse = await request.get(`/test-uploads/${upload.name}`);
 		const { equal } = await looksSame(uploadResponse.body, testImage2);
 
 		expect(equal).toBe(false);

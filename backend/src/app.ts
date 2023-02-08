@@ -6,8 +6,8 @@ import path from 'path';
 import appRoot from 'app-root-path';
 import router from './routes';
 import { logToFile, initLogToFile } from './logging/logging';
-import { APP_URL } from './keys';
-// import cronJobs from './jobs';
+import { APP_URL, TEST } from './keys';
+import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
 	key: 'ConfTwBot',
@@ -54,5 +54,11 @@ app.use(router.allowedMethods());
 // serve static assets from within the public directory, for example GET /uploads/some_file.png
 app.use(serve(path.join(appRoot.path, 'public')));
 
+if (TEST) {
+	console.log('RUNNING IN TEST MODE');
+}
+
 // run cron jobs
-// cronJobs();
+if (!TEST) {
+	cronJobs().then();
+}

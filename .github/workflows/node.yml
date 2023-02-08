@@ -29,4 +29,5 @@ jobs:
                 working-directory: ./backend
                 run: npm run github-actions-test
                 env:
+                    TEST: 'true'
                     DATABASE_URL: 'postgresql://prisma:prisma@localhost:5433/tests'
