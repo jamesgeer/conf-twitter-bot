@@ -34,7 +34,8 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 const Scraper = () => {
 	const [urls, setUrls] = useState<urls>(initialState);
 	const [isScraping, setIsScraping] = useState(false);
-	let { data: historyData } = useScrapeHistory();
+	const { data: historyData } = useScrapeHistory();
+
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		try {
 			e.preventDefault();
