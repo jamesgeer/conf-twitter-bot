@@ -44,6 +44,7 @@ async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
 	}
 	const errorsArray = errors.split('\n');
 	const errorsSet: Set<string> = new Set(errorsArray);
+	errorsSet.delete('');
 	try {
 		await prisma.scrapeHistory.create({
 			data: {
