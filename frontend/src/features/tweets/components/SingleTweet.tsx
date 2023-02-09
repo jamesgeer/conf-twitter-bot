@@ -13,7 +13,7 @@ interface Props {
 const SingleTweet = ({ tweet }: Props) => {
 	const [isEdit, setIsEdit] = useState(false);
 
-	const { id, content, dateTime, uploads } = tweet;
+	const { id, content, dateTime, uploads, sent } = tweet;
 
 	const handleClick = (menuItem: string) => {
 		switch (menuItem) {
@@ -43,7 +43,7 @@ const SingleTweet = ({ tweet }: Props) => {
 					<p>{content}</p>
 					{uploads && <UploadsList uploads={uploads} />}
 				</div>
-				<TweetMenu handleClick={handleClick} />
+				<TweetMenu sent={sent} handleClick={handleClick} />
 			</div>
 		);
 	};
