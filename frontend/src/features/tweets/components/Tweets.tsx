@@ -1,14 +1,35 @@
-import { Tweet } from '../types';
+import { Tweet, Tweets as TweetArray } from '../types';
 import { useTweets } from '../api/getTweets';
 import SingleTweet from './SingleTweet';
 import TweetToggles from './TweetToggles';
+import { useEffect, useState } from 'react';
 
 interface Props {
 	isList: { activeLayout: string };
 }
 
 const Tweets = ({ isList }: Props) => {
+	const [toggles, setToggles] = useState({
+		all: true,
+		sent: false,
+		unsent: false,
+	});
+
 	const { isLoading, error, data: tweets } = useTweets();
+
+	const [toggledTweets, setToggledTweets] = useState<TweetArray>(tweets);
+
+	useEffect(() => {
+		if (toggles.all) {
+			setToggledTweets(tweets);
+		} else if (toggles.sent) {
+			let filteredSent = tweets.filter((tweet) => tweet.sent === true);
+			setToggledTweets(filteredSent);
+		} else {
+			let filteredUnsent = tweets.filter((tweet) => tweet.sent === false);
+			setToggledTweets(filteredUnsent);
+		}
+	}, [toggles, tweets]);
 
 	if (isLoading) {
 		return <div>Loading Tweets...</div>;
@@ -21,14 +42,12 @@ const Tweets = ({ isList }: Props) => {
 	const displayTweets = () => {
 		return (
 			<>
-				{/* temporary*/}
-				<TweetToggles />
 				<div
 					className={
 						isList.activeLayout === 'list' ? 'grid gap-4' : 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'
 					}
 				>
-					{tweets.map((tweet: Tweet) => (
+					{toggledTweets.map((tweet: Tweet) => (
 						<SingleTweet key={tweet.id} tweet={tweet} />
 					))}
 				</div>
@@ -36,7 +55,17 @@ const Tweets = ({ isList }: Props) => {
 		);
 	};
 
-	return tweets.length === 0 ? <p>No tweets to display.</p> : displayTweets();
+	return toggledTweets.length === 0 ? (
+		<>
+			<TweetToggles toggles={toggles} setToggles={setToggles} />
+			<p>No tweets to display.</p>
+		</>
+	) : (
+		<>
+			<TweetToggles toggles={toggles} setToggles={setToggles} />
+			{displayTweets()}
+		</>
+	);
 };
 
 export default Tweets;

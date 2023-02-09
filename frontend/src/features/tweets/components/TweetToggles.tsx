@@ -1,14 +1,12 @@
 import { IconCheck } from '@tabler/icons';
 import { Flex, Button } from '@chakra-ui/react';
-import { useState } from 'react';
 
-const TweetToggles = () => {
-	const [toggles, setToggles] = useState({
-		all: true,
-		sent: false,
-		unsent: false,
-	});
+interface Props {
+	toggles: { all: boolean; sent: boolean; unsent: boolean };
+	setToggles: React.Dispatch<React.SetStateAction<{ all: boolean; sent: boolean; unsent: boolean }>>;
+}
 
+const TweetToggles = ({ toggles, setToggles }: Props) => {
 	return (
 		<Flex gap={6} paddingBottom={4}>
 			{toggles.all ? (
