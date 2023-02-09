@@ -5,6 +5,7 @@ import { useDeleteTweet } from '../api/deleteTweet';
 import { useState } from 'react';
 import TweetForm from './Tweet';
 import UploadsList from '../../uploads/components/UploadsList';
+import { Badge } from '@chakra-ui/react';
 
 interface Props {
 	tweet: Tweet;
@@ -39,7 +40,14 @@ const SingleTweet = ({ tweet }: Props) => {
 		return (
 			<div className="border-b border-slate-200 pb-4 flex justify-between">
 				<div>
-					<small>{tweetDate}</small>
+					<div className="flex items-center justify-center">
+						<small>{tweetDate}</small>
+						{sent && (
+							<Badge fontSize={12} ml="4" colorScheme="blue">
+								Posted
+							</Badge>
+						)}
+					</div>
 					<p>{content}</p>
 					{uploads && <UploadsList uploads={uploads} />}
 				</div>
