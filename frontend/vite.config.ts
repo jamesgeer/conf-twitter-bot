@@ -5,18 +5,20 @@ import react from '@vitejs/plugin-react';
 dns.setDefaultResultOrder('verbatim');
 
 export default defineConfig({
-	root: './',
-	publicDir: 'public',
+	base: '/',
 	plugins: [react()],
 	server: {
-		host: '0.0.0.0',
+		host: 'ws',
 		port: 3000,
-		https: true,
-		// hmr: {
-		// 	// host: 'yourdomainname.com',
-		// 	// port: 3000,
-		// 	protocol: 'ws',
-		// },
+		proxy: {
+			backend: {
+				target: 'ws://localhost:3000',
+				ws: true,
+			},
+		},
+		hmr: {
+			path: 'ws',
+			port: 3000,
+		},
 	},
-	base: '/',
 });

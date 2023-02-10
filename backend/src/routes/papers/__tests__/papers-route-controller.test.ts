@@ -50,7 +50,6 @@ it('GET papers should return an array with one paper', async () => {
 
 it('GET search paper should return paper matching result', async () => {
 	const response = await request.get(papersEndpoint).query({ search: 'javascript' });
-	console.log(response);
 
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body).toEqual([paper]);
