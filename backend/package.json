@@ -42,7 +42,6 @@
     "@types/jsdom": "16.2.13",
     "@types/koa": "2.13.4",
     "@types/koa-bodyparser": "^4.3.7",
-    "@types/koa-session": "^5.10.4",
     "@types/koa__router": "^8.0.11",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
@@ -72,7 +71,9 @@
       "<rootDir>/dist/"
     ],
     "transform": {
-      "^.+\\.tsx?$":  ["ts-jest"]
+      "^.+\\.tsx?$": [
+        "ts-jest"
+      ]
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
     "moduleFileExtensions": [
@@ -84,12 +85,7 @@
     "collectCoverage": true,
     "clearMocks": true,
     "coverageDirectory": "coverage",
-    "maxWorkers": 1,
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false
-      }
-    }
+    "maxWorkers": 1
   },
   "scripts": {
     "start": "cd src && nodemon server.ts",

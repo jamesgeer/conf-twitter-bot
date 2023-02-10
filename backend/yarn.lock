@@ -1161,16 +1161,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa-session@npm:^5.10.4":
-  version: 5.10.6
-  resolution: "@types/koa-session@npm:5.10.6"
-  dependencies:
-    "@types/cookies": "*"
-    "@types/koa": "*"
-  checksum: 61e3b74d51ad15466528ba03ce8464397a4683e97bd6434e4bb28e9fd51c7a49ebe4384516a58ea567406d9ad872914e1c73dd37e97d65e58be81e6b8619b9c6
-  languageName: node
-  linkType: hard
-
 "@types/koa-static@npm:^4.0.2":
   version: 4.0.2
   resolution: "@types/koa-static@npm:4.0.2"
@@ -2233,7 +2223,6 @@ __metadata:
     "@types/koa": 2.13.4
     "@types/koa-bodyparser": ^4.3.7
     "@types/koa-send": ^4.1.3
-    "@types/koa-session": ^5.10.4
     "@types/koa-static": ^4.0.2
     "@types/koa__router": ^8.0.11
     "@types/supertest": ^2.0.12
