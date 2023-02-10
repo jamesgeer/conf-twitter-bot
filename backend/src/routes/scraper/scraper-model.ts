@@ -24,6 +24,7 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 			}
 		}
 		await uploadScrapeHistoryToDatabase(urls);
+		await cleanScrapeHistoryDatabase();
 		errors = '';
 		return true;
 	} catch (e) {
@@ -61,6 +62,23 @@ async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
 	}
 }
 
+async function cleanScrapeHistoryDatabase(): Promise<boolean> {
+	const date = new Date();
+	date.setDate(date.getDate() - 7) // delete records that are 7 days or older
+	try {
+		await prisma.scrapeHistory.deleteMany({
+			where: {
+				scrapeDate: {
+					lte: date
+				}
+			}
+		});
+		return true;
+	} catch (e) {
+		console.log(logToFile(e));
+		return false;
+	}
+}
 async function isAcmUrl(url: string): Promise<boolean> {
 	return url.includes('/dl.acm.org/');
 }
