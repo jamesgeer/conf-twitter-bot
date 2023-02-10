@@ -1,4 +1,4 @@
-import playwright, { ElementHandle, Page } from 'playwright';
+import playwright, { ElementHandle, Page } from 'playwright-chromium';
 import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';

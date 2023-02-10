@@ -32,7 +32,7 @@
     "looks-same": "^8.1.0",
     "node-cron": "^3.0.1",
     "pino-pretty": "^9.1.1",
-    "playwright": "^1.27.1",
+    "playwright-chromium": "^1.30.0",
     "twitter-api-v2": "1.8.0",
     "user-agents": "^1.0.1100"
   },
@@ -57,7 +57,9 @@
     "typescript": "4.5.4"
   },
   "jest": {
-    "roots": ["<rootDir>"],
+    "roots": [
+      "<rootDir>"
+    ],
     "preset": "ts-jest",
     "testEnvironment": "node",
     "globalSetup": "./jest/global-setup.ts",
@@ -73,7 +75,12 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
-    "moduleFileExtensions": ["ts", "js", "json", "node"],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json",
+      "node"
+    ],
     "collectCoverage": true,
     "clearMocks": true,
     "coverageDirectory": "coverage",
