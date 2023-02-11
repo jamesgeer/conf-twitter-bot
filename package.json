@@ -29,6 +29,7 @@
   },
   "scripts": {
     "start": "concurrently \"cd backend && yarn start\" \"cd frontend && yarn dev\"",
+    "github-actions-packages": "yarn && cd backend && yarn",
     "install-packages": "yarn && concurrently \"cd backend && yarn\" \"cd frontend && yarn\"",
     "format": "prettier --config .prettierrc {backend,tests,resources}/**/*.{ts,js} --write",
     "verify": "yarn lint",
