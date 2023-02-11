@@ -1,6 +1,6 @@
 import { TwitterApi, UserV1 } from 'twitter-api-v2';
 import HttpStatus from 'http-status';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { TwitterOAuth, TwitterOAuthRequestToken, TwitterUserOAuth } from './oauths';
 import { ServerError } from '../types';
 import prisma from '../../../lib/prisma';
@@ -96,7 +96,7 @@ export const insertTwitterOAuth = async (
 			},
 		});
 	} catch (e) {
-		if (e instanceof Prisma.PrismaClientKnownRequestError) {
+		if (e instanceof PrismaClientKnownRequestError) {
 			if (e.code === 'P2002') return new ServerError(HttpStatus.CONFLICT, 'OAuth already exists.');
 		}
 		console.log(e);

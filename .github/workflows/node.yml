@@ -20,10 +20,10 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
             -   name: Install Packages
-                run: yarn install && yarn github-actions-packages
+                run: npm run install-packages
 
             -   name: Linter Tests
-                run: yarn eslint . --ext .js,.jsx,.ts,.tsx
+                run: npx eslint . --ext .js,.jsx,.ts,.tsx
 
             -   name: Code Tests
                 working-directory: ./backend

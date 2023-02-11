@@ -227,14 +227,3 @@ $RECYCLE.BIN/
 twitter-accounts.json
 src/config.json
 backend/src/routes/scraper/sites/output.html
-
-### yarn ###
-# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-backend/.yarn/install-state.gz

@@ -1,5 +1,5 @@
 import HttpStatus from 'http-status';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { existsSync, rmSync } from 'fs';
 import path from 'path';
 import { ServerError } from '../types';
@@ -68,7 +68,7 @@ export const deleteUploadDb = async (imageId: number): Promise<Upload | ServerEr
 			},
 		});
 	} catch (e) {
-		if (e instanceof Prisma.PrismaClientKnownRequestError) {
+		if (e instanceof PrismaClientKnownRequestError) {
 			return new ServerError(
 				HttpStatus.NOT_FOUND,
 				`Image with ID ${imageId} not found: either already deleted or received incorrect/invalid ID.`,
@@ -101,7 +101,7 @@ export const updateUploadUrl = async (uploadId: number, newUrl: string): Promise
 			},
 		});
 	} catch (e) {
-		if (e instanceof Prisma.PrismaClientKnownRequestError) {
+		if (e instanceof PrismaClientKnownRequestError) {
 			return new ServerError(HttpStatus.NOT_FOUND, `Upload with ID ${uploadId} not found.`);
 		}
 		console.log(logToFile(e));

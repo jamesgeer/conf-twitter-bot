@@ -1,15 +1,13 @@
 import Koa from 'koa';
 import cors from '@koa/cors';
+import koaSession from 'koa-session';
 import serve from 'koa-static';
 import path from 'path';
 import appRoot from 'app-root-path';
-import koaSession from 'koa-session';
 import router from './routes';
 import { logToFile, initLogToFile } from './logging/logging';
 import { APP_URL, TEST } from './keys';
 import cronJobs from './jobs';
-
-export const app = new Koa();
 
 const SESSION_CONFIG = {
 	key: 'ConfTwBot',
@@ -24,9 +22,11 @@ const SESSION_CONFIG = {
 	sameSite: true,
 };
 
+// eslint-disable-next-line import/prefer-default-export
+export const app = new Koa();
+
 app.keys = ['Session Key Secret 5346fdg434'];
 app.proxy = true;
-
 app.use(koaSession(SESSION_CONFIG, app));
 
 // fix for: TypeError: Do not know how to serialize a BigInt

@@ -13,9 +13,6 @@ module.exports = {
 		react: {
 			version: '18.2.0'
 		},
-		jest: {
-			version: '29.0.5'
-		},
 	},
 	env: {
 		es6: true,
