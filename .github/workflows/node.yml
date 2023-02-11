@@ -20,7 +20,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
             -   name: Install Packages
-                run: yarn github-actions-packages
+                run: yarn install && yarn github-actions-packages
 
             -   name: Linter Tests
                 run: yarn eslint . --ext .js,.jsx,.ts,.tsx

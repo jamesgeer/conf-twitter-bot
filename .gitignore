@@ -236,3 +236,5 @@ backend/src/routes/scraper/sites/output.html
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+backend/.yarn/install-state.gz
