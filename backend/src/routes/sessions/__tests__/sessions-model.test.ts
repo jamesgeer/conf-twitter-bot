@@ -5,9 +5,7 @@ import { prismaMock } from '../../../../lib/prismaMock';
 import { ServerError } from '../../types';
 
 test('valid session cookie should return true', async () => {
-	const requestCookie =
-		// eslint-disable-next-line max-len
-		'ConfTwBot=some_random_hash_string==; ConfTwBot.sig=not_real_sig';
+	const requestCookie = 'some_random_hash_string==; ConfTwBot.sig=not_real_sig';
 	const sessionCookie = 'some_random_hash_string==';
 
 	expect(validSessionCookie(requestCookie, sessionCookie)).toEqual(true);
