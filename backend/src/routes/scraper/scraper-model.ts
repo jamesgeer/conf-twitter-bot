@@ -64,14 +64,14 @@ async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
 
 async function cleanScrapeHistoryDatabase(): Promise<boolean> {
 	const date = new Date();
-	date.setDate(date.getDate() - 7) // delete records that are 7 days or older
+	date.setDate(date.getDate() - 7); // delete records that are 7 days or older
 	try {
 		await prisma.scrapeHistory.deleteMany({
 			where: {
 				scrapeDate: {
-					lte: date
-				}
-			}
+					lte: date,
+				},
+			},
 		});
 		return true;
 	} catch (e) {
