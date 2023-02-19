@@ -4,20 +4,32 @@ import {
 	useReactTable,
 	flexRender,
 	getCoreRowModel,
-	ColumnDef,
 	SortingState,
 	getSortedRowModel,
+	createColumnHelper,
 } from '@tanstack/react-table';
 import { useState } from 'react';
+import { AcmPaper, RschrPaper } from '../types';
 
 export type DataTableProps<Data extends object> = {
 	data: Data[];
-	columns: ColumnDef<Data, any>[];
 };
 
-export function DataTable<Data extends object>({ data, columns }: DataTableProps<Data>) {
+export function DataTable<Data extends object>({ data }: DataTableProps<Data>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
+
+	const columnHelper = createColumnHelper<AcmPaper | RschrPaper>();
+
+	const columns = [
+		columnHelper.accessor('title', {
+			cell: (info) => info.getValue(),
+			header: 'Title',
+			sortingFn: 'alphanumeric',
+		}),
+	];
+
 	const table = useReactTable({
+		// @ts-ignore
 		columns,
 		data,
 		getCoreRowModel: getCoreRowModel(),

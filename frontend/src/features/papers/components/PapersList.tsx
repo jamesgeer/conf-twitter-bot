@@ -1,6 +1,5 @@
 import { AcmPaper, RschrPaper, Papers } from '../types';
 import { getFilteredPapers, usePapers } from '../api/getPapers';
-import { createColumnHelper } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
 import FilterPapers from './FilterPapers';
 import React, { useEffect, useState } from 'react';
@@ -47,31 +46,13 @@ const PapersList = ({ isList }: Props) => {
 
 	const debouncedHandleFilter = debounce(handleFilter, 300);
 
-	const columnHelper = createColumnHelper<AcmPaper | RschrPaper>();
-
-	const columns = [
-		columnHelper.accessor('title', {
-			cell: (info) => info.getValue(),
-			header: 'Title',
-			sortingFn: 'alphanumeric',
-		}),
-		columnHelper.accessor('source', {
-			cell: (info) => info.getValue(),
-			header: 'Source',
-			sortingFn: 'alphanumeric',
-		}),
-	];
-
 	return (
 		<>
 			{data && data.length > 0 ? (
 				isList.activeLayout === 'list' ? (
 					<>
 						<FilterPapers setSearchInput={setSearchInput} debouncedHandleFilter={debouncedHandleFilter} />
-						<DataTable
-							columns={columns}
-							data={searchInput.search === '' && searchInput.source === '' ? data : results!}
-						/>
+						<DataTable data={searchInput.search === '' && searchInput.source === '' ? data : results!} />
 					</>
 				) : (
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
