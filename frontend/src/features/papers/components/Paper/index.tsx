@@ -1,7 +1,16 @@
 import { Paper as PaperType } from '../../types';
-import { IconFileDescription, IconCircleLetterR, IconCircleLetterA } from '@tabler/icons';
-import { Button } from '@chakra-ui/react';
+import { IconCalendar, IconUsers, IconStack, IconTimeline } from '@tabler/icons';
 import React from 'react';
+import {
+	Heading,
+	Box,
+	HStack,
+	useDisclosure,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalCloseButton,
+} from '@chakra-ui/react';
 
 interface Props {
 	paper: PaperType;
@@ -9,31 +18,41 @@ interface Props {
 
 const Paper = ({ paper }: Props) => {
 	const { title, authors, shortAbstract, url } = paper;
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	return (
-		<div className="border-b border-slate-200 pb-4">
-			<header>
-				<h5 className="font-bold">{title}</h5>
-
-				<small className="text-slate-700 dark:text-slate-400">{authors.join(', ')}</small>
-			</header>
-			<div className="content pt-4">
-				<p>{shortAbstract}</p>
-			</div>
-			<div>
-				<a href={url} target="_blank" rel="noreferrer">
-					<Button>
-						<IconFileDescription />
-					</Button>
-					<Button hidden={paper.source === 'acm'}>
-						<IconCircleLetterR />
-					</Button>
-					<Button hidden={paper.source !== 'acm'}>
-						<IconCircleLetterA />
-					</Button>
-				</a>
-			</div>
-		</div>
+		<Box
+			borderWidth="1px"
+			rounded="md"
+			padding="5"
+			_hover={{ bg: 'var(--chakra-colors-gray-100)', cursor: 'pointer' }}
+			onClick={onOpen}
+		>
+			<Heading as="h4" size="md">
+				{title}
+			</Heading>
+			<HStack spacing="24px" className="mt-3">
+				<Box className="flex">
+					<IconCalendar className="mr-1" /> Mar '21
+				</Box>
+				<Box className="flex">
+					<IconUsers className="mr-1" /> {authors.length}
+				</Box>
+				<Box className="flex">
+					<IconStack className="mr-1" /> 10-15
+				</Box>
+				<Box className="flex">
+					<IconTimeline className="mr-1" /> 76
+				</Box>
+			</HStack>
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent maxWidth="fit-content">
+					<ModalCloseButton />
+					{paper.fullAbstract}
+				</ModalContent>
+			</Modal>
+		</Box>
 	);
 };
 
