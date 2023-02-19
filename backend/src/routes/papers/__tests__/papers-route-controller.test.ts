@@ -41,11 +41,11 @@ it('GET papers should return an array with one paper', async () => {
 		source: 'source',
 	};
 	paper = await insertTestPaper(testPaper);
-	console.log(paper);
+
 	const response = await request.get(papersEndpoint);
-	console.log(response.body);
+
 	expect(response.status).toEqual(HttpStatus.OK);
-	expect(response.body).toEqual([paper]);
+	expect(<AcmPaper[]>response.body).toEqual([paper]);
 });
 
 it('GET search paper should return paper matching result', async () => {
