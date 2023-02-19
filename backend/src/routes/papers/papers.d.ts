@@ -19,6 +19,7 @@ export interface AcmPaper {
 	downloads?: number;
 
 	source: string;
+	scrapeDate?: Date;
 }
 
 export interface RschrPaper {
@@ -33,6 +34,7 @@ export interface RschrPaper {
 
 	shortAbstract: string;
 	fullAbstract?: string;
+	scrapeDate?: Date;
 }
 
 export interface PaperSearch {
