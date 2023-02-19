@@ -43,14 +43,14 @@ it('GET papers should return an array with one paper', async () => {
 	paper = await insertTestPaper(testPaper);
 
 	const response = await request.get(papersEndpoint);
-
+	response.body.paper.scrapeDate = new Date(response.body.paper.scrapeDate);
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body).toEqual([paper]);
 });
 
 it('GET search paper should return paper matching result', async () => {
 	const response = await request.get(papersEndpoint).query({ search: 'javascript' });
-
+	response.body.paper.scrapeDate = new Date(response.body.paper.scrapeDate);
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body).toEqual([paper]);
 });
