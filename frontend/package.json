@@ -10,6 +10,7 @@
     "@tabler/icons": "^1.101.0",
     "@tanstack/react-query": "^4.10.3",
     "@tanstack/react-query-devtools": "^4.10.3",
+    "@tanstack/react-table": "^8.7.4",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -21,6 +22,7 @@
     "dayjs": "^1.11.4",
     "framer-motion": "^7.5.3",
     "http-status": "^1.5.2",
+    "lodash": "^4.17.21",
     "query-string": "^7.1.1",
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",
@@ -29,13 +31,13 @@
     "react-scripts": "5.0.1",
     "react-uuid": "^2.0.0",
     "typescript": "^4.7.4",
+    "vite": "^4.1.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite dev --host",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.8",
     "postcss": "^8.4.14",
     "tailwindcss": "^3.1.7"

@@ -1,8 +1,9 @@
-import { Papers } from './papers';
+import { AcmPaper, Papers, PaperSearchDB } from './papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
 
 let papers: Papers;
+let searchedPapers: Papers;
 
 export async function getPapers(): Promise<Papers> {
 	try {
@@ -18,6 +19,53 @@ export async function getPapers(): Promise<Papers> {
 	}
 	return papers;
 }
+
+export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
+	console.log(params);
+
+	try {
+		const acmPapers = await prisma.acmPaper
+			.findMany({
+				where: {
+					title: {
+						contains: params.title,
+						mode: 'insensitive',
+					},
+					source: {
+						equals: params.source,
+					},
+				},
+			})
+			.then((paperArray) => <Papers>paperArray);
+
+		const rschrPapers = await prisma.researchrPaper
+			.findMany({
+				where: {
+					title: {
+						contains: params.title,
+						mode: 'insensitive',
+					},
+					source: {
+						equals: params.source,
+					},
+				},
+			})
+			.then((paperArray) => <Papers>paperArray);
+
+		searchedPapers = acmPapers.concat(rschrPapers);
+	} catch (e) {
+		console.error(e);
+		console.log(logToFile(e));
+		searchedPapers = [];
+	}
+	return searchedPapers;
+}
+
+export const insertTestPaper = async (acmPaper: AcmPaper): Promise<AcmPaper> =>
+	// @ts-ignore
+	prisma.acmPaper.create({
+		data: acmPaper,
+	});
 
 /*
 export const getPaper = (paperId: number): Paper => {

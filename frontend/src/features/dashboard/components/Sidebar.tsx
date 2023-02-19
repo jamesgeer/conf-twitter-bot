@@ -3,7 +3,7 @@ interface Props {
 }
 
 const Sidebar = ({ handleClick }: Props) => {
-	// 'Schedule', 'History', 'Papers', 'Change Account', 'Tweets'
+	// 'Schedule', 'History', 'PapersList', 'Change Account', 'Tweets'
 	const sideBarList = ['Tweets', 'Papers', 'Scraper'];
 
 	const sideBarButtons = sideBarList.map((item, index) => {

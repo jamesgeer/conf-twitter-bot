@@ -17,4 +17,4 @@ RUN npx playwright install --with-deps chromium
 
 COPY . .
 
-CMD npx prisma migrate dev && npm start
+CMD npx prisma migrate deploy && npm start

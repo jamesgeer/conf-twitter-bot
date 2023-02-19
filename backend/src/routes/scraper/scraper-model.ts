@@ -1,4 +1,4 @@
-import playwright, { ElementHandle, Page } from 'playwright';
+import playwright, { ElementHandle, Page } from 'playwright-chromium';
 import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
@@ -193,6 +193,10 @@ async function extractAcmPaper(
 		url: href,
 		doi: href?.replace('https://dl.acm.org/doi', ''),
 		authors,
+		fullAbstract: '',
+		fullAuthors: '',
+		monthYear: '',
+		preprint: '',
 		// monthYear,
 		pages,
 		shortAbstract: (await shortAbstracts[i].innerText()).trim(),
