@@ -42,7 +42,7 @@ it('GET papers should return an array with one paper', async () => {
 	};
 	paper = await insertTestPaper(testPaper);
 	if (paper.scrapeDate) {
-		paper.scrapeDate = paper.scrapeDate.toString();
+		paper.scrapeDate = <string>paper.scrapeDate;
 	}
 
 	const response = await request.get(papersEndpoint);
