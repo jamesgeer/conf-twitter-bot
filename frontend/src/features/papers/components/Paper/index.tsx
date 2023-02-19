@@ -1,10 +1,10 @@
-import { AcmPaper, RschrPaper } from '../../types';
+import { Paper as PaperType } from '../../types';
 import { IconFileDescription, IconCircleLetterR, IconCircleLetterA } from '@tabler/icons';
 import { Button } from '@chakra-ui/react';
 import React from 'react';
 
 interface Props {
-	paper: AcmPaper | RschrPaper;
+	paper: PaperType;
 }
 
 const Paper = ({ paper }: Props) => {

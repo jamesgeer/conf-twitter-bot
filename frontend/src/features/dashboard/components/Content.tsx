@@ -1,5 +1,5 @@
 import Tweets from '../../tweets/components/Tweets';
-import PapersList from '../../papers/components/PapersList';
+import PaperSearch from '../../papers/components/PaperSearch';
 import Scraper from '../../scraper/components/Scraper';
 import ToggleListGrid from './toggleListGrid';
 import React, { useState } from 'react';
@@ -27,7 +27,7 @@ const Content = ({ active }: Props) => {
 			<hr className="my-8" />
 			<ActiveTitle title={active.title} />
 			{active.title === 'Tweets' && <Tweets />}
-			{active.title === 'Papers' && <PapersList />}
+			{active.title === 'Papers' && <PaperSearch />}
 			{active.title === 'Scraper' && <Scraper />}
 		</div>
 	);

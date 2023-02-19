@@ -39,4 +39,6 @@ export interface RschrPaper {
 	source: string;
 }
 
-export type Papers = Array<AcmPaper | RschrPaper>;
+export type Paper = AcmPaper | RschrPaper;
+
+export type Papers = Array<Paper>;
