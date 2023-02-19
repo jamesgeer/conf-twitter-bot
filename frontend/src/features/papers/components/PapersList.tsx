@@ -1,17 +1,12 @@
 import { AcmPaper, RschrPaper, Papers } from '../types';
 import { getFilteredPapers, usePapers } from '../api/getPapers';
-import { DataTable } from './DataTable';
 import FilterPapers from './FilterPapers';
 import React, { useEffect, useState } from 'react';
 import Paper from './Paper';
 import uuid from 'react-uuid';
 import { debounce } from 'lodash';
 
-interface Props {
-	isList: { activeLayout: string };
-}
-
-const PapersList = ({ isList }: Props) => {
+const PapersList = () => {
 	const [results, setResults] = useState<Papers>();
 	const [searchInput, setSearchInput] = useState({
 		search: '',
@@ -39,6 +34,10 @@ const PapersList = ({ isList }: Props) => {
 		return <div>An error occurred: {error.message}</div>;
 	}
 
+	if (data.length === 0) {
+		return <p>No papers to display.</p>;
+	}
+
 	const handleFilter = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 		setSearchInput({ ...searchInput, [name]: value });
@@ -48,22 +47,10 @@ const PapersList = ({ isList }: Props) => {
 
 	return (
 		<>
-			{data && data.length > 0 ? (
-				isList.activeLayout === 'list' ? (
-					<>
-						<FilterPapers setSearchInput={setSearchInput} debouncedHandleFilter={debouncedHandleFilter} />
-						<DataTable data={searchInput.search === '' && searchInput.source === '' ? data : results!} />
-					</>
-				) : (
-					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{data?.map((paper: AcmPaper | RschrPaper) => (
-							<Paper key={uuid()} paper={paper} />
-						))}
-					</div>
-				)
-			) : (
-				<p>No papers to display.</p>
-			)}
+			<FilterPapers setSearchInput={setSearchInput} debouncedHandleFilter={debouncedHandleFilter} />
+			{data?.map((paper: AcmPaper | RschrPaper) => (
+				<Paper key={uuid()} paper={paper} />
+			))}
 		</>
 	);
 };
