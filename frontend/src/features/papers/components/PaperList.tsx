@@ -16,7 +16,7 @@ const PaperList = ({ papers }: Interface) => {
 	const paperList = papers.map((paper: PaperType) => <Paper key={uuid()} paper={paper} />);
 
 	return (
-		<SimpleGrid columns={1} spacing={10}>
+		<SimpleGrid columns={1} spacing={5}>
 			{paperList}
 		</SimpleGrid>
 	);
