@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
 import { ParameterizedContext } from 'koa';
-import { scrapePapers } from './scraper-model';
+import { scrapePapers, getHistory } from './scraper-model';
 
 export const scrape = async (ctx: ParameterizedContext): Promise<void> => {
 	const { urls } = ctx.request.body;
@@ -14,4 +14,11 @@ export const scrape = async (ctx: ParameterizedContext): Promise<void> => {
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = { message: 'Unsuccessful scrape request.' };
+};
+
+export const history = async (ctx: ParameterizedContext): Promise<void> => {
+	const history = await getHistory();
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = history;
 };

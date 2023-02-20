@@ -20,6 +20,11 @@ export interface AcmPaper {
 	source: string;
 }
 
+export interface PaperSearch {
+	search?: string;
+	source?: string;
+}
+
 export interface RschrPaper {
 	title: string;
 	authors: string[];

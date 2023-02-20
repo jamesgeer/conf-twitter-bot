@@ -2,7 +2,7 @@
  * Model for creating/reading/updating/deleting stored tweets
  */
 import HttpStatus from 'http-status';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { Prisma } from '@prisma/client';
 import { HTTPTweet, Tweet, Tweets } from './tweets';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
@@ -123,7 +123,7 @@ export const updateTweetContent = async (tweetId: string, content: string): Prom
 			},
 		});
 	} catch (e) {
-		if (e instanceof PrismaClientKnownRequestError) {
+		if (e instanceof Prisma.PrismaClientKnownRequestError) {
 			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
 		}
 		console.log(logToFile(e));
@@ -145,7 +145,7 @@ export const updateTweetScheduledTime = async (
 			},
 		});
 	} catch (e) {
-		if (e instanceof PrismaClientKnownRequestError) {
+		if (e instanceof Prisma.PrismaClientKnownRequestError) {
 			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
 		}
 		console.log(logToFile(e));
@@ -164,7 +164,7 @@ export const updateTweetSent = async (tweetId: number, sent: boolean): Promise<T
 			},
 		});
 	} catch (e) {
-		if (e instanceof PrismaClientKnownRequestError) {
+		if (e instanceof Prisma.PrismaClientKnownRequestError) {
 			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
 		}
 		console.log(logToFile(e));
@@ -180,7 +180,7 @@ export const deleteTweet = async (tweetId: string): Promise<Tweet | ServerError>
 			},
 		});
 	} catch (e) {
-		if (e instanceof PrismaClientKnownRequestError) {
+		if (e instanceof Prisma.PrismaClientKnownRequestError) {
 			return new ServerError(
 				HttpStatus.NOT_FOUND,
 				`Tweet with ID ${tweetId} not found: either already deleted or received incorrect/invalid ID.`,

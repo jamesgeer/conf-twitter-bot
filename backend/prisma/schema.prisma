@@ -2,12 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["debian-openssl-1.1.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
@@ -102,6 +103,7 @@ model AcmPaper {
   citations     Int?
   downloads     Int?
   source        String
+  scrapeDate    DateTime @default(now())
 }
 
 // data model not complete yet, will be complete once scrapping starts
@@ -116,4 +118,12 @@ model ResearchrPaper {
   shortAbstract String
   fullAbstract  String?
   source        String
+  scrapeDate    DateTime @default(now())
+}
+
+model ScrapeHistory {
+  id            Int      @id @default(autoincrement())
+  links         String
+  errors        String
+  scrapeDate    DateTime @default(now())
 }
