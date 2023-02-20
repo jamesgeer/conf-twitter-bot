@@ -1,6 +1,5 @@
 import { readFile } from 'fs/promises';
 import prisma from '../../lib/prisma';
-import { logToFile } from '../logging/logging';
 
 /**
  * Command to run this file:
@@ -80,7 +79,7 @@ interface ImportPaper {
 				},
 			});
 		} catch (e) {
-			console.log(logToFile(e));
+			console.log(e);
 		}
 	}
 })();

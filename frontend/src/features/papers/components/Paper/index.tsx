@@ -9,7 +9,12 @@ import {
 	Modal,
 	ModalOverlay,
 	ModalContent,
+	ModalHeader,
 	ModalCloseButton,
+	ModalBody,
+	SimpleGrid,
+	Button,
+	Link,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -17,8 +22,65 @@ interface Props {
 }
 
 const Paper = ({ paper }: Props) => {
-	const { title, authors, shortAbstract, url } = paper;
+	const { title, authors, url, shortAbstract, fullAbstract } = paper;
 	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const paperSourceButton = () => {
+		let buttonText;
+
+		switch (paper.source) {
+			case 'acm':
+				buttonText = 'ACM';
+				break;
+
+			case 'researchr':
+				buttonText = 'ResearchR';
+				break;
+
+			default:
+				buttonText = 'SRC';
+		}
+
+		return (
+			<Link href={url} isExternal>
+				<Button colorScheme="gray">{buttonText}</Button>
+			</Link>
+		);
+	};
+
+	const paperModalContent = () => {
+		return (
+			<SimpleGrid>
+				<ModalHeader></ModalHeader>
+				<ModalBody>
+					<Box>
+						<Heading as="h2" size="md">
+							{title}
+						</Heading>
+						<Box>{paperSourceButton()}</Box>
+					</Box>
+					<Box>
+						<Heading as="h6" size="xs">
+							{fullAbstract ? 'Full Abstract' : 'Short Abstract'}
+						</Heading>
+						{fullAbstract ? fullAbstract : shortAbstract}
+					</Box>
+				</ModalBody>
+			</SimpleGrid>
+		);
+	};
+
+	const paperModal = () => {
+		return (
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalCloseButton />
+					{paperModalContent()}
+				</ModalContent>
+			</Modal>
+		);
+	};
 
 	return (
 		<Box
@@ -45,13 +107,7 @@ const Paper = ({ paper }: Props) => {
 					<IconTimeline className="mr-1" /> 76
 				</Box>
 			</HStack>
-			<Modal isOpen={isOpen} onClose={onClose}>
-				<ModalOverlay />
-				<ModalContent maxWidth="fit-content">
-					<ModalCloseButton />
-					{paper.fullAbstract}
-				</ModalContent>
-			</Modal>
+			{paperModal()}
 		</Box>
 	);
 };
