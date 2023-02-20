@@ -44,7 +44,7 @@ it('GET papers should return an array with one paper', async () => {
 	}
 
 	const response = await request.get(papersEndpoint);
-
+	console.log(response.body);
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body).toEqual([paper]);
 });
