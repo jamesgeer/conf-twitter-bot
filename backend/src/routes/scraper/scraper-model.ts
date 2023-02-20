@@ -371,40 +371,31 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 		try {
 			// eslint-disable-next-line no-await-in-loop
 			if ('type' in thisPaper) {
-				await prisma.acmPaper.upsert({
-					where: {
-						doi: thisPaper.doi,
-					},
-					update: {
-						type: thisPaper.type,
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						monthYear: thisPaper.monthYear,
-						pages: thisPaper.pages,
-						citations: thisPaper.citations,
-						downloads: thisPaper.downloads,
-						source: thisPaper.source,
-					},
-					create: {
-						type: thisPaper.type,
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						monthYear: thisPaper.monthYear,
-						pages: thisPaper.pages,
-						citations: thisPaper.citations,
-						downloads: thisPaper.downloads,
-						source: thisPaper.source,
+				await prisma.paper.create({
+					data: {
+						AcmPaper: {
+							connectOrCreate: {
+								create: {
+									type: thisPaper.type,
+									title: thisPaper.title,
+									authors: thisPaper.authors,
+									fullAuthors: thisPaper.fullAuthors,
+									doi: thisPaper.doi,
+									url: thisPaper.url,
+									preprint: thisPaper.preprint,
+									shortAbstract: thisPaper.shortAbstract,
+									fullAbstract: thisPaper.fullAbstract,
+									monthYear: thisPaper.monthYear,
+									pages: thisPaper.pages,
+									citations: thisPaper.citations,
+									downloads: thisPaper.downloads,
+									source: thisPaper.source,
+								},
+								where: {
+									doi: thisPaper.doi,
+								},
+							},
+						},
 					},
 				});
 			} else {
@@ -412,32 +403,26 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 				if (thisPaper.doi === '') {
 					thisPaper.doi = null;
 				}
-				// eslint-disable-next-line no-await-in-loop
-				await prisma.researchrPaper.upsert({
-					where: {
-						title: thisPaper.title,
-					},
-					update: {
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						source: thisPaper.source,
-					},
-					create: {
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						source: thisPaper.source,
+				await prisma.paper.create({
+					data: {
+						ResearchrPaper: {
+							connectOrCreate: {
+								create: {
+									title: thisPaper.title,
+									authors: thisPaper.authors,
+									fullAuthors: thisPaper.fullAuthors,
+									doi: thisPaper.doi,
+									url: thisPaper.url,
+									preprint: thisPaper.preprint,
+									shortAbstract: thisPaper.shortAbstract,
+									fullAbstract: thisPaper.fullAbstract,
+									source: thisPaper.source,
+								},
+								where: {
+									title: thisPaper.title,
+								},
+							},
+						},
 					},
 				});
 			}

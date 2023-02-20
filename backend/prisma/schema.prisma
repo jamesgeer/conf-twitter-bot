@@ -86,7 +86,12 @@ model TwitterOAuth {
     updatedAt     DateTime    @updatedAt
 }
 
-// data model might need some small changes.
+model Paper {
+  id             Int      @id @default(autoincrement())
+  AcmPaper       AcmPaper?
+  ResearchrPaper ResearchrPaper?
+}
+
 model AcmPaper {
   id            Int      @id @default(autoincrement())
   doi           String   @unique
@@ -104,9 +109,10 @@ model AcmPaper {
   downloads     Int?
   source        String
   scrapeDate    DateTime @default(now())
+  paper         Paper @relation(fields: [paperId], references: [id])
+  paperId       Int   @unique
 }
 
-// data model not complete yet, will be complete once scrapping starts
 model ResearchrPaper {
   id            Int      @id @default(autoincrement())
   doi           String?  @unique
@@ -119,6 +125,8 @@ model ResearchrPaper {
   fullAbstract  String?
   source        String
   scrapeDate    DateTime @default(now())
+  paper         Paper @relation(fields: [paperId], references: [id])
+  paperId       Int   @unique
 }
 
 model ScrapeHistory {

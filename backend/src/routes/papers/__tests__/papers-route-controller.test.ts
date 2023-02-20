@@ -11,13 +11,11 @@ const request = supertest(http.createServer(app.callback()));
 const papersEndpoint = '/api/papers';
 
 beforeAll(async () => {
-	await prisma.acmPaper.deleteMany({});
-	await prisma.researchrPaper.deleteMany({});
+	await prisma.paper.deleteMany({});
 });
 
 afterAll(async () => {
-	await prisma.acmPaper.deleteMany({});
-	await prisma.researchrPaper.deleteMany({});
+	await prisma.paper.deleteMany({});
 });
 
 let paper: AcmPaper;
