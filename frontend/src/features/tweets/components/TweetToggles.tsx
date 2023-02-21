@@ -8,7 +8,7 @@ interface Props {
 
 const TweetToggles = ({ toggles, setToggles }: Props) => {
 	return (
-		<Flex gap={6} paddingBottom={4}>
+		<Flex gap={6} marginBottom={8}>
 			{toggles.all ? (
 				<Button height={9} borderRadius={20} border="2px" borderColor="blue.400" leftIcon={<IconCheck />}>
 					All
