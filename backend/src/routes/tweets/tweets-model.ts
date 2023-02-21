@@ -14,6 +14,9 @@ export const getTwitterUserTweets = async (twitterUserId: bigint): Promise<Tweet
 			where: {
 				twitterUserId,
 			},
+			orderBy: {
+				dateTime: 'desc',
+			},
 			include: {
 				uploads: true,
 			},

@@ -1,6 +1,8 @@
-import { Textarea } from '@chakra-ui/react';
+import {Box,Textarea, Table, Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer, Button,} from '@chakra-ui/react';
 import axios from "axios";
 import React, { useState} from "react";
+import {useScrapeHistory} from "../api/getScrapeHistory";
+import {ScrapeHistoryElm} from "../types";
 
 interface urls {
 	urls: string,
@@ -32,6 +34,7 @@ https://dl.acm.org/doi/proceedings/10.5555/638476
 const Scraper = () => {
 	const [urls, setUrls] = useState<urls>(initialState);
 	const [isScraping, setIsScraping] = useState(false);
+	const { data: historyData } = useScrapeHistory();
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		try {
@@ -53,11 +56,54 @@ const Scraper = () => {
 			return { ...prevState, urls: val }
 		});
 	}
+	const handleClick = async (e: React.MouseEvent<HTMLButtonElement>, links: string) => {
+		try {
+			e.preventDefault();
+			setIsScraping(true);
+			const payload = { urls:links }
+			await axios.post('/api/scraper/', payload);
+			setIsScraping(false);
+		} catch (error){
+			setIsScraping(false);
+			console.error(error);
+		}
+
+
+	};
+	const displayHistory = historyData.map((history: ScrapeHistoryElm, index) => {
+		return (
+			<Tr key={index} style={{whiteSpace: "pre-line"}}>
+				<Td>{history.links}</Td>
+				<Td>{history.errors}</Td>
+				<Td>{history.scrapeDate.toLocaleString()}</Td>
+				<Td><Button isLoading={isScraping} loadingText='Scraping' colorScheme='twitter' variant='solid' onClick={(e) => handleClick(e, history.links)}>Re-scrape</Button></Td>
+			</Tr>
+		);
+	});
+
 	return (
-		<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
-			<Textarea rows={15} placeholder='Paste your links here. Please put each link on a new line!' onChange={(e) => onChangeHandler(e.target)}/>
-			<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full" type="submit">{isScraping ? "...Scraping in progress..." : "Start Scraping"}</button>
-		</form>
+		<Box>
+			<form className="flex gap-x-4 relative" onSubmit={(e) => handleSubmit(e)}>
+				<Textarea rows={5} placeholder='Paste your links here. Please put each link on a new line!' onChange={(e) => onChangeHandler(e.target)}/>
+				<Button isLoading={isScraping} loadingText='Scraping' colorScheme='twitter' variant='solid' type="submit">Start Scraping</Button>
+			</form>
+			<TableContainer>
+				<Table variant='simple' colorScheme='twitter'>
+					<TableCaption placement='top'>Web Scraping History (Last 10)</TableCaption>
+					<Thead>
+						<Tr>
+							<Th>Links</Th>
+							<Th>Errors</Th>
+							<Th>Date</Th>
+							<Th>Re-scrape</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{displayHistory}
+					</Tbody>
+				</Table>
+			</TableContainer>
+		</Box>
 	);
 };
 

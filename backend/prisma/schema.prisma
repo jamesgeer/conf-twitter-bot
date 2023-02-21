@@ -88,33 +88,42 @@ model TwitterOAuth {
 
 // data model might need some small changes.
 model AcmPaper {
-    id            Int      @id @default(autoincrement())
-    doi           String   @unique
-    type          String
-    title         String
-    authors       String[]
-    fullAuthors   String?
-    url           String
-    preprint      String?
-    shortAbstract String
-    fullAbstract  String?
-    monthYear     String?
-    pages         String?
-    citations     Int?
-    downloads     Int?
-    source        String
+  id            Int      @id @default(autoincrement())
+  doi           String   @unique
+  type          String
+  title         String
+  authors       String[]
+  fullAuthors   String?
+  url           String
+  preprint      String?
+  shortAbstract String
+  fullAbstract  String?
+  monthYear     String?
+  pages         String?
+  citations     Int?
+  downloads     Int?
+  source        String
+  scrapeDate    DateTime @default(now())
 }
 
 // data model not complete yet, will be complete once scrapping starts
 model ResearchrPaper {
-    id            Int      @id @default(autoincrement())
-    doi           String?  @unique
-    title         String   @unique
-    authors       String[]
-    fullAuthors   String?
-    url           String
-    preprint      String?
-    shortAbstract String
-    fullAbstract  String?
-    source        String
+  id            Int      @id @default(autoincrement())
+  doi           String?  @unique
+  title         String   @unique
+  authors       String[]
+  fullAuthors   String?
+  url           String
+  preprint      String?
+  shortAbstract String
+  fullAbstract  String?
+  source        String
+  scrapeDate    DateTime @default(now())
+}
+
+model ScrapeHistory {
+  id            Int      @id @default(autoincrement())
+  links         String
+  errors        String
+  scrapeDate    DateTime @default(now())
 }

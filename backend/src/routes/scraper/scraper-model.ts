@@ -2,33 +2,83 @@ import playwright, { ElementHandle, Page } from 'playwright-chromium';
 import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
+import { ScrapeHistory } from './scraper';
+
 /*
 	testing: https://2022.splashcon.org/track/splash-2022-oopsla?#event-overview
 https://dl.acm.org/doi/proceedings/10.1145/3475738
  */
+let errors = '';
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
 		const urlsArray = urls.trim().split('\n');
-
 		// go through each URL and check what website it belongs to, then scrape accordingly
 		for (const url of urlsArray) {
 			// eslint-disable-next-line no-await-in-loop
 			if (await isAcmUrl(url.trim())) {
 				// TODO: for testing purposes just console log now
-				// logs out true if the scraping was succesful, false otherwise
+				// logs out true if the scraping was successful, false otherwise
 				await scrapeListOfAcmPapers(url.trim()).then((r) => console.log(r));
 			} else if (await isRschrUrl(url.trim())) {
 				await scrapeListOfRschrPapers(url.trim()).then((r) => console.log(r));
 			}
 		}
+		await uploadScrapeHistoryToDatabase(urls);
+		await cleanScrapeHistoryDatabase();
+		errors = '';
 		return true;
 	} catch (e) {
+		await uploadScrapeHistoryToDatabase(urls);
+		errors = '';
 		console.error(e);
 		console.log(logToFile(e));
 		return false;
 	}
 }
 
+async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
+	if (urls.length === 0) {
+		return false;
+	}
+	if (errors === '') {
+		errors = 'No errors.';
+	}
+	const errorsArray = errors.split('\n');
+	const errorsSet: Set<string> = new Set(errorsArray);
+	errorsSet.delete('');
+	try {
+		await prisma.scrapeHistory.create({
+			data: {
+				links: urls,
+				errors: Array.from(errorsSet).toString(),
+			},
+		});
+		errors = '';
+		return true;
+	} catch (e) {
+		errors = '';
+		console.log(logToFile(e));
+		return false;
+	}
+}
+
+async function cleanScrapeHistoryDatabase(): Promise<boolean> {
+	const date = new Date();
+	date.setDate(date.getDate() - 7); // delete records that are 7 days or older
+	try {
+		await prisma.scrapeHistory.deleteMany({
+			where: {
+				scrapeDate: {
+					lte: date,
+				},
+			},
+		});
+		return true;
+	} catch (e) {
+		console.log(logToFile(e));
+		return false;
+	}
+}
 async function isAcmUrl(url: string): Promise<boolean> {
 	return url.includes('/dl.acm.org/');
 }
@@ -63,6 +113,7 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 				await page.click('.removed-items-count', { timeout: 1000 });
 			} catch (error) {
 				if (error instanceof playwright.errors.TimeoutError) {
+					errors += 'Expand authors button could not be clicked on acm.\n';
 					console.log('Expand authors button could not be clicked...');
 					console.log(logToFile(error));
 				}
@@ -94,11 +145,13 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 					),
 				);
 			} catch (e) {
+				errors += 'Could not scrape some content on acm.\n';
 				// ignore entry
 			}
 		}
 		return await uploadPapersToDatabase(papers);
 	} catch (error) {
+		errors += 'Could not scrape website on acm.\n';
 		return false;
 	} finally {
 		await browser.close();
@@ -176,6 +229,7 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 
 		return await uploadPapersToDatabase(papers);
 	} catch (error) {
+		errors += 'Could not scrape website on researchr.\n';
 		console.error(error);
 		console.log(logToFile(error));
 		return false;
@@ -199,6 +253,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await urlContainer.getAttribute('href');
 		link = aux == null ? '' : aux;
 	} catch (e) {
+		errors += 'Could not scrape link for researchr.\n';
 		if (e instanceof playwright.errors.TimeoutError) {
 			link = '';
 		}
@@ -212,6 +267,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await titleContainer.textContent();
 		title = aux == null ? '' : aux;
 	} catch (e) {
+		errors += 'Could not scrape title for researchr.\n';
 		if (e instanceof playwright.errors.TimeoutError) {
 			title = '';
 		}
@@ -225,6 +281,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await abstractContainer.textContent();
 		abstract = aux == null ? '' : aux;
 	} catch (e) {
+		errors += 'Could not scrape abstract for researchr.\n';
 		if (e instanceof playwright.errors.TimeoutError) {
 			abstract = '';
 		}
@@ -240,6 +297,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await doiContainer.getAttribute('href');
 		doi = aux == null ? '' : aux;
 	} catch (e) {
+		errors += 'Could not scrape doi for researchr.\n';
 		if (e instanceof playwright.errors.TimeoutError) {
 			doi = '';
 		}
@@ -255,6 +313,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await preprintContainer.getAttribute('href');
 		preprint = aux == null ? '' : aux;
 	} catch (e) {
+		errors += `Could not scrape preprint for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			preprint = '';
 		}
@@ -276,6 +335,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		});
 		if (authors == null) authors = [];
 	} catch (e) {
+		errors += 'Could not scrape authors for researchr.\n';
 		if (e instanceof playwright.errors.TimeoutError) {
 			authors = [];
 		}
@@ -382,9 +442,29 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 				});
 			}
 		} catch (e) {
+			errors += 'Error while uploading to database.\n';
 			console.log(logToFile(e));
 		}
 	}
 	// TODO: add some kind of check in case some papers were not actually created, maybe in the try catch above
 	return true;
+}
+
+export async function getHistory(): Promise<ScrapeHistory> {
+	let history: ScrapeHistory;
+	try {
+		history = await prisma.scrapeHistory
+			.findMany({
+				orderBy: {
+					scrapeDate: 'desc',
+				},
+				take: 10,
+			})
+			.then((historyArray) => <ScrapeHistory>historyArray);
+	} catch (e) {
+		console.error(e);
+		console.log(logToFile(e));
+		history = [];
+	}
+	return history;
 }

@@ -41,6 +41,9 @@ it('GET papers should return an array with one paper', async () => {
 		source: 'source',
 	};
 	paper = await insertTestPaper(testPaper);
+	if (paper.scrapeDate instanceof Date) {
+		paper.scrapeDate = paper.scrapeDate.toISOString();
+	}
 
 	const response = await request.get(papersEndpoint);
 
