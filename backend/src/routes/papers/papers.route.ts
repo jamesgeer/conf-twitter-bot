@@ -1,13 +1,31 @@
 import Router from '@koa/router';
-import { papers, searchedPapers } from './papers-controller';
+import koaBody from 'koa-body';
+import { papers, searchedPapers, updatePaper } from './papers-controller';
 
 const papersRouter = new Router({ prefix: '/papers' });
 
-// GET /api/papers
+/**
+ * Get all papers
+ *
+ * GET /api/papers
+ */
 papersRouter.get('/', papers);
 
-// GET /api/papers/:search?/:source?
+/**
+ * Get papers based on filter options
+ * ?search: optional search string
+ * ?source: optional source e.g. acm
+ *
+ * GET /api/papers/:search?/:source?
+ */
 papersRouter.get('/filter/:search?/:source?', searchedPapers);
+
+/**
+ * Update paper with ID
+ *
+ * PATCH: /api/papers/:id
+ */
+papersRouter.patch('/papers/:id', koaBody(), updatePaper);
 
 // GET /api/papers/:paperId
 // papersRouter.get('/:paperId', paper);

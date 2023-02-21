@@ -12,7 +12,6 @@ export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('searchedPapers run');
 	const obj: PaperSearch = { ...ctx.request.query };
 
 	const { search, source } = obj;
@@ -23,6 +22,15 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 	ctx.status = HttpStatus.OK;
 	ctx.body = papers;
 };
+
+export const updatePaper = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id } = ctx.params;
+	const { title, content } = ctx.request.body;
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = ;
+};
+
 /*
 export const paper = async (ctx: ParameterizedContext): Promise<void> => {
 	const { paperId } = ctx.params;
