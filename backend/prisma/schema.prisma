@@ -87,15 +87,9 @@ model TwitterOAuth {
 }
 
 model Paper {
-  id             Int      @id @default(autoincrement())
-  AcmPaper       AcmPaper?
-  ResearchrPaper ResearchrPaper?
-}
-
-model AcmPaper {
   id            Int      @id @default(autoincrement())
-  doi           String   @unique
-  type          String
+  doi           String?
+  type          String?
   title         String
   authors       String[]
   fullAuthors   String?
@@ -109,24 +103,6 @@ model AcmPaper {
   downloads     Int?
   source        String
   scrapeDate    DateTime @default(now())
-  paper         Paper @relation(fields: [paperId], references: [id])
-  paperId       Int   @unique
-}
-
-model ResearchrPaper {
-  id            Int      @id @default(autoincrement())
-  doi           String?  @unique
-  title         String   @unique
-  authors       String[]
-  fullAuthors   String?
-  url           String
-  preprint      String?
-  shortAbstract String
-  fullAbstract  String?
-  source        String
-  scrapeDate    DateTime @default(now())
-  paper         Paper @relation(fields: [paperId], references: [id])
-  paperId       Int   @unique
 }
 
 model ScrapeHistory {
