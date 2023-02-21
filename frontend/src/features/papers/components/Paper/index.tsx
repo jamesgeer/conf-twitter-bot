@@ -16,6 +16,7 @@ import {
 	Button,
 	Link,
 } from '@chakra-ui/react';
+import uuid from 'react-uuid';
 
 interface Props {
 	paper: PaperType;
@@ -26,45 +27,36 @@ const Paper = ({ paper }: Props) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const paperSourceButton = () => {
-		let buttonText;
-
-		switch (paper.source) {
-			case 'acm':
-				buttonText = 'ACM';
-				break;
-
-			case 'researchr':
-				buttonText = 'ResearchR';
-				break;
-
-			default:
-				buttonText = 'SRC';
-		}
-
 		return (
 			<Link href={url} isExternal>
-				<Button colorScheme="gray">{buttonText}</Button>
+				Source
 			</Link>
 		);
+	};
+
+	// maps over array and puts a comma after each author except for the last
+	const paperModalAuthors = () => {
+		return authors
+			.map<React.ReactNode>((author) => {
+				// TODO: internal link to display author's papers
+				return (
+					<Link key={uuid()} href="#">
+						{author}
+					</Link>
+				);
+			})
+			.reduce((prev, curr) => [prev, ', ', curr]);
 	};
 
 	const paperModalContent = () => {
 		return (
 			<SimpleGrid>
-				<ModalHeader></ModalHeader>
 				<ModalBody>
-					<Box>
-						<Heading as="h2" size="md">
-							{title}
-						</Heading>
+					<Box paddingBottom="24px">
 						<Box>{paperSourceButton()}</Box>
+						<Box>{paperModalAuthors()}</Box>
 					</Box>
-					<Box>
-						<Heading as="h6" size="xs">
-							{fullAbstract ? 'Full Abstract' : 'Short Abstract'}
-						</Heading>
-						{fullAbstract ? fullAbstract : shortAbstract}
-					</Box>
+					<Box>{fullAbstract ? fullAbstract : shortAbstract}</Box>
 				</ModalBody>
 			</SimpleGrid>
 		);
@@ -74,8 +66,9 @@ const Paper = ({ paper }: Props) => {
 		return (
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
-				<ModalContent>
+				<ModalContent maxW="740px" padding="24px">
 					<ModalCloseButton />
+					<ModalHeader>{title}</ModalHeader>
 					{paperModalContent()}
 				</ModalContent>
 			</Modal>
