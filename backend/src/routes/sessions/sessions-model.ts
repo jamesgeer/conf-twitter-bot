@@ -7,7 +7,7 @@ export const validSessionCookie = (requestCookie: string, sessionCookie: string)
 	if (requestCookie && requestCookie.length > 0) {
 		// extract the ConfTwBot cookie (request may contain many cookies)
 		// @ts-ignore
-		const confTwBotCookie = requestCookie.split('; ConfTwBot=').pop().split(';')[0];
+		const confTwBotCookie = requestCookie.split('; ConfTwBot=').pop().split(';')[0].replace('ConfTwBot=', '');
 		// if the confTwBot cookie is missing, then the variable will contain an empty string
 		if (confTwBotCookie.length > 0) {
 			// verify browser cookie matches existing session cookie

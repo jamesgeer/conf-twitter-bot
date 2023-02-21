@@ -24,11 +24,11 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 };
 
 export const updatePaper = async (ctx: ParameterizedContext): Promise<void> => {
-	const { id } = ctx.params;
-	const { title, content } = ctx.request.body;
+	// const { id } = ctx.params;
+	// const { title, content } = ctx.request.body;
 
 	ctx.status = HttpStatus.OK;
-	ctx.body = ;
+	ctx.body = '';
 };
 
 /*

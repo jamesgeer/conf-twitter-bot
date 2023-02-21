@@ -2,6 +2,7 @@ import { Tweet, Tweets as TweetArray } from '../types';
 import { useTweets } from '../api/getTweets';
 import SingleTweet from './SingleTweet';
 import { useEffect, useState } from 'react';
+import TweetToggles from './TweetToggles';
 
 const Tweets = () => {
 	const [isList, setListActive] = useState({

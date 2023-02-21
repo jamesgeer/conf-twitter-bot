@@ -71,21 +71,21 @@ export const insertTestPaper = async (acmPaper: AcmPaper): Promise<AcmPaper> =>
 		data: acmPaper,
 	});
 
-export const updateTweetContent = async (paperId: number, title: string): Promise<AcmPaper | ServerError> => {
-	try {
-		return await prisma.acmPaper.update({
-			where: {
-				id: paperId,
-			},
-			data: {
-				title,
-			},
-		});
-	} catch (e) {
-		if (e instanceof Prisma.PrismaClientKnownRequestError) {
-			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
-		}
-		console.log(logToFile(e));
-		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
-	}
-};
+// export const updateTweetContent = async (paperId: number, title: string): Promise<AcmPaper | ServerError> => {
+// 	try {
+// 		return await prisma.acmPaper.update({
+// 			where: {
+// 				id: paperId,
+// 			},
+// 			data: {
+// 				title,
+// 			},
+// 		});
+// 	} catch (e) {
+// 		if (e instanceof Prisma.PrismaClientKnownRequestError) {
+// 			return new ServerError(HttpStatus.NOT_FOUND, `Tweet with ID ${tweetId} not found.`);
+// 		}
+// 		console.log(logToFile(e));
+// 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
+// 	}
+// };
