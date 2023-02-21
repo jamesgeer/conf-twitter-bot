@@ -55,6 +55,7 @@ const Paper = ({ paper }: Props) => {
 					<Box paddingBottom="24px">
 						<Box>{paperSourceButton()}</Box>
 						<Box>{paperModalAuthors()}</Box>
+						<Box>Published: March 2021, Pages: 10-15, Downloads: 76</Box>
 					</Box>
 					<Box>{fullAbstract ? fullAbstract : shortAbstract}</Box>
 				</ModalBody>
@@ -87,16 +88,16 @@ const Paper = ({ paper }: Props) => {
 				{title}
 			</Heading>
 			<HStack spacing="24px" className="mt-3">
-				<Box className="flex">
+				<Box className="flex" title="Publish date">
 					<IconCalendar className="mr-1" /> Mar '21
 				</Box>
-				<Box className="flex">
+				<Box className="flex" title="Authors">
 					<IconUsers className="mr-1" /> {authors.length}
 				</Box>
-				<Box className="flex">
+				<Box className="flex" title="Pages">
 					<IconStack className="mr-1" /> 10-15
 				</Box>
-				<Box className="flex">
+				<Box className="flex" title="Downloads">
 					<IconTimeline className="mr-1" /> 76
 				</Box>
 			</HStack>
