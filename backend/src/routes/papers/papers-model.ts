@@ -1,6 +1,4 @@
-import { Prisma } from '@prisma/client';
-import HttpStatus from 'http-status';
-import { AcmPaper, Papers, PaperSearchDB } from './papers';
+import { Paper, Papers, PaperSearchDB } from './papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
 import { Tweet } from '../tweets/tweets';
@@ -13,9 +11,7 @@ export async function getPapers(): Promise<Papers> {
 	try {
 		// get all Acm papers and all Researchr papers
 		// https://github.com/prisma/prisma/discussions/4136 would be useful, but not possible here :(
-		const acmPapers = await prisma.acmPaper.findMany().then((paperArray) => <Papers>paperArray);
-		const rschrPapers = await prisma.researchrPaper.findMany().then((paperArray) => <Papers>paperArray);
-		papers = acmPapers.concat(rschrPapers);
+		papers = await prisma.paper.findMany({}).then((papersArr) => <Papers>papersArr);
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));
@@ -25,38 +21,24 @@ export async function getPapers(): Promise<Papers> {
 }
 
 export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
-	console.log(params);
-
 	try {
-		const acmPapers = await prisma.acmPaper
+		searchedPapers = await prisma.paper
 			.findMany({
 				where: {
-					title: {
-						contains: params.title,
-						mode: 'insensitive',
-					},
-					source: {
-						equals: params.source,
-					},
+					OR: [
+						{
+							title: {
+								contains: params.title,
+								mode: 'insensitive',
+							},
+							source: {
+								equals: params.source,
+							},
+						},
+					],
 				},
 			})
-			.then((paperArray) => <Papers>paperArray);
-
-		const rschrPapers = await prisma.researchrPaper
-			.findMany({
-				where: {
-					title: {
-						contains: params.title,
-						mode: 'insensitive',
-					},
-					source: {
-						equals: params.source,
-					},
-				},
-			})
-			.then((paperArray) => <Papers>paperArray);
-
-		searchedPapers = acmPapers.concat(rschrPapers);
+			.then((papersArr) => <Papers>papersArr);
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));
@@ -65,9 +47,9 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers |
 	return searchedPapers;
 }
 
-export const insertTestPaper = async (acmPaper: AcmPaper): Promise<AcmPaper> =>
+export const insertTestPaper = async (acmPaper: Paper): Promise<Paper> =>
 	// @ts-ignore
-	prisma.acmPaper.create({
+	prisma.paper.create({
 		data: acmPaper,
 	});
 

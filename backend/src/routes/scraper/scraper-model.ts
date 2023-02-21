@@ -1,5 +1,5 @@
 import playwright, { ElementHandle, Page } from 'playwright-chromium';
-import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
+import { Paper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
 import { ScrapeHistory } from './scraper';
@@ -166,7 +166,7 @@ async function extractAcmPaper(
 	shortAbstracts: ElementHandle<SVGElement | HTMLElement>[],
 	citations: ElementHandle<SVGElement | HTMLElement>[],
 	downloads: ElementHandle<SVGElement | HTMLElement>[],
-): Promise<AcmPaper> {
+): Promise<Paper> {
 	// GRAB AUTHORS
 	const authors = await authorContainers[i].$$eval('li a', (authorElm) => {
 		const data: string[] = [];
@@ -238,7 +238,7 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 	}
 }
 
-async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper> {
+async function extractRschrPaper(index: number, page: Page): Promise<Paper> {
 	// open the modal
 	await page.click(`div#event-overview tbody tr:nth-child(${index + 1}) td:nth-child(2) a`, {
 		timeout: 1000,
@@ -253,7 +253,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await urlContainer.getAttribute('href');
 		link = aux == null ? '' : aux;
 	} catch (e) {
-		errors += 'Could not scrape link for researchr.\n';
+		errors += `Could not scrape link for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			link = '';
 		}
@@ -267,7 +267,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await titleContainer.textContent();
 		title = aux == null ? '' : aux;
 	} catch (e) {
-		errors += 'Could not scrape title for researchr.\n';
+		errors += `Could not scrape title for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			title = '';
 		}
@@ -281,7 +281,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await abstractContainer.textContent();
 		abstract = aux == null ? '' : aux;
 	} catch (e) {
-		errors += 'Could not scrape abstract for researchr.\n';
+		errors += `Could not scrape abstract for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			abstract = '';
 		}
@@ -297,7 +297,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await doiContainer.getAttribute('href');
 		doi = aux == null ? '' : aux;
 	} catch (e) {
-		errors += 'Could not scrape doi for researchr.\n';
+		errors += `Could not scrape doi for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			doi = '';
 		}
@@ -335,7 +335,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		});
 		if (authors == null) authors = [];
 	} catch (e) {
-		errors += 'Could not scrape authors for researchr.\n';
+		errors += `Could not scrape authors for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			authors = [];
 		}
@@ -369,77 +369,37 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 	}
 	for (const thisPaper of papers) {
 		try {
-			// eslint-disable-next-line no-await-in-loop
-			if ('type' in thisPaper) {
-				await prisma.acmPaper.upsert({
-					where: {
-						doi: thisPaper.doi,
-					},
-					update: {
-						type: thisPaper.type,
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						monthYear: thisPaper.monthYear,
-						pages: thisPaper.pages,
-						citations: thisPaper.citations,
-						downloads: thisPaper.downloads,
-						source: thisPaper.source,
-					},
-					create: {
-						type: thisPaper.type,
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						monthYear: thisPaper.monthYear,
-						pages: thisPaper.pages,
-						citations: thisPaper.citations,
-						downloads: thisPaper.downloads,
-						source: thisPaper.source,
-					},
-				});
-			} else {
-				// doi is unique and some pages don't actually have it
-				if (thisPaper.doi === '') {
-					thisPaper.doi = null;
-				}
-				// eslint-disable-next-line no-await-in-loop
-				await prisma.researchrPaper.upsert({
-					where: {
-						title: thisPaper.title,
-					},
-					update: {
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						source: thisPaper.source,
-					},
-					create: {
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						source: thisPaper.source,
-					},
-				});
+			switch (thisPaper.source) {
+				case 'acm':
+					// acm always has a doi, so it's easy to find
+					// have to do it this way because upsert requires unique columns
+					await prisma.paper.deleteMany({
+						where: {
+							AND: {
+								doi: thisPaper.doi,
+								source: thisPaper.source,
+							},
+						},
+					});
+					await prisma.paper.create({
+						data: thisPaper,
+					});
+					break;
+				case 'rschr':
+					await prisma.paper.deleteMany({
+						where: {
+							AND: {
+								title: thisPaper.title,
+								source: thisPaper.source,
+							},
+						},
+					});
+					await prisma.paper.create({
+						data: thisPaper,
+					});
+					break;
+				default:
+					errors += `Could not trace website source. ${thisPaper.url}\n`;
 			}
 		} catch (e) {
 			errors += 'Error while uploading to database.\n';
