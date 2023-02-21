@@ -11,6 +11,9 @@ import SignUp from './SignUp';
 import LoginSuccess from '../features/oauths/components/LoginSuccess';
 import { AccountContext } from '../features/accounts/context/AccountContext';
 import { AccountContextProps } from '../features/accounts/types';
+import Tweets from '../features/tweets/components/Tweets';
+import PaperSearch from '../features/papers/components/PaperSearch';
+import Scraper from '../features/scraper/components/Scraper';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
@@ -54,7 +57,12 @@ export default function Index() {
 				<Route path="login" element={<Login appLogin={setAppLoggedIn} />} />
 				<Route path="select-account" element={<SelectAccount />} />
 				<Route path="twitter-oauth-callback" element={<LoginSuccess />} />
-				<Route path="/" element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />} />
+				<Route path="/" element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />}>
+					<Route path="tweets" element={<Tweets />} />
+					<Route path="papers" element={<PaperSearch />} />
+					<Route path="scraper" element={<Scraper />} />
+				</Route>
+
 				{/*<Route path="*" element={<PageNotFound />} />*/}
 			</Routes>
 		</>
