@@ -3,7 +3,7 @@ import http from 'http';
 import HttpStatus from 'http-status';
 import { app } from '../../../app';
 import { insertTestPaper } from '../papers-model';
-import { AcmPaper } from '../papers';
+import { Paper } from '../papers';
 import prisma from '../../../../lib/prisma';
 
 const request = supertest(http.createServer(app.callback()));
@@ -11,16 +11,14 @@ const request = supertest(http.createServer(app.callback()));
 const papersEndpoint = '/api/papers';
 
 beforeAll(async () => {
-	await prisma.acmPaper.deleteMany({});
-	await prisma.researchrPaper.deleteMany({});
+	await prisma.paper.deleteMany({});
 });
 
 afterAll(async () => {
-	await prisma.acmPaper.deleteMany({});
-	await prisma.researchrPaper.deleteMany({});
+	await prisma.paper.deleteMany({});
 });
 
-let paper: AcmPaper;
+let paper: Paper;
 
 it('GET papers should return an empty array', async () => {
 	const response = await request.get(papersEndpoint);
@@ -30,7 +28,7 @@ it('GET papers should return an empty array', async () => {
 });
 
 it('GET papers should return an array with one paper', async () => {
-	const testPaper: AcmPaper = {
+	const testPaper: Paper = {
 		type: 'type',
 		title: 'javascript rocks',
 		authors: ['authors'],
@@ -46,7 +44,7 @@ it('GET papers should return an array with one paper', async () => {
 	}
 
 	const response = await request.get(papersEndpoint);
-
+	console.log(response.body);
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body).toEqual([paper]);
 });

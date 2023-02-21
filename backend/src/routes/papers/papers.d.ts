@@ -1,11 +1,11 @@
-export interface AcmPaper {
-	type: string;
+export interface Paper {
+	type?: string;
 
 	title: string;
 	authors: string[];
 	fullAuthors: string;
 
-	doi: string;
+	doi?: string;
 	url: string;
 	preprint?: string;
 
@@ -19,21 +19,6 @@ export interface AcmPaper {
 	downloads?: number;
 
 	source: string;
-	scrapeDate?: Date | string;
-}
-
-export interface RschrPaper {
-	title: string;
-	authors: string[];
-	fullAuthors?: string;
-	source: string;
-
-	doi?: string | null;
-	url: string;
-	preprint?: string;
-
-	shortAbstract: string;
-	fullAbstract?: string;
 	scrapeDate?: Date | string;
 }
 
@@ -52,4 +37,4 @@ export interface PaperSearchDB {
 //	fullAuthors: string;
 // }
 
-export type Papers = Array<AcmPaper | RschrPaper>;
+export type Papers = Array<Paper>;
