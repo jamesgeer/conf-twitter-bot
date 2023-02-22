@@ -16,11 +16,11 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 		for (const url of urlsArray) {
 			// eslint-disable-next-line no-await-in-loop
 			if (await isAcmUrl(url.trim())) {
-				// TODO: for testing purposes just console log now
-				// logs out true if the scraping was successful, false otherwise
 				await scrapeListOfAcmPapers(url.trim()).then((r) => console.log(r));
 			} else if (await isRschrUrl(url.trim())) {
 				await scrapeListOfRschrPapers(url.trim()).then((r) => console.log(r));
+			} else if (await isKarUrl(url.trim())){
+				await scrapeKarPaper(url.trim()).then((r) => console.log(r));
 			}
 		}
 		await uploadScrapeHistoryToDatabase(urls);
@@ -81,6 +81,10 @@ async function cleanScrapeHistoryDatabase(): Promise<boolean> {
 }
 async function isAcmUrl(url: string): Promise<boolean> {
 	return url.includes('/dl.acm.org/');
+}
+
+async function isKarUrl(url: string): Promise<boolean> {
+	return url.includes('/kar.kent.ac.uk/');
 }
 
 async function isRschrUrl(url: string): Promise<boolean> {
