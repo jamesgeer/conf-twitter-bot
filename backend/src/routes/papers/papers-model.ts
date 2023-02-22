@@ -1,8 +1,6 @@
 import { Paper, Papers, PaperSearchDB } from './papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
-import { Tweet } from '../tweets/tweets';
-import { ServerError } from '../types';
 
 let papers: Papers;
 let searchedPapers: Papers;
@@ -47,10 +45,9 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers |
 	return searchedPapers;
 }
 
-export const insertTestPaper = async (acmPaper: Paper): Promise<Paper> =>
-	// @ts-ignore
+export const insertPaper = async (paper: Paper): Promise<Paper> =>
 	prisma.paper.create({
-		data: acmPaper,
+		data: paper,
 	});
 
 // export const updateTweetContent = async (paperId: number, title: string): Promise<AcmPaper | ServerError> => {
