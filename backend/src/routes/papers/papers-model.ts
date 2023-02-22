@@ -20,29 +20,26 @@ export async function getPapers(): Promise<Papers> {
 
 export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
 	try {
-		searchedPapers = await prisma.paper
-			.findMany({
-				where: {
-					OR: [
-						{
-							title: {
-								contains: params.title,
-								mode: 'insensitive',
-							},
-							source: {
-								equals: params.source,
-							},
+		return await prisma.paper.findMany({
+			where: {
+				OR: [
+					{
+						title: {
+							contains: params.title,
+							mode: 'insensitive',
 						},
-					],
-				},
-			})
-			.then((papersArr) => <Papers>papersArr);
+						source: {
+							equals: params.source,
+						},
+					},
+				],
+			},
+		});
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));
-		searchedPapers = [];
 	}
-	return searchedPapers;
+	return [];
 }
 
 export const insertPaper = async (paper: Paper): Promise<Paper> =>

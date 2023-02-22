@@ -1,4 +1,4 @@
-import { AcmPaper, RschrPaper, Papers } from '../types';
+import { Papers } from '../types';
 import { getFilteredPapers, usePapers } from '../api/getPapers';
 import FilterPapers from './FilterPapers';
 import React, { useEffect, useState } from 'react';

@@ -13,6 +13,7 @@ const PaperList = ({ papers }: Interface) => {
 		return <p>No papers to display.</p>;
 	}
 
+	console.log(papers);
 	const paperList = papers.map((paper: PaperType) => <Paper key={uuid()} paper={paper} />);
 
 	return (
