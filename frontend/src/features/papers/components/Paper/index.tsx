@@ -14,9 +14,10 @@ import {
 	ModalBody,
 	SimpleGrid,
 	Button,
-	Link,
+	Link as ChakraLink,
 } from '@chakra-ui/react';
 import uuid from 'react-uuid';
+import { Link } from 'react-router-dom';
 
 interface Props {
 	paper: PaperType;
@@ -28,9 +29,9 @@ const Paper = ({ paper }: Props) => {
 
 	const paperSourceButton = () => {
 		return (
-			<Link href={url} isExternal>
+			<ChakraLink href={url} isExternal>
 				Source
-			</Link>
+			</ChakraLink>
 		);
 	};
 
@@ -40,7 +41,7 @@ const Paper = ({ paper }: Props) => {
 			.map<React.ReactNode>((author) => {
 				// TODO: internal link to display author's papers
 				return (
-					<Link key={uuid()} href="#">
+					<Link key={uuid()} to={author.replace(' ', '-').toLowerCase()}>
 						{author}
 					</Link>
 				);

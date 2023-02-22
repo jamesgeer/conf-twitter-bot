@@ -14,6 +14,7 @@ import { AccountContextProps } from '../features/accounts/types';
 import Tweets from '../features/tweets/components/Tweets';
 import PaperSearch from '../features/papers/components/PaperSearch';
 import Scraper from '../features/scraper/components/Scraper';
+import AuthorPapers from '../features/papers/components/AuthorPapers';
 
 export default function Index() {
 	const [appLoggedIn, setAppLoggedIn] = useState(false);
@@ -60,6 +61,7 @@ export default function Index() {
 				<Route path="/" element={appLoggedIn && twitterLoggedIn ? <Dashboard /> : <Navigate to="login" />}>
 					<Route path="tweets" element={<Tweets />} />
 					<Route path="papers" element={<PaperSearch />} />
+					<Route path="papers/:author" element={<AuthorPapers />} />
 					<Route path="scraper" element={<Scraper />} />
 				</Route>
 
