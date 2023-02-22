@@ -27,8 +27,8 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 export const authorsPapers = async (ctx: ParameterizedContext): Promise<void> => {
 	const { author }: { author: string } = ctx.params;
 
-	// unhandled case with . and - in name
-	const authorFormatted = author.replace('-', ' ');
+	// unhandled case with - in name
+	const authorFormatted = author.replace(/-/g, ' ');
 	const name = authorFormatted.split(' ');
 
 	for (let i = 0; i < name.length; i++) {
