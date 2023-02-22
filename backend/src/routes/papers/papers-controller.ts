@@ -1,10 +1,10 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getPapers, getSearchedPapers } from './papers-model';
+import { getAuthorsPapers, getPapers, getSearchedPapers } from './papers-model';
 import { PaperSearch, PaperSearchDB } from './papers';
 
 export const papers = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('papers run');
+	// console.log('papers run');
 	const papers = await getPapers();
 
 	ctx.status = HttpStatus.OK;
@@ -12,13 +12,22 @@ export const papers = async (ctx: ParameterizedContext): Promise<void> => {
 };
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('searchedPapers run');
+	// console.log('searchedPapers run');
 	const obj: PaperSearch = { ...ctx.request.query };
 
 	const { search, source } = obj;
 	const queryForDb: PaperSearchDB = { title: search, source };
 
 	const papers = await getSearchedPapers(queryForDb);
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = papers;
+};
+
+export const authorsPapers = async (ctx: ParameterizedContext): Promise<void> => {
+	const { author }: { author: string } = ctx.params;
+
+	const papers = await getAuthorsPapers(author);
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = papers;
