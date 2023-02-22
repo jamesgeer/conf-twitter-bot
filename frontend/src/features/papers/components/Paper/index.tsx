@@ -41,7 +41,8 @@ const Paper = ({ paper }: Props) => {
 			.map<React.ReactNode>((author) => {
 				// TODO: internal link to display author's papers
 				return (
-					<Link key={uuid()} to={author.replace(' ', '-').toLowerCase()}>
+					//changing to react Link ruined styling of link
+					<Link key={uuid()} to={'/papers/' + author.replace(' ', '-').toLowerCase()}>
 						{author}
 					</Link>
 				);

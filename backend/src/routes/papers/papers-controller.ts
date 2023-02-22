@@ -27,7 +27,17 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 export const authorsPapers = async (ctx: ParameterizedContext): Promise<void> => {
 	const { author }: { author: string } = ctx.params;
 
-	const papers = await getAuthorsPapers(author);
+	// unhandled case with . and - in name
+	const authorFormatted = author.replace('-', ' ');
+	const name = authorFormatted.split(' ');
+
+	for (let i = 0; i < name.length; i++) {
+		name[i] = name[i][0].toUpperCase() + name[i].substring(1);
+	}
+
+	const authorParam = name.join(' ');
+
+	const papers = await getAuthorsPapers(authorParam);
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = papers;
