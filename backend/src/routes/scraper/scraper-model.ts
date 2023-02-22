@@ -432,3 +432,41 @@ export async function getHistory(): Promise<ScrapeHistory> {
 	}
 	return history;
 }
+
+// returns true if successfully scraped, false otherwise
+async function scrapeKarPaper(url: string): Promise<boolean> {
+	const browser = await playwright.chromium.launch({
+		headless: true, // setting this to true will not run the UI
+	});
+	try {
+		// opens a page
+		const page = await browser.newPage();
+
+		// goes to that URL
+		await page.goto(url);
+		// scrape the data
+		// scrape title
+		let title = '';
+		try {
+			const titleContainer = page.locator('h1');
+			await titleContainer.waitFor({ timeout: 500 });
+			const aux: string | null = await titleContainer.textContent();
+			title = aux == null ? '' : aux.trim();
+		} catch (e) {
+			errors += `Could not scrape title for ${page.url()}.\n`;
+			if (e instanceof playwright.errors.TimeoutError) {
+				title = '';
+			}
+		}
+		console.log(title);
+
+		let papers : Papers = [];
+		return true;
+		//return await uploadPapersToDatabase(papers);
+	} catch (error) {
+		errors += 'Could not scrape website on KAR.\n';
+		return false;
+	} finally {
+		await browser.close();
+	}
+}
