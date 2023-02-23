@@ -17,6 +17,23 @@ export async function getPapers(): Promise<Papers> {
 	}
 }
 
+export const getPaper = async (paperId: number): Promise<Paper | ServerError> => {
+	try {
+		const result = await prisma.paper.findUnique({
+			where: {
+				id: paperId,
+			},
+		});
+		if (result) {
+			return result;
+		}
+		return new ServerError(HttpStatus.NOT_FOUND, `Paper with ID ${paperId} not found.`);
+	} catch (e) {
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get tweet due to server problem.');
+	}
+};
+
 export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
 	try {
 		return await prisma.paper.findMany({
@@ -92,5 +109,24 @@ export const updatePaper = async (paperId: number, updateData: UpdatePaperType):
 		}
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to update tweet due to server problem.');
+	}
+};
+
+export const deletePaper = async (paperId: number): Promise<Paper | ServerError> => {
+	try {
+		return await prisma.paper.delete({
+			where: {
+				id: paperId,
+			},
+		});
+	} catch (e) {
+		if (e instanceof Prisma.PrismaClientKnownRequestError) {
+			return new ServerError(
+				HttpStatus.NOT_FOUND,
+				`Paper with ID ${paperId} not found: either already deleted or received incorrect/invalid ID.`,
+			);
+		}
+		console.log(logToFile(e));
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete paper due to server problem.');
 	}
 };

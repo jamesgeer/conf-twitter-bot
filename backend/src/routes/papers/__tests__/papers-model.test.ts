@@ -1,15 +1,9 @@
-import supertest from 'supertest';
-import http from 'http';
 import HttpStatus from 'http-status';
 import { faker } from '@faker-js/faker';
-import { app } from '../../../app';
-import { getPapers, insertPaper, updatePaper } from '../papers-model';
+import { deletePaper, getPaper, getPapers, insertPaper, updatePaper } from '../papers-model';
 import { Paper, Papers } from '../papers';
 import prisma from '../../../../lib/prisma';
-
-const request = supertest(http.createServer(app.callback()));
-
-const papersEndpoint = '/api/papers';
+import { ServerError } from '../../types';
 
 beforeAll(async () => {
 	await prisma.paper.deleteMany({});
@@ -54,8 +48,32 @@ it('update paper should return paper with updated fields', async () => {
 		source: 'abc',
 	};
 
-	const result = <Paper>await updatePaper(paper.id!, updatedFields);
+	const paperId = paper.id ? paper.id : 0;
+	const result = <Paper>await updatePaper(paperId, updatedFields);
 	expect(result.id).toEqual(paper.id);
 	expect(result.title).toEqual('cheese plumbs blueberries');
 	expect(result.source).toEqual('abc');
+
+	paper = result;
+});
+
+it('get paper with id should return paper', async () => {
+	const paperId = paper.id ? paper.id : 0;
+	const result = <Paper>await getPaper(paperId);
+
+	expect(result).toEqual(paper);
+});
+
+it('delete paper should return deleted paper', async () => {
+	const paperId = paper.id ? paper.id : 0;
+	const result = <Paper>await deletePaper(paperId);
+
+	expect(result).toEqual(paper);
+});
+
+it('get deleted paper should not found error', async () => {
+	const paperId = paper.id ? paper.id : 0;
+	const result = <ServerError>await getPaper(paperId);
+
+	expect(result.getStatusCode()).toEqual(HttpStatus.NOT_FOUND);
 });
