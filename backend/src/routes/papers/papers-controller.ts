@@ -1,10 +1,25 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getPapers, getSearchedPapers } from './papers-model';
+import { getPaper, getPapers, getSearchedPapers } from './papers-model';
 import { PaperSearch, PaperSearchDB } from './papers';
+import { ServerError } from '../types';
+import { handleServerError } from '../util';
+
+export const paper = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+	const paperId = +id;
+
+	const result = await getPaper(paperId);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
+};
 
 export const papers = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('papers run');
 	const papers = await getPapers();
 
 	ctx.status = HttpStatus.OK;
@@ -30,18 +45,3 @@ export const updatePaper = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.OK;
 	ctx.body = '';
 };
-
-/*
-export const paper = async (ctx: ParameterizedContext): Promise<void> => {
-	const { paperId } = ctx.params;
-	const paper = getPaper(parseInt(paperId, 10));
-
-	if (paper) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = paper;
-		return;
-	}
-
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'No paper with that ID exists.' };
-}; */
