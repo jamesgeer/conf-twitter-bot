@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { paper, papers, searchedPapers, patchPaper } from './papers-controller';
+import { paper, papers, searchedPapers, patchPaper, removePaper } from './papers-controller';
 
 const papersRouter = new Router({ prefix: '/papers' });
 
@@ -33,5 +33,12 @@ papersRouter.get('/filter/:search?/:source?', searchedPapers);
  * PATCH: /api/papers/:id
  */
 papersRouter.patch('/papers/:id', koaBody(), patchPaper);
+
+/**
+ * Delete paper with ID
+ *
+ * DELETE: /api/papers/:id
+ */
+papersRouter.delete('/papers/:id', removePaper);
 
 export default papersRouter;

@@ -1,6 +1,6 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getPaper, getPapers, getSearchedPapers, updatePaper, UpdatePaperType } from './papers-model';
+import { deletePaper, getPaper, getPapers, getSearchedPapers, updatePaper, UpdatePaperType } from './papers-model';
 import { PaperSearch, PaperSearchDB } from './papers';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
@@ -41,6 +41,19 @@ export const patchPaper = async (ctx: ParameterizedContext): Promise<void> => {
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = result;
+};
+
+export const removePaper = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+
+	const result = await deletePaper(+id);
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
 };
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
