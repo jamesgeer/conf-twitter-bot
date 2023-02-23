@@ -1,8 +1,15 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { papers, searchedPapers, updatePaper } from './papers-controller';
+import { paper, papers, searchedPapers, patchPaper } from './papers-controller';
 
 const papersRouter = new Router({ prefix: '/papers' });
+
+/**
+ * Get paper with ID
+ *
+ * GET: /api/papers/:id
+ */
+papersRouter.get('/papers/:id', paper);
 
 /**
  * Get all papers
@@ -25,9 +32,6 @@ papersRouter.get('/filter/:search?/:source?', searchedPapers);
  *
  * PATCH: /api/papers/:id
  */
-papersRouter.patch('/papers/:id', koaBody(), updatePaper);
-
-// GET /api/papers/:paperId
-// papersRouter.get('/:paperId', paper);
+papersRouter.patch('/papers/:id', koaBody(), patchPaper);
 
 export default papersRouter;

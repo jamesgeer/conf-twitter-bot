@@ -5,7 +5,7 @@ import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
 import { ServerError } from '../types';
 
-export async function getPapers(): Promise<Papers> {
+export async function getPapers(): Promise<Papers | ServerError> {
 	try {
 		// get all Acm papers and all Researchr papers
 		// https://github.com/prisma/prisma/discussions/4136 would be useful, but not possible here :(
@@ -13,7 +13,7 @@ export async function getPapers(): Promise<Papers> {
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));
-		return [];
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get tweets due to server problem.');
 	}
 }
 
