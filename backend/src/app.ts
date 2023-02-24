@@ -39,7 +39,9 @@ initLogToFile(); // initiate logging to file
 app.use(async (ctx, next) => {
 	try {
 		await next();
-		console.log(`${ctx.method} ${ctx.url} RESPONSE: ${ctx.response.status}`);
+		if(!TEST) {
+			console.log(`${ctx.method} ${ctx.url} RESPONSE: ${ctx.response.status}`);
+		}
 	} catch (error) {
 		console.error(error);
 		console.log(logToFile(error));

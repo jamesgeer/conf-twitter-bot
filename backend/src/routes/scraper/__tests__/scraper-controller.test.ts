@@ -2,7 +2,7 @@ import supertest from 'supertest';
 import http from 'http';
 import HttpStatus from 'http-status';
 import { app } from '../../../app';
-import { ScrapeHistory } from "../scraper";
+import { ScrapeHistoryElm } from "../scraper";
 import prisma from '../../../../lib/prisma';
 
 const request = supertest(http.createServer(app.callback()));
@@ -28,9 +28,17 @@ it('GET scrape history should return an empty array', async () => {
 });
 
 it('GET scrape history should return an array with one element', async () => {
-    
+    const scrapeTest : ScrapeHistoryElm = await prisma.scrapeHistory.create({
+        data: {
+            links: 'https://google.com',
+            errors: 'No errors.',
+        }
+    });
+    if (scrapeTest.scrapeDate instanceof Date) {
+        scrapeTest.scrapeDate = scrapeTest.scrapeDate.toISOString();
+    }
     const response = await request.get(scrapeHistoryEndpoint);
 
     expect(response.status).toEqual(HttpStatus.OK);
-    expect(response.body).toEqual([]);
+    expect(response.body).toEqual([scrapeTest]);
 });
