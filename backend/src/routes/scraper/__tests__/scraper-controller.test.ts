@@ -8,7 +8,7 @@ import prisma from '../../../../lib/prisma';
 const request = supertest(http.createServer(app.callback()));
 
 const scrapeHistoryEndpoint = '/api/scraper/history';
-//const scraperEndpoint = '/api/scraper/';
+// const scraperEndpoint = '/api/scraper/';
 
 beforeAll(async () => {
 	await prisma.paper.deleteMany({});
