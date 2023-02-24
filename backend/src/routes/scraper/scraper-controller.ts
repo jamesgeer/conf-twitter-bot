@@ -8,12 +8,11 @@ export const scrape = async (ctx: ParameterizedContext): Promise<void> => {
 
 	if (scraped) {
 		ctx.status = HttpStatus.OK;
-		ctx.body = { message: 'Successful scrape request.' };
-		return;
+		ctx.body = 'Successful scrape request.';
 	}
 
 	ctx.status = HttpStatus.NO_CONTENT;
-	ctx.body = { message: 'Unsuccessful scrape request.' };
+	ctx.body = 'Unsuccessful scrape request.';
 };
 
 export const history = async (ctx: ParameterizedContext): Promise<void> => {

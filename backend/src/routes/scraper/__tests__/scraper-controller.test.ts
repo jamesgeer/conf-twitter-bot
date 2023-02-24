@@ -8,7 +8,7 @@ import prisma from '../../../../lib/prisma';
 const request = supertest(http.createServer(app.callback()));
 
 const scrapeHistoryEndpoint = '/api/scraper/history';
-// const scraperEndpoint = '/api/scraper/';
+const scraperEndpoint = '/api/scraper/';
 
 beforeAll(async () => {
 	await prisma.paper.deleteMany({});
@@ -19,6 +19,8 @@ afterAll(async () => {
 	await prisma.paper.deleteMany({});
 	await prisma.scrapeHistory.deleteMany({});
 });
+
+// SCRAPE HISTORY CONTROLLER TESTS
 
 it('GET scrape history should return an empty array', async () => {
 	const response = await request.get(scrapeHistoryEndpoint);
@@ -41,4 +43,12 @@ it('GET scrape history should return an array with one element', async () => {
 
 	expect(response.status).toEqual(HttpStatus.OK);
 	expect(response.body).toEqual([scrapeTest]);
+});
+
+// PAPER SCRAPER CONTROLLER TESTS
+it('POST scrape should return false when given the wrong url', async () => {
+	const urls = 'bad urls';
+	const response = await request.post(scraperEndpoint).send({ urls });
+
+	expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 });

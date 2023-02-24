@@ -12,21 +12,36 @@ let errors = '';
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
 		const urlsArray = urls.trim().split('\n');
+		let finishedCorrectly = true;
 		// go through each URL and check what website it belongs to, then scrape accordingly
 		for (const url of urlsArray) {
 			// eslint-disable-next-line no-await-in-loop
 			if (await isAcmUrl(url.trim())) {
-				// TODO: for testing purposes just console log now
 				// logs out true if the scraping was successful, false otherwise
-				await scrapeListOfAcmPapers(url.trim()).then((r) => console.log(r));
+				const aux = await scrapeListOfAcmPapers(url.trim());
+				if (!aux) {
+					finishedCorrectly = false;
+				}
 			} else if (await isRschrUrl(url.trim())) {
-				await scrapeListOfRschrPapers(url.trim()).then((r) => console.log(r));
+				const aux = await scrapeListOfRschrPapers(url.trim());
+				if (!aux) {
+					finishedCorrectly = false;
+				}
+			} else {
+				finishedCorrectly = false;
+				errors += `Invalid paper link: ${url}\n`;
 			}
 		}
-		await uploadScrapeHistoryToDatabase(urls);
-		await cleanScrapeHistoryDatabase();
+		let aux = await uploadScrapeHistoryToDatabase(urls);
+		if (!aux) {
+			finishedCorrectly = false;
+		}
+		aux = await cleanScrapeHistoryDatabase();
+		if (!aux) {
+			finishedCorrectly = false;
+		}
 		errors = '';
-		return true;
+		return finishedCorrectly;
 	} catch (e) {
 		await uploadScrapeHistoryToDatabase(urls);
 		errors = '';
@@ -404,9 +419,9 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 		} catch (e) {
 			errors += 'Error while uploading to database.\n';
 			console.log(logToFile(e));
+			return false;
 		}
 	}
-	// TODO: add some kind of check in case some papers were not actually created, maybe in the try catch above
 	return true;
 }
 
