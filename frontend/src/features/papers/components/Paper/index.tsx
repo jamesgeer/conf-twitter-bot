@@ -1,39 +1,118 @@
-import { AcmPaper, RschrPaper } from '../../types';
-import { IconFileDescription, IconCircleLetterR, IconCircleLetterA } from '@tabler/icons';
-import { Button } from '@chakra-ui/react';
+import { Paper as PaperType } from '../../types';
+import { IconCalendar, IconUsers, IconStack, IconTimeline } from '@tabler/icons';
 import React from 'react';
+import {
+	Heading,
+	Box,
+	HStack,
+	useDisclosure,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalCloseButton,
+	ModalBody,
+	SimpleGrid,
+	Button,
+	Link,
+} from '@chakra-ui/react';
+import uuid from 'react-uuid';
 
 interface Props {
-	paper: AcmPaper | RschrPaper;
+	paper: PaperType;
 }
 
 const Paper = ({ paper }: Props) => {
-	const { title, authors, shortAbstract, url } = paper;
+	const { title, authors, url, shortAbstract, fullAbstract } = paper;
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const paperSourceButton = () => {
+		return (
+			<Link href={url} isExternal>
+				Source
+			</Link>
+		);
+	};
+
+	// maps over array and puts a comma after each author except for the last
+	const paperModalAuthors = () => {
+		return authors
+			.map<React.ReactNode>((author) => {
+				// TODO: internal link to display author's papers
+				return (
+					<Link key={uuid()} href="#">
+						{author}
+					</Link>
+				);
+			})
+			.reduce((prev, curr) => [prev, ', ', curr]);
+	};
+
+	const paperModalContent = () => {
+		return (
+			<SimpleGrid>
+				<ModalBody>
+					<Box paddingBottom="24px">
+						<Box>{paperSourceButton()}</Box>
+						<Box>{paperModalAuthors()}</Box>
+						<Box>
+							{paper.monthYear && `Published: ${paper.monthYear},`}{' '}
+							{paper.pages && `Pages: ${paper.pages},`}{' '}
+							{paper.downloads && `Downloads: ${paper.downloads}`}
+						</Box>
+					</Box>
+					<Box>{fullAbstract ? fullAbstract : shortAbstract}</Box>
+				</ModalBody>
+			</SimpleGrid>
+		);
+	};
+
+	const paperModal = () => {
+		return (
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent maxW="740px" padding="24px">
+					<ModalCloseButton />
+					<ModalHeader>{title}</ModalHeader>
+					{paperModalContent()}
+				</ModalContent>
+			</Modal>
+		);
+	};
 
 	return (
-		<div className="border-b border-slate-200 pb-4">
-			<header>
-				<h5 className="font-bold">{title}</h5>
-
-				<small className="text-slate-700 dark:text-slate-400">{authors.join(', ')}</small>
-			</header>
-			<div className="content pt-4">
-				<p>{shortAbstract}</p>
-			</div>
-			<div>
-				<a href={url} target="_blank" rel="noreferrer">
-					<Button>
-						<IconFileDescription />
-					</Button>
-					<Button hidden={paper.source === 'acm'}>
-						<IconCircleLetterR />
-					</Button>
-					<Button hidden={paper.source !== 'acm'}>
-						<IconCircleLetterA />
-					</Button>
-				</a>
-			</div>
-		</div>
+		<Box
+			borderWidth="1px"
+			rounded="md"
+			padding="5"
+			_hover={{ bg: 'var(--chakra-colors-gray-100)', cursor: 'pointer' }}
+			onClick={onOpen}
+		>
+			<Heading as="h4" size="md">
+				{title}
+			</Heading>
+			<HStack spacing="24px" className="mt-3">
+				{paper.monthYear && (
+					<Box className="flex" title="Publish date">
+						<IconCalendar className="mr-1" /> {paper.monthYear}
+					</Box>
+				)}
+				<Box className="flex" title="Authors">
+					<IconUsers className="mr-1" /> {authors.length}
+				</Box>
+				{paper.pages && (
+					<Box className="flex" title="Pages">
+						<IconStack className="mr-1" /> {paper.pages}
+					</Box>
+				)}
+				{paper.downloads && (
+					<Box className="flex" title="Downloads">
+						<IconTimeline className="mr-1" /> {paper.downloads}
+					</Box>
+				)}
+			</HStack>
+			{paperModal()}
+		</Box>
 	);
 };
 

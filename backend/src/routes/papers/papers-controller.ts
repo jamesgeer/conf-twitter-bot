@@ -1,18 +1,62 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { getPapers, getSearchedPapers } from './papers-model';
+import { deletePaper, getPaper, getPapers, getSearchedPapers, updatePaper, UpdatePaperType } from './papers-model';
 import { PaperSearch, PaperSearchDB } from './papers';
+import { ServerError } from '../types';
+import { handleServerError } from '../util';
 
-export const papers = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('papers run');
-	const papers = await getPapers();
+export const paper = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+
+	const result = await getPaper(+id);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
+		return;
+	}
 
 	ctx.status = HttpStatus.OK;
-	ctx.body = papers;
+	ctx.body = result;
+};
+
+export const papers = async (ctx: ParameterizedContext): Promise<void> => {
+	const result = await getPapers();
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
+};
+
+export const patchPaper = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+	const updateData = ctx.request.body as UpdatePaperType;
+
+	const result = await updatePaper(+id, updateData);
+	if (result instanceof ServerError) {
+		handleServerError(ctx, result);
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = result;
+};
+
+export const removePaper = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+
+	const result = await deletePaper(+id);
+	if (result instanceof ServerError) {
+		ctx.status = result.getStatusCode();
+		ctx.body = { message: result.getMessage() };
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
 };
 
 export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
-	console.log('searchedPapers run');
 	const obj: PaperSearch = { ...ctx.request.query };
 
 	const { search, source } = obj;
@@ -23,17 +67,3 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 	ctx.status = HttpStatus.OK;
 	ctx.body = papers;
 };
-/*
-export const paper = async (ctx: ParameterizedContext): Promise<void> => {
-	const { paperId } = ctx.params;
-	const paper = getPaper(parseInt(paperId, 10));
-
-	if (paper) {
-		ctx.status = HttpStatus.OK;
-		ctx.body = paper;
-		return;
-	}
-
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'No paper with that ID exists.' };
-}; */

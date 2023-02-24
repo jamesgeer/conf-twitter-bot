@@ -39,7 +39,9 @@ const getTwitterMediaIds = async (client: TwitterApi, uploads: Uploads): Promise
  */
 const tweetSchedule = async (): Promise<void> => {
 	const scheduledTweets = await getScheduledTweets();
-	console.log(`TWEET_CRON: ${scheduledTweets.length} tweets loaded.`);
+	if (scheduledTweets.length > 0) {
+		console.log(`TWEET_CRON: ${scheduledTweets.length} tweets loaded.`);
+	}
 
 	scheduledTweets.forEach((scheduledTweet) => {
 		const { oauth, tweets } = scheduledTweet;
