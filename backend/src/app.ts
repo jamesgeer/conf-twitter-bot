@@ -6,7 +6,7 @@ import path from 'path';
 import appRoot from 'app-root-path';
 import router from './routes';
 import { logToFile, initLogToFile } from './logging/logging';
-import { APP_URL, TEST } from './keys';
+import { APP_URL, NODE_ENV, NODE_ENV_OPTIONS } from './keys';
 import cronJobs from './jobs';
 
 const SESSION_CONFIG = {
@@ -39,7 +39,10 @@ initLogToFile(); // initiate logging to file
 app.use(async (ctx, next) => {
 	try {
 		await next();
-		console.log(`${ctx.method} ${ctx.url} RESPONSE: ${ctx.response.status}`);
+		// prevent lots of console logs when running in test mode
+		if (NODE_ENV !== NODE_ENV_OPTIONS.TEST) {
+			console.log(`${ctx.method} ${ctx.url} RESPONSE: ${ctx.response.status}`);
+		}
 	} catch (error) {
 		console.error(error);
 		console.log(logToFile(error));
@@ -54,11 +57,8 @@ app.use(router.allowedMethods());
 // serve static assets from within the public directory, for example GET /uploads/some_file.png
 app.use(serve(path.join(appRoot.path, 'public')));
 
-if (TEST) {
-	console.log('RUNNING IN TEST MODE');
-}
-
-// run cron jobs
-if (!TEST) {
+// prevent cron jobs from running in test mode
+if (NODE_ENV !== NODE_ENV_OPTIONS.TEST) {
+	// run cron jobs
 	cronJobs().then();
 }

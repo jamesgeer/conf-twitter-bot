@@ -9,7 +9,7 @@ import { uploadFolder } from '../src/routes/util';
 const jestGlobalSetup = (): void => {
 	if (!existsSync(uploadFolder)) {
 		mkdirSync(uploadFolder);
-		console.log(`jestGlobalSetup: ${uploadFolder}`);
+		console.log('RUNNING IN TEST MODE');
 	}
 };
 

@@ -41,17 +41,14 @@ export const insertTwitterUser = async (
 ): Promise<TwitterUser | ServerError> => {
 	// user is attempting to add a Twitter account that they already control
 	if (await accountExists(userId, twitterUser.id)) {
-		console.log('conflict');
 		return new ServerError(HttpStatus.CONFLICT, 'You already have access to this Twitter user.');
 	}
 
 	// another user is trying to add an existing account so just use existing value
 	if (await twitterUserExists(twitterUser.id)) {
-		console.log('exists');
 		return twitterUser;
 	}
 
-	console.log('new');
 	const { id, name, screenName, profileImageUrl } = twitterUser;
 	try {
 		return await prisma.twitterUser.create({
