@@ -1,5 +1,4 @@
 import { readFile } from 'fs/promises';
-import prisma from '../../lib/prisma';
 import { insertPaper } from '../routes/papers/papers-model';
 
 /**
