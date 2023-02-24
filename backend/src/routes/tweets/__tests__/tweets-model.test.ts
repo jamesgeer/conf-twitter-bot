@@ -18,6 +18,7 @@ let tweet: Tweet;
 
 // before any tests are run
 beforeAll(async () => {
+	await TestHarness.deleteAll();
 	await harness.createStandard();
 });
 

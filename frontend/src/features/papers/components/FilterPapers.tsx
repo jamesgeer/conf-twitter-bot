@@ -48,9 +48,7 @@ const FilterPapers = ({ setSearchInput, debouncedHandleFilter }: Props) => {
 						<option value="rschr">Researchr</option>
 					</Select>
 				</Box>
-				<Box>
-					<Button onClick={handleReset}>Clear all</Button>
-				</Box>
+				<Button onClick={handleReset}>Clear all</Button>
 			</div>
 		</div>
 	);

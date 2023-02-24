@@ -14,7 +14,7 @@ export const validSessionCookie = (requestCookie: string, sessionCookie: string)
 			if (confTwBotCookie === sessionCookie) {
 				return true;
 			}
-			console.log(`expected: ConfTwBot=${sessionCookie}  but got: ${confTwBotCookie}`);
+			// console.log(`expected: ConfTwBot=${sessionCookie}  but got: ${confTwBotCookie}`);
 		}
 	}
 
