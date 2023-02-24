@@ -12,7 +12,7 @@ export const scrape = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	ctx.status = HttpStatus.OK;
+	ctx.status = HttpStatus.NO_CONTENT;
 	ctx.body = { message: 'Unsuccessful scrape request.' };
 };
 
