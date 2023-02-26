@@ -17,7 +17,6 @@ interface Props {
 }
 
 const PapersTable = ({ papers }: Props) => {
-	console.log(papers);
 	const [sorting, setSorting] = useState<SortingState>([]);
 
 	const columnHelper = createColumnHelper<Paper>();
@@ -27,18 +26,14 @@ const PapersTable = ({ papers }: Props) => {
 			header: 'Title',
 			cell: ({ row, getValue }) => (
 				<>
-					{true ? (
-						<button
-							{...{
-								onClick: () => row.toggleExpanded(),
-								style: { cursor: 'pointer' },
-							}}
-						>
-							{row.getIsExpanded() ? '👇' : '👉'}
-						</button>
-					) : (
-						'🔵'
-					)}{' '}
+					<button
+						{...{
+							onClick: () => row.toggleExpanded(),
+							style: { cursor: 'pointer' },
+						}}
+					>
+						{row.getIsExpanded() ? '👇' : '👉'}
+					</button>{' '}
 					{getValue()}
 				</>
 			),
@@ -59,8 +54,6 @@ const PapersTable = ({ papers }: Props) => {
 		getSortedRowModel: getSortedRowModel(),
 		debugTable: true,
 	});
-
-	console.log(table.getHeaderGroups());
 
 	return (
 		<>
@@ -108,7 +101,7 @@ const PapersTable = ({ papers }: Props) => {
 								</Tr>
 								{row.getIsExpanded() ? (
 									<Tr>
-										<Td>Toast</Td>
+										<Td>{row.original.shortAbstract}</Td>
 									</Tr>
 								) : null}
 							</>
@@ -116,9 +109,6 @@ const PapersTable = ({ papers }: Props) => {
 					})}
 				</Tbody>
 			</Table>
-			{/* table debugging info */}
-			<div>{table.getRowModel().rows.length} Rows</div>
-			<pre>{JSON.stringify(sorting, null, 2)}</pre>
 		</>
 	);
 };
