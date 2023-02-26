@@ -4,11 +4,11 @@ import uuid from 'react-uuid';
 import React from 'react';
 import { SimpleGrid } from '@chakra-ui/react';
 
-interface Interface {
+interface Props {
 	papers: Papers;
 }
 
-const PaperList = ({ papers }: Interface) => {
+const PaperList = ({ papers }: Props) => {
 	if (papers.length === 0) {
 		return <p>No papers to display.</p>;
 	}
