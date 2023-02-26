@@ -32,7 +32,7 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 				errors += `Invalid paper link: ${url}\n`;
 			}
 		}
-		let aux = await uploadScrapeHistoryToDatabase(urls);
+		let aux = await uploadScrapeHistoryToDatabase(urls, errors);
 		if (!aux) {
 			finishedCorrectly = false;
 		}
@@ -43,7 +43,7 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 		errors = '';
 		return finishedCorrectly;
 	} catch (e) {
-		await uploadScrapeHistoryToDatabase(urls);
+		await uploadScrapeHistoryToDatabase(urls, errors);
 		errors = '';
 		console.error(e);
 		console.log(logToFile(e));
@@ -51,7 +51,7 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 	}
 }
 
-async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
+export async function uploadScrapeHistoryToDatabase(urls: string, errors: string): Promise<boolean> {
 	if (urls.length === 0) {
 		return false;
 	}
