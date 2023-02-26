@@ -378,7 +378,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<Paper> {
 	};
 }
 
-async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
+export async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 	if (papers.length === 0) {
 		return false;
 	}

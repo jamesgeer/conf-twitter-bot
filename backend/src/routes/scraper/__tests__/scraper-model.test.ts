@@ -1,6 +1,13 @@
 import prisma from '../../../../lib/prisma';
-import { getHistory, isAcmUrl, isRschrUrl, uploadScrapeHistoryToDatabase } from '../scraper-model';
+import {
+	getHistory,
+	isAcmUrl,
+	isRschrUrl,
+	uploadPapersToDatabase,
+	uploadScrapeHistoryToDatabase,
+} from '../scraper-model';
 import { ScrapeHistoryElm } from '../scraper';
+import { Paper, Papers } from '../../papers/papers';
 
 beforeAll(async () => {
 	await prisma.paper.deleteMany({});
@@ -75,5 +82,52 @@ describe('paper link conditional tests', () => {
 
 			expect(result).toBe(false);
 		});
+	});
+});
+
+describe('test upload papers to database', () => {
+	const acmPaper: Paper = { authors: [], shortAbstract: '', source: 'acm', title: 'The acm paper', url: '' };
+	const rschrPaper: Paper = { authors: [], shortAbstract: '', source: 'rschr', title: '', url: '' };
+	const badPaper: Paper = { authors: [], shortAbstract: '', source: 'badSource', title: '', url: '' };
+	it('should not upload an empty array', async () => {
+		const result = await uploadPapersToDatabase([]);
+
+		expect(result).toBe(false);
+	});
+	it('should upload an acm paper', async () => {
+		const result = await uploadPapersToDatabase([acmPaper]);
+		let testRes: Paper | null = await prisma.paper.findFirst({
+			where: {
+				source: 'acm',
+			},
+		});
+		expect(result).toBe(true);
+		if (testRes == null) {
+			testRes = { authors: [], shortAbstract: '', source: '', title: 'this was null', url: '' };
+		}
+		expect(testRes.title).toBe(acmPaper.title);
+	});
+	it('should upload a researchr paper', async () => {
+		const result = await uploadPapersToDatabase([rschrPaper]);
+		let testRes: Paper | null = await prisma.paper.findFirst({
+			where: {
+				source: 'rschr',
+			},
+		});
+		expect(result).toBe(true);
+		if (testRes == null) {
+			testRes = { authors: [], shortAbstract: '', source: '', title: 'this was null', url: '' };
+		}
+		expect(testRes.title).toBe(rschrPaper.title);
+	});
+	it('should not upload a paper from the wrong source', async () => {
+		const result = await uploadPapersToDatabase([badPaper]);
+		const testRes = await prisma.paper.findFirst({
+			where: {
+				source: 'badSource',
+			},
+		});
+		expect(result).toBe(true);
+		expect(testRes).toBeNull();
 	});
 });
