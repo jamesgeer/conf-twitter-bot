@@ -94,11 +94,11 @@ async function cleanScrapeHistoryDatabase(): Promise<boolean> {
 		return false;
 	}
 }
-async function isAcmUrl(url: string): Promise<boolean> {
+export async function isAcmUrl(url: string): Promise<boolean> {
 	return url.includes('/dl.acm.org/');
 }
 
-async function isRschrUrl(url: string): Promise<boolean> {
+export async function isRschrUrl(url: string): Promise<boolean> {
 	// every single conference on researchr seems to have its own domain or a different one to the others
 	// the only thing they have in common, is that the papers tab always end with #event-overview
 	// other than that, there'll only be a preliminary check while scraping to make sure that the page

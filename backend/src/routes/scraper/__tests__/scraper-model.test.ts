@@ -1,5 +1,5 @@
 import prisma from '../../../../lib/prisma';
-import { getHistory, uploadScrapeHistoryToDatabase } from '../scraper-model';
+import { getHistory, isAcmUrl, isRschrUrl, uploadScrapeHistoryToDatabase } from '../scraper-model';
 import { ScrapeHistoryElm } from '../scraper';
 
 beforeAll(async () => {
@@ -34,5 +34,35 @@ describe('tests for the scrape history model', () => {
 		expect(result.length).toBe(1);
 		expect(result[0].links).toBe(testRes.links);
 		expect(result[0].errors).toBe(testRes.errors);
+	});
+});
+
+describe('paper link conditional tests', () => {
+	const acmUrl = 'https://dl.acm.org/doi/proceedings/10.1145/3475738';
+	const rschrUrl = 'https://2022.splashcon.org/track/splash-2022-oopsla?#event-overview';
+	const wrongUrl = 'https://www.google.com';
+	describe('acm url tests', () => {
+		it('check acm url returns true', async () => {
+			const result = await isAcmUrl(acmUrl);
+
+			expect(result).toBe(true);
+		});
+		it('check acm url returns false', async () => {
+			const result = await isAcmUrl(wrongUrl);
+
+			expect(result).toBe(false);
+		});
+	});
+	describe('researchr url tests', () => {
+		it('check researchr url returns true', async () => {
+			const result = await isRschrUrl(rschrUrl);
+
+			expect(result).toBe(true);
+		});
+		it('check researchr url returns false', async () => {
+			const result = await isRschrUrl(wrongUrl);
+
+			expect(result).toBe(false);
+		});
 	});
 });
