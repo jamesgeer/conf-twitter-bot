@@ -25,6 +25,23 @@ const PapersTable = ({ papers }: Props) => {
 	const headers = [
 		columnHelper.accessor('title', {
 			header: 'Title',
+			cell: ({ row, getValue }) => (
+				<>
+					{true ? (
+						<button
+							{...{
+								onClick: () => row.toggleExpanded(),
+								style: { cursor: 'pointer' },
+							}}
+						>
+							{row.getIsExpanded() ? '👇' : '👉'}
+						</button>
+					) : (
+						'🔵'
+					)}{' '}
+					{getValue()}
+				</>
+			),
 		}),
 	];
 
@@ -77,11 +94,9 @@ const PapersTable = ({ papers }: Props) => {
 					))}
 				</Thead>
 				<Tbody>
-					{table
-						.getRowModel()
-						.rows.slice(0, 10)
-						.map((row) => {
-							return (
+					{table.getRowModel().rows.map((row) => {
+						return (
+							<>
 								<Tr key={row.id}>
 									{row.getVisibleCells().map((cell) => {
 										return (
@@ -91,8 +106,14 @@ const PapersTable = ({ papers }: Props) => {
 										);
 									})}
 								</Tr>
-							);
-						})}
+								{row.getIsExpanded() ? (
+									<Tr>
+										<Td>Toast</Td>
+									</Tr>
+								) : null}
+							</>
+						);
+					})}
 				</Tbody>
 			</Table>
 			{/* table debugging info */}
