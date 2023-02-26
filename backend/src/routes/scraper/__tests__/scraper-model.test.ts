@@ -7,7 +7,7 @@ import {
 	uploadScrapeHistoryToDatabase,
 } from '../scraper-model';
 import { ScrapeHistoryElm } from '../scraper';
-import { Paper, Papers } from '../../papers/papers';
+import { Paper } from '../../papers/papers';
 
 beforeAll(async () => {
 	await prisma.paper.deleteMany({});
