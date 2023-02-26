@@ -107,7 +107,7 @@ export async function isRschrUrl(url: string): Promise<boolean> {
 }
 
 // returns true if successfully scraped, false otherwise
-async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
+export async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 	// there's also playwright.firefox , we'll need to compare them at a later date for performance/memory
 	const browser = await playwright.chromium.launch({
 		headless: true, // setting this to true will not run the UI

@@ -15,6 +15,17 @@ afterAll(async () => {
 describe('tests for the scrape history model', () => {
 	const url = 'https://www.google.com';
 	const errors = 'No errors.';
+	it('should not be possible to upload empty string', async () => {
+		const result = await uploadScrapeHistoryToDatabase('', errors);
+
+		expect(result).toBe(false);
+	});
+	it('should convert no errors to textual form', async () => {
+		const result = await uploadScrapeHistoryToDatabase(url, '');
+		const uploaded = await getHistory();
+		expect(result).toBe(true);
+		expect(uploaded[0].errors).toBe('No errors.');
+	});
 	it('inserting a history element should return true', async () => {
 		const errors = 'No errors.';
 		const result = await uploadScrapeHistoryToDatabase(url, errors);
@@ -31,7 +42,7 @@ describe('tests for the scrape history model', () => {
 
 		const result = await getHistory();
 
-		expect(result.length).toBe(1);
+		expect(result.length).toBeGreaterThanOrEqual(1);
 		expect(result[0].links).toBe(testRes.links);
 		expect(result[0].errors).toBe(testRes.errors);
 	});
