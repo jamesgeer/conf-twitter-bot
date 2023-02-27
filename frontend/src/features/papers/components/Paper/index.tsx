@@ -13,7 +13,6 @@ import {
 	ModalCloseButton,
 	ModalBody,
 	SimpleGrid,
-	Button,
 	Link,
 } from '@chakra-ui/react';
 import uuid from 'react-uuid';

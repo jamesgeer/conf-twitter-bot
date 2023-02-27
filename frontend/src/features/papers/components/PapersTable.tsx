@@ -13,6 +13,7 @@ import {
 
 import React, { useMemo, useState } from 'react';
 import { Paper, Papers } from '../types';
+import PapersTableExpanded from './PapersTableExpanded';
 
 interface Props {
 	papers: Papers;
@@ -42,11 +43,11 @@ const PapersTable = ({ papers }: Props) => {
 			header: 'Authors',
 			cell: ({ row, getValue }) => getValue().join(', '),
 		}),
-		columnHelper.accessor('downloads', {
-			header: 'Downloads',
-		}),
 		columnHelper.accessor('citations', {
-			header: 'Citations',
+			header: 'Cites',
+		}),
+		columnHelper.accessor('downloads', {
+			header: '#Down',
 		}),
 	];
 
@@ -108,7 +109,9 @@ const PapersTable = ({ papers }: Props) => {
 				</Tr>
 				{row.getIsExpanded() ? (
 					<Tr>
-						<Td colSpan={headers.length}>{row.original.shortAbstract}</Td>
+						<Td colSpan={headers.length}>
+							<PapersTableExpanded paper={row.original} />
+						</Td>
 					</Tr>
 				) : null}
 			</>
@@ -116,12 +119,10 @@ const PapersTable = ({ papers }: Props) => {
 	});
 
 	return (
-		<>
-			<Table>
-				<Thead>{tableHeaders}</Thead>
-				<Tbody>{tableData}</Tbody>
-			</Table>
-		</>
+		<Table>
+			<Thead>{tableHeaders}</Thead>
+			<Tbody>{tableData}</Tbody>
+		</Table>
 	);
 };
 
