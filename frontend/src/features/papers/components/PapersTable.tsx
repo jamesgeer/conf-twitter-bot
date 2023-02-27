@@ -27,12 +27,26 @@ const PapersTable = ({ papers }: Props) => {
 			header: 'Title',
 			cell: ({ row, getValue }) => (
 				<Box className="flex items-center">
-					{row.getIsExpanded() ? <IconCircleMinus className="mr-2" /> : <IconCirclePlus className="mr-2" />}{' '}
+					{row.getIsExpanded() ? (
+						<IconCircleMinus className="min-w-[25px] mr-2" />
+					) : (
+						<IconCirclePlus className="min-w-[25px] mr-2" />
+					)}{' '}
 					<Text as="span" fontWeight="bold">
 						{getValue()}
 					</Text>
 				</Box>
 			),
+		}),
+		columnHelper.accessor('authors', {
+			header: 'Authors',
+			cell: ({ row, getValue }) => getValue().join(', '),
+		}),
+		columnHelper.accessor('downloads', {
+			header: 'Downloads',
+		}),
+		columnHelper.accessor('citations', {
+			header: 'Citations',
 		}),
 	];
 
@@ -94,7 +108,7 @@ const PapersTable = ({ papers }: Props) => {
 				</Tr>
 				{row.getIsExpanded() ? (
 					<Tr>
-						<Td>{row.original.shortAbstract}</Td>
+						<Td colSpan={headers.length}>{row.original.shortAbstract}</Td>
 					</Tr>
 				) : null}
 			</>
