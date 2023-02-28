@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import uuid from 'react-uuid';
+import { IconExternalLink } from '@tabler/icons';
 
 interface Props {
 	paper: PaperType;
@@ -23,7 +24,9 @@ const PaperModal = ({ paper, isOpen, onClose }: Props) => {
 	const paperSourceButton = () => {
 		return (
 			<Link href={paper.url} isExternal>
-				Source
+				<span className="flex">
+					Source <IconExternalLink className="w-4" />
+				</span>
 			</Link>
 		);
 	};
