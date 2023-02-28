@@ -14,8 +14,6 @@ const generatePrompt = (
     ${abstract}
     `;
 
-//https://github.com/openai/openai-quickstart-node/blob/master/pages/api/generate.js
-
 export const getSummary = async (abstract: string): Promise<string | ServerError> => {
 	let result = '';
 	if (!configuration.apiKey) {

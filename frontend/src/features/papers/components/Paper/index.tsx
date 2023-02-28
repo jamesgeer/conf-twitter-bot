@@ -1,6 +1,8 @@
 import { Paper as PaperType } from '../../types';
+import { IconSparkles } from '@tabler/icons-react';
+import { Text } from '@chakra-ui/react';
 import { IconCalendar, IconUsers, IconStack, IconTimeline } from '@tabler/icons';
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Heading,
 	Box,
@@ -15,16 +17,28 @@ import {
 	SimpleGrid,
 	Button,
 	Link,
+	Flex,
 } from '@chakra-ui/react';
 import uuid from 'react-uuid';
+import { getAbstract } from '../../api/getPapers';
 
 interface Props {
 	paper: PaperType;
 }
 
 const Paper = ({ paper }: Props) => {
-	const { title, authors, url, shortAbstract, fullAbstract } = paper;
+	const { title, authors, url, shortAbstract, fullAbstract, id } = paper;
 	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const [summary, setSummary] = useState('');
+	const [isSummarising, setIsSummarising] = useState(false);
+
+	const handleButtonClick = async () => {
+		setIsSummarising(true);
+		const summarised = await getAbstract(id.toString());
+		setSummary(summarised);
+		setIsSummarising(false);
+	};
 
 	const paperSourceButton = () => {
 		return (
@@ -61,7 +75,20 @@ const Paper = ({ paper }: Props) => {
 							{paper.downloads && `Downloads: ${paper.downloads}`}
 						</Box>
 					</Box>
-					<Box>{fullAbstract ? fullAbstract : shortAbstract}</Box>
+					<Flex direction={'column'}>
+						{fullAbstract ? fullAbstract : shortAbstract}
+						<Button mt={4} mb={4} isLoading={isSummarising} onClick={handleButtonClick}>
+							<IconSparkles />
+						</Button>
+						{summary ? (
+							<>
+								<Text as="b">Summary: </Text>
+								{summary}
+							</>
+						) : (
+							''
+						)}
+					</Flex>
 				</ModalBody>
 			</SimpleGrid>
 		);

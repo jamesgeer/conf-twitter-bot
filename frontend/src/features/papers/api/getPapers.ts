@@ -7,6 +7,11 @@ export const getPapers = async (): Promise<Papers> => {
 	return response.data;
 };
 
+export const getAbstract = async (paperId: string): Promise<string> => {
+	const response = await axios.post(`/api/papers/${paperId}/summarise`);
+	return response.data;
+};
+
 export const usePapers = () => {
 	return useQuery<Papers, Error>(['papers'], () => getPapers(), {
 		initialData: [],
