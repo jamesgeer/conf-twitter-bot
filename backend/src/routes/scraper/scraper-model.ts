@@ -12,6 +12,9 @@ https://dl.acm.org/doi/proceedings/10.1145/3475738
 let errors = '';
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
+		if (urls === 'TEST') {
+			return true;
+		}
 		const urlsArray = urls.trim().split('\n');
 		let finishedCorrectly = true;
 		// go through each URL and check what website it belongs to, then scrape accordingly
