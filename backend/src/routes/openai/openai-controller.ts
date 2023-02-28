@@ -31,13 +31,14 @@ export const getSummary = async (abstract: string): Promise<string | ServerError
 			model: 'text-davinci-003',
 			prompt: generatePrompt(abstract),
 			temperature: 0.6,
+			max_tokens: 256,
 		});
 
 		if (completion.data.choices[0].text) {
 			result = completion.data.choices[0].text;
 		}
 
-		console.log(completion);
+		console.log(completion.data);
 	} catch (error) {
 		if (error.response) {
 			console.log(error.response);
