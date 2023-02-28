@@ -42,7 +42,7 @@ const Paper = ({ paper }: Props) => {
 					</Box>
 				)}
 			</HStack>
-			{<PaperModal paper={paper} isOpen={isOpen} onClose={onClose} />}
+			{isOpen && <PaperModal paper={paper} isOpen={isOpen} onClose={onClose} />}
 		</Box>
 	);
 };

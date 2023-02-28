@@ -14,6 +14,7 @@ import {
 import React, { useMemo, useState } from 'react';
 import { Paper, Papers } from '../types';
 import PapersTableExpanded from './PapersTableExpanded';
+import uuid from 'react-uuid';
 
 interface Props {
 	papers: Papers;
@@ -41,7 +42,7 @@ const PapersTable = ({ papers }: Props) => {
 		}),
 		columnHelper.accessor('authors', {
 			header: 'Authors',
-			cell: ({ row, getValue }) => getValue().join(', '),
+			cell: ({ getValue }) => getValue().join(', '),
 		}),
 		columnHelper.accessor('citations', {
 			header: 'Cites',
@@ -51,7 +52,7 @@ const PapersTable = ({ papers }: Props) => {
 		}),
 	];
 
-	const data = useMemo(() => papers, []);
+	const data = useMemo(() => papers, [papers]);
 	const columns = useMemo(() => headers, []);
 
 	const table = useReactTable({
@@ -67,10 +68,10 @@ const PapersTable = ({ papers }: Props) => {
 	});
 
 	const tableHeaders = table.getHeaderGroups().map((headerGroup) => (
-		<Tr key={headerGroup.id}>
+		<Tr key={uuid()}>
 			{headerGroup.headers.map((header) => {
 				return (
-					<Th key={header.id} colSpan={header.colSpan}>
+					<Th key={uuid()} colSpan={header.colSpan}>
 						{header.isPlaceholder ? null : (
 							<Box
 								{...{
@@ -99,16 +100,16 @@ const PapersTable = ({ papers }: Props) => {
 		return (
 			<>
 				<Tr
-					key={row.id}
+					key={uuid()}
 					onClick={() => handleRowClick(row)}
 					className="cursor-pointer hover:bg-[color:var(--chakra-colors-gray-100)]"
 				>
 					{row.getVisibleCells().map((cell) => {
-						return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>;
+						return <Td key={uuid()}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>;
 					})}
 				</Tr>
 				{row.getIsExpanded() ? (
-					<Tr>
+					<Tr key={uuid()}>
 						<Td colSpan={headers.length}>
 							<PapersTableExpanded paper={row.original} />
 						</Td>

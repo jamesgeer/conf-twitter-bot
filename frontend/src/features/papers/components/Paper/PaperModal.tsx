@@ -9,7 +9,6 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	SimpleGrid,
-	useDisclosure,
 } from '@chakra-ui/react';
 import React from 'react';
 import uuid from 'react-uuid';
