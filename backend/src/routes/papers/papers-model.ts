@@ -29,26 +29,23 @@ export const getPaper = async (paperId: number): Promise<Paper | ServerError> =>
 		}
 		return new ServerError(HttpStatus.NOT_FOUND, `Paper with ID ${paperId} not found.`);
 	} catch (e) {
+		console.log(e);
 		console.log(logToFile(e));
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get tweet due to server problem.');
 	}
 };
 
-export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers | []> {
+export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers> {
 	try {
 		return await prisma.paper.findMany({
 			where: {
-				OR: [
-					{
-						title: {
-							contains: params.title,
-							mode: 'insensitive',
-						},
-						source: {
-							equals: params.source,
-						},
-					},
-				],
+				title: {
+					contains: params.title,
+					mode: 'insensitive',
+				},
+				source: {
+					equals: params.source,
+				},
 			},
 		});
 	} catch (e) {

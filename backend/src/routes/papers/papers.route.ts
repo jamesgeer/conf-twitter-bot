@@ -5,11 +5,20 @@ import { paper, papers, searchedPapers, patchPaper, removePaper } from './papers
 const papersRouter = new Router({ prefix: '/papers' });
 
 /**
+ * Get papers based on filter options
+ * ?search: optional search string
+ * ?source: optional source e.g. acm
+ *
+ * GET /api/papers/filter
+ */
+papersRouter.get('/filter', searchedPapers);
+
+/**
  * Get paper with ID
  *
  * GET: /api/papers/:id
  */
-papersRouter.get('/papers/:id', paper);
+papersRouter.get('/:id', paper);
 
 /**
  * Get all papers
@@ -19,26 +28,17 @@ papersRouter.get('/papers/:id', paper);
 papersRouter.get('/', papers);
 
 /**
- * Get papers based on filter options
- * ?search: optional search string
- * ?source: optional source e.g. acm
- *
- * GET /api/papers/:search?/:source?
- */
-papersRouter.get('/filter/:search?/:source?', searchedPapers);
-
-/**
  * Update paper with ID
  *
  * PATCH: /api/papers/:id
  */
-papersRouter.patch('/papers/:id', koaBody(), patchPaper);
+papersRouter.patch('/:id', koaBody(), patchPaper);
 
 /**
  * Delete paper with ID
  *
  * DELETE: /api/papers/:id
  */
-papersRouter.delete('/papers/:id', removePaper);
+papersRouter.delete('/:id', removePaper);
 
 export default papersRouter;
