@@ -50,7 +50,7 @@ describe('paper endpoint get operations', () => {
 	});
 
 	it('GET paper with id should return paper', async () => {
-		const response = await request.get(`${papersEndpoint}/papers/${paper.id}`);
+		const response = await request.get(`${papersEndpoint}/${paper.id}`);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 		expect(response.body).toEqual(paper);
@@ -59,14 +59,18 @@ describe('paper endpoint get operations', () => {
 
 describe('search paper operations', () => {
 	it('GET search paper should return paper matching result', async () => {
-		const response = await request.get(papersEndpoint).query({ search: 'javascript' });
+		const response = await request.get(`${papersEndpoint}/filter`).query({
+			search: 'javascript',
+		});
 
 		expect(response.status).toEqual(HttpStatus.OK);
 		expect(response.body).toEqual([paper]);
 	});
 
 	it('GET search paper should return an empty array as no results match query', async () => {
-		const response = await request.get(`${papersEndpoint}/filter`).query({ search: 'beans' });
+		const response = await request.get(`${papersEndpoint}/filter`).query({
+			search: 'beans',
+		});
 
 		expect(response.status).toEqual(HttpStatus.OK);
 		expect(response.body).toEqual([]);
@@ -80,7 +84,7 @@ describe('paper endpoint update operations', () => {
 			fullAbstract: 'In the before times, C was the language of choice...',
 		};
 
-		const response = await request.patch(`${papersEndpoint}/papers/${paper.id}`).send(payload);
+		const response = await request.patch(`${papersEndpoint}/${paper.id}`).send(payload);
 		const result: Paper = response.body;
 
 		expect(response.status).toEqual(HttpStatus.OK);
@@ -92,7 +96,7 @@ describe('paper endpoint update operations', () => {
 	});
 
 	it('GET paper with id should return updated paper', async () => {
-		const response = await request.get(`${papersEndpoint}/papers/${paper.id}`);
+		const response = await request.get(`${papersEndpoint}/${paper.id}`);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 		expect(response.body).toEqual(paper);
@@ -101,14 +105,14 @@ describe('paper endpoint update operations', () => {
 
 describe('paper endpoint delete operations', () => {
 	it('DELETE paper with id should return updated paper', async () => {
-		const response = await request.delete(`${papersEndpoint}/papers/${paper.id}`);
+		const response = await request.delete(`${papersEndpoint}/${paper.id}`);
 
 		expect(response.status).toEqual(HttpStatus.OK);
 	});
 
 	it('DELETE/GET deleted paper with id should return not found error', async () => {
-		const deleteResponse = await request.delete(`${papersEndpoint}/papers/${paper.id}`);
-		const getResponse = await request.get(`${papersEndpoint}/papers/${paper.id}`);
+		const deleteResponse = await request.delete(`${papersEndpoint}/${paper.id}`);
+		const getResponse = await request.get(`${papersEndpoint}/${paper.id}`);
 
 		expect(deleteResponse.status).toEqual(HttpStatus.NOT_FOUND);
 		expect(getResponse.status).toEqual(HttpStatus.NOT_FOUND);
