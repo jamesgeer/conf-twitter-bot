@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from 'openai';
-import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
+import { ServerError } from '../types';
 
 const configuration = new Configuration({
 	apiKey: process.env.OPENAI_SECRET,
@@ -16,18 +16,14 @@ const generatePrompt = (
 
 //https://github.com/openai/openai-quickstart-node/blob/master/pages/api/generate.js
 
-export const getSummary = async (ctx: ParameterizedContext): Promise<void> => {
+export const getSummary = async (abstract: string): Promise<string | ServerError> => {
+	let result = '';
 	if (!configuration.apiKey) {
-		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-		console.error('OpenAI API key not configured');
-		return;
+		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'OpenAI API key not configured');
 	}
 
-	const abstract: string = ctx.request.body;
 	if (abstract.trim().length === 0) {
-		ctx.status = HttpStatus.BAD_REQUEST;
-		console.error('Please enter a valid abstract');
-		return;
+		return new ServerError(HttpStatus.BAD_REQUEST, 'Please enter a valid abstract');
 	}
 
 	try {
@@ -36,15 +32,19 @@ export const getSummary = async (ctx: ParameterizedContext): Promise<void> => {
 			prompt: generatePrompt(abstract),
 			temperature: 0.6,
 		});
-		ctx.status = HttpStatus.OK;
-		ctx.body = completion.data.choices[0].text;
-		console.log(completion.data.choices[0].text);
+
+		if (completion.data.choices[0].text) {
+			result = completion.data.choices[0].text;
+		}
+
+		console.log(completion);
 	} catch (error) {
 		if (error.response) {
 			console.log(error.response);
 		} else {
-			ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-			console.error('An error occurred during your request.');
+			return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'An error occurred during your request.');
 		}
 	}
+
+	return result;
 };

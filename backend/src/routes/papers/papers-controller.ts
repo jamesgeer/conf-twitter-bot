@@ -12,6 +12,7 @@ import {
 import { PaperSearch, PaperSearchDB } from './papers';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
+import { getSummary } from '../openai/openai-controller';
 
 export const paper = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id }: { id: string } = ctx.params;
@@ -92,8 +93,10 @@ export const summary = async (ctx: ParameterizedContext): Promise<void> => {
 		return;
 	}
 
-	ctx.status = HttpStatus.OK;
-	console.log(abstract);
+	const summaryOfAbstract = await getSummary(abstract);
 
-	// call openai method here with abstract
+	// console.log(summaryOfAbstract);
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = summaryOfAbstract;
 };
