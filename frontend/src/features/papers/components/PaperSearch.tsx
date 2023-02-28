@@ -3,7 +3,7 @@ import { getFilteredPapers, usePapers } from '../api/getPapers';
 import FilterPapers from './FilterPapers';
 import React, { useEffect, useState } from 'react';
 import { debounce } from 'lodash';
-import PaperList from './PaperList';
+import PapersList from './PapersList';
 import PapersTable from './PapersTable';
 
 const PaperSearch = () => {
@@ -44,8 +44,8 @@ const PaperSearch = () => {
 	return (
 		<>
 			<FilterPapers setSearchInput={setSearchInput} debouncedHandleFilter={debouncedHandleFilter} />
-			{/*<PaperList papers={results ? results : papers} />*/}
-			<PapersTable papers={results ? results : papers} />
+			<PapersList papers={results ? results : papers} />
+			{/*<PapersTable papers={results ? results : papers} />*/}
 		</>
 	);
 };

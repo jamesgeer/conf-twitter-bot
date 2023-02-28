@@ -8,7 +8,7 @@ interface Props {
 	papers: Papers;
 }
 
-const PaperList = ({ papers }: Props) => {
+const PapersList = ({ papers }: Props) => {
 	if (papers.length === 0) {
 		return <p>No papers to display.</p>;
 	}
@@ -22,4 +22,4 @@ const PaperList = ({ papers }: Props) => {
 	);
 };
 
-export default PaperList;
+export default PapersList;
