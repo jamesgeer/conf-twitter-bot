@@ -1,13 +1,15 @@
+import path from 'path';
 import prisma from '../../../../lib/prisma';
 import {
 	getHistory,
 	isAcmUrl,
 	isRschrUrl,
+	scrapeListOfAcmPapers,
 	uploadPapersToDatabase,
 	uploadScrapeHistoryToDatabase,
 } from '../scraper-model';
 import { ScrapeHistoryElm } from '../scraper';
-import { Paper } from '../../papers/papers';
+import { Paper, Papers } from '../../papers/papers';
 
 beforeAll(async () => {
 	await prisma.paper.deleteMany({});
@@ -101,6 +103,7 @@ describe('test upload papers to database', () => {
 				source: 'acm',
 			},
 		});
+		await prisma.paper.deleteMany({});
 		expect(result).toBe(true);
 		if (testRes == null) {
 			testRes = { authors: [], shortAbstract: '', source: '', title: 'this was null', url: '' };
@@ -114,6 +117,7 @@ describe('test upload papers to database', () => {
 				source: 'rschr',
 			},
 		});
+		await prisma.paper.deleteMany({});
 		expect(result).toBe(true);
 		if (testRes == null) {
 			testRes = { authors: [], shortAbstract: '', source: '', title: 'this was null', url: '' };
@@ -130,4 +134,19 @@ describe('test upload papers to database', () => {
 		expect(result).toBe(true);
 		expect(testRes).toBeNull();
 	});
+});
+
+describe('paper scraping tests using local html', () => {
+	const acmPath = `${path.join(__dirname, 'test_html/acm.htm')}`;
+	it('should scrape the acm html correctly', async () => {
+		const result = await scrapeListOfAcmPapers(acmPath, true);
+		const papers: Papers = await prisma.paper.findMany({
+			where: {
+				source: 'acm',
+			},
+		});
+		await prisma.paper.deleteMany({});
+		expect(result).toBe(true);
+		expect(papers.length).toBe(12);
+	}, 100000);
 });
