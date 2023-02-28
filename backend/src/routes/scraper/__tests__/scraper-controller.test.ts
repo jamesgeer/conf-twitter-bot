@@ -53,7 +53,7 @@ it('POST scrape should return false when given the wrong url', async () => {
 	expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 });
 
-it('POST scrape should return true when given the correct url', async () => {
+it('POST scrape should return true when given the test url', async () => {
 	const urls = 'TEST';
 	const response = await request.post(scraperEndpoint).send({ urls });
 
