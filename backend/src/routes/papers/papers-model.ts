@@ -37,8 +37,6 @@ export const getPaper = async (paperId: number): Promise<Paper | ServerError> =>
 
 export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers> {
 	try {
-		console.log(params);
-		console.log(params.title);
 		return await prisma.paper.findMany({
 			where: {
 				title: {
