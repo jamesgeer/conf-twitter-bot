@@ -1,6 +1,14 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import { deletePaper, getPaper, getPapers, getSearchedPapers, updatePaper, UpdatePaperType } from './papers-model';
+import {
+	deletePaper,
+	getAbstract,
+	getPaper,
+	getPapers,
+	getSearchedPapers,
+	updatePaper,
+	UpdatePaperType,
+} from './papers-model';
 import { PaperSearch, PaperSearchDB } from './papers';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
@@ -63,7 +71,29 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 	const queryForDb: PaperSearchDB = { title: search, source };
 
 	const papers = await getSearchedPapers(queryForDb);
+	if (papers instanceof ServerError) {
+		ctx.status = papers.getStatusCode();
+		ctx.body = { message: papers.getMessage() };
+		return;
+	}
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = papers;
+};
+
+export const summary = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+
+	const idNumber = parseInt(id, 10);
+	const abstract = await getAbstract(idNumber);
+	if (abstract instanceof ServerError) {
+		ctx.status = abstract.getStatusCode();
+		ctx.body = { message: abstract.getMessage() };
+		return;
+	}
+
+	ctx.status = HttpStatus.OK;
+	console.log(abstract);
+
+	// call openai method here with abstract
 };

@@ -14,7 +14,9 @@ const generatePrompt = (
     ${abstract}
     `;
 
-export const getOpenai = async (ctx: ParameterizedContext): Promise<void> => {
+//https://github.com/openai/openai-quickstart-node/blob/master/pages/api/generate.js
+
+export const getSummary = async (ctx: ParameterizedContext): Promise<void> => {
 	if (!configuration.apiKey) {
 		ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
 		console.error('OpenAI API key not configured');
