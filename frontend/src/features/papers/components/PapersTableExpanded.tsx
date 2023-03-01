@@ -1,8 +1,10 @@
 import { Paper } from '../types';
-import { Box, Button, ModalBody, SimpleGrid, useDisclosure } from '@chakra-ui/react';
+import { Text, Box, Button, Flex, ModalBody, SimpleGrid, useDisclosure } from '@chakra-ui/react';
 import PaperModal from './Paper/PaperModal';
-import React from 'react';
+import React, { useState } from 'react';
 import { IconArrowsDiagonal2 } from '@tabler/icons';
+import { getAbstract } from '../api/getPapers';
+import { IconSparkles } from '@tabler/icons-react';
 
 interface Props {
 	paper: Paper;
@@ -10,10 +12,34 @@ interface Props {
 
 const PapersTableExpanded = ({ paper }: Props) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [summary, setSummary] = useState('');
+	const [isSummarising, setIsSummarising] = useState(false);
+
+	const handleButtonClick = async () => {
+		setIsSummarising(true);
+		const summarised = await getAbstract(paper.id.toString());
+		setSummary(summarised);
+		setIsSummarising(false);
+	};
 
 	return (
 		<SimpleGrid columns={2} spacing={10}>
-			<Box>{paper.fullAbstract ? paper.fullAbstract : paper.shortAbstract}</Box>
+			<Flex direction={'column'}>
+				<Box>{paper.fullAbstract ? paper.fullAbstract : paper.shortAbstract}</Box>
+				<Button mt={4} mb={4} isLoading={isSummarising} onClick={handleButtonClick}>
+					<IconSparkles />
+				</Button>
+				<Box>
+					{summary ? (
+						<>
+							<Text as="b">Summary: </Text>
+							{summary}
+						</>
+					) : (
+						''
+					)}
+				</Box>
+			</Flex>
 			<Box>
 				<Button onClick={onOpen}>
 					<IconArrowsDiagonal2 />
