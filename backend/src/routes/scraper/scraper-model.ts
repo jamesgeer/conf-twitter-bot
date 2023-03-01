@@ -1,4 +1,5 @@
 import playwright, { ElementHandle, Page } from 'playwright-chromium';
+import * as fs from 'fs';
 import { Paper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
@@ -11,24 +12,42 @@ https://dl.acm.org/doi/proceedings/10.1145/3475738
 let errors = '';
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
+		if (urls === 'TEST') {
+			return true;
+		}
 		const urlsArray = urls.trim().split('\n');
+		let finishedCorrectly = true;
 		// go through each URL and check what website it belongs to, then scrape accordingly
 		for (const url of urlsArray) {
 			// eslint-disable-next-line no-await-in-loop
 			if (await isAcmUrl(url.trim())) {
-				// TODO: for testing purposes just console log now
 				// logs out true if the scraping was successful, false otherwise
-				await scrapeListOfAcmPapers(url.trim()).then((r) => console.log(r));
+				const aux = await scrapeListOfAcmPapers(url.trim());
+				if (!aux) {
+					finishedCorrectly = false;
+				}
 			} else if (await isRschrUrl(url.trim())) {
-				await scrapeListOfRschrPapers(url.trim()).then((r) => console.log(r));
+				const aux = await scrapeListOfRschrPapers(url.trim());
+				if (!aux) {
+					finishedCorrectly = false;
+				}
+			} else {
+				finishedCorrectly = false;
+				errors += `Invalid paper link: ${url}\n`;
 			}
 		}
-		await uploadScrapeHistoryToDatabase(urls);
-		await cleanScrapeHistoryDatabase();
+		let aux = await uploadScrapeHistoryToDatabase(urls, errors);
+		if (!aux) {
+			finishedCorrectly = false;
+		}
+		aux = await cleanScrapeHistoryDatabase();
+		if (!aux) {
+			finishedCorrectly = false;
+		}
 		errors = '';
-		return true;
+		return finishedCorrectly;
 	} catch (e) {
-		await uploadScrapeHistoryToDatabase(urls);
+		await uploadScrapeHistoryToDatabase(urls, errors);
 		errors = '';
 		console.error(e);
 		console.log(logToFile(e));
@@ -36,7 +55,7 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 	}
 }
 
-async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
+export async function uploadScrapeHistoryToDatabase(urls: string, errors: string): Promise<boolean> {
 	if (urls.length === 0) {
 		return false;
 	}
@@ -53,10 +72,8 @@ async function uploadScrapeHistoryToDatabase(urls: string): Promise<boolean> {
 				errors: Array.from(errorsSet).toString(),
 			},
 		});
-		errors = '';
 		return true;
 	} catch (e) {
-		errors = '';
 		console.log(logToFile(e));
 		return false;
 	}
@@ -79,11 +96,11 @@ async function cleanScrapeHistoryDatabase(): Promise<boolean> {
 		return false;
 	}
 }
-async function isAcmUrl(url: string): Promise<boolean> {
+export async function isAcmUrl(url: string): Promise<boolean> {
 	return url.includes('/dl.acm.org/');
 }
 
-async function isRschrUrl(url: string): Promise<boolean> {
+export async function isRschrUrl(url: string): Promise<boolean> {
 	// every single conference on researchr seems to have its own domain or a different one to the others
 	// the only thing they have in common, is that the papers tab always end with #event-overview
 	// other than that, there'll only be a preliminary check while scraping to make sure that the page
@@ -92,7 +109,7 @@ async function isRschrUrl(url: string): Promise<boolean> {
 }
 
 // returns true if successfully scraped, false otherwise
-async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
+export async function scrapeListOfAcmPapers(url: string, TEST = false): Promise<boolean> {
 	// there's also playwright.firefox , we'll need to compare them at a later date for performance/memory
 	const browser = await playwright.chromium.launch({
 		headless: true, // setting this to true will not run the UI
@@ -101,8 +118,14 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 		// opens a page
 		const page = await browser.newPage();
 
-		// goes to that URL | TODO: error catching
-		await page.goto(url);
+		if (TEST) {
+			// used for testing
+			const contentHtml = fs.readFileSync(url, 'utf8');
+
+			await page.setContent(contentHtml, { waitUntil: 'domcontentloaded' });
+		} else {
+			await page.goto(url);
+		}
 
 		const paperTypes = await page.$$('.issue-heading');
 		const paperTitleHTags = await page.$$('.issue-item__title');
@@ -124,8 +147,8 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 		const shortAbstracts = await page.$$('.issue-item__abstract');
 		const citations = await page.$$('span.citation');
 		const downloads = await page.$$('span.metric');
-
 		const numPapers = paperTypes.length;
+
 		const papers: Papers = [];
 		console.assert(numPapers === paperTitleHTags.length && numPapers === authorContainers.length);
 
@@ -142,6 +165,7 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 						shortAbstracts,
 						citations,
 						downloads,
+						TEST,
 					),
 				);
 			} catch (e) {
@@ -151,13 +175,14 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 		}
 		return await uploadPapersToDatabase(papers);
 	} catch (error) {
+		console.log(error);
 		errors += 'Could not scrape website on acm.\n';
 		return false;
 	} finally {
 		await browser.close();
 	}
 }
-async function extractAcmPaper(
+export async function extractAcmPaper(
 	authorContainers: ElementHandle<SVGElement | HTMLElement>[],
 	i: number,
 	dateAndPages: ElementHandle<SVGElement | HTMLElement>[],
@@ -166,8 +191,10 @@ async function extractAcmPaper(
 	shortAbstracts: ElementHandle<SVGElement | HTMLElement>[],
 	citations: ElementHandle<SVGElement | HTMLElement>[],
 	downloads: ElementHandle<SVGElement | HTMLElement>[],
+	TEST = false,
 ): Promise<Paper> {
 	// GRAB AUTHORS
+	/* istanbul ignore next */
 	const authors = await authorContainers[i].$$eval('li a', (authorElm) => {
 		const data: string[] = [];
 		authorElm.forEach((elm) => {
@@ -179,6 +206,7 @@ async function extractAcmPaper(
 	const spans = await dateAndPages[i].$$('span');
 	// TODO: scrape monthYear correctly
 	// const monthYear = await spans[0].textContent().then((data) => data?.replace(', ', ''));
+	/* istanbul ignore next */
 	const href = await paperTitleHTags[i].$eval('a', (hrefElm) => hrefElm.href);
 	let paperType = await paperTypes[i].textContent();
 	if (paperType == null) paperType = '';
@@ -186,12 +214,17 @@ async function extractAcmPaper(
 	if (title == null) title = '';
 	let pages = await spans[0].textContent();
 	if (pages == null) pages = '';
-
+	let doi: string;
+	if (TEST) {
+		doi = Math.random().toString();
+	} else {
+		doi = href?.replace('https://dl.acm.org/doi', '');
+	}
 	return {
 		type: paperType,
 		title,
 		url: href,
-		doi: href?.replace('https://dl.acm.org/doi', ''),
+		doi,
 		authors,
 		fullAbstract: '',
 		fullAuthors: '',
@@ -207,7 +240,7 @@ async function extractAcmPaper(
 }
 // returns true if successfully scraped, false otherwise
 
-async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
+export async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 	// there's also playwright.firefox , we'll need to compare them at a later date for performance/memory
 	const browser = await playwright.chromium.launch({
 		headless: true, // setting this to true will not run the UI
@@ -216,17 +249,16 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		// opens a page
 		const page = await browser.newPage();
 
-		// goes to that URL | TODO: error catching
 		await page.goto(url, { timeout: 100000 });
+
 		// get how many papers there are on the page
 		const paperRows = await page.$$('#event-overview tbody tr').then((v) => v.length);
-
+		await page.screenshot({ path: 'screenshot.png', fullPage: true });
 		// then open them and copy the link to their page
 		const papers: Papers = [];
 		for (let i = 0; i < paperRows; i++) {
 			papers.push(await extractRschrPaper(i, page));
 		}
-
 		return await uploadPapersToDatabase(papers);
 	} catch (error) {
 		errors += 'Could not scrape website on researchr.\n';
@@ -238,7 +270,7 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 	}
 }
 
-async function extractRschrPaper(index: number, page: Page): Promise<Paper> {
+export async function extractRschrPaper(index: number, page: Page): Promise<Paper> {
 	// open the modal
 	await page.click(`div#event-overview tbody tr:nth-child(${index + 1}) td:nth-child(2) a`, {
 		timeout: 1000,
@@ -326,6 +358,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<Paper> {
 			.locator(`.appended:nth-child(${index + 1}) .event-description .media-body h5`)
 			.nth(0);
 		await authorsContainer.waitFor({ timeout: 500 });
+		/* istanbul ignore next */
 		authors = await authorsContainer.evaluateAll((elements) => {
 			const data: string[] = [];
 			elements.forEach((elm) => {
@@ -363,7 +396,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<Paper> {
 	};
 }
 
-async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
+export async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 	if (papers.length === 0) {
 		return false;
 	}
@@ -404,9 +437,9 @@ async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
 		} catch (e) {
 			errors += 'Error while uploading to database.\n';
 			console.log(logToFile(e));
+			return false;
 		}
 	}
-	// TODO: add some kind of check in case some papers were not actually created, maybe in the try catch above
 	return true;
 }
 
