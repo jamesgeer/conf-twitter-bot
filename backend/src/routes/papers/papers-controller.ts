@@ -1,14 +1,6 @@
 import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
-import {
-	deletePaper,
-	getPaper,
-	getPapers,
-	getSearchedPapers,
-	updatePaper,
-	UpdatePaperType,
-	getAbstract,
-} from './papers-model';
+import { deletePaper, getPaper, getPapers, getSearchedPapers, updatePaper, UpdatePaperType } from './papers-model';
 import { PaperSearchDB } from './papers';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
@@ -85,20 +77,18 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 	ctx.body = papers;
 };
 
-export const summary = async (ctx: ParameterizedContext): Promise<void> => {
+export const summariseAbstract = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id }: { id: string } = ctx.params;
 
 	const idNumber = parseInt(id, 10);
-	const abstract = await getAbstract(idNumber);
-	if (abstract instanceof ServerError) {
-		ctx.status = abstract.getStatusCode();
-		ctx.body = { message: abstract.getMessage() };
+	const paper = await getPaper(idNumber);
+	if (paper instanceof ServerError) {
+		ctx.status = paper.getStatusCode();
+		ctx.body = { message: paper.getMessage() };
 		return;
 	}
 
-	const summaryOfAbstract = await getSummary(abstract);
-
-	// console.log(summaryOfAbstract);
+	const summaryOfAbstract = await getSummary(paper.shortAbstract);
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = summaryOfAbstract;

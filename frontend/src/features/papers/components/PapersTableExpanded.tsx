@@ -3,8 +3,8 @@ import { Text, Box, Button, Flex, ModalBody, SimpleGrid, useDisclosure } from '@
 import PaperModal from './Paper/PaperModal';
 import React, { useState } from 'react';
 import { IconArrowsDiagonal2 } from '@tabler/icons';
-import { getAbstract } from '../api/getPapers';
 import { IconSparkles } from '@tabler/icons-react';
+import { getAbstractSummary } from '../api/getPapers';
 
 interface Props {
 	paper: Paper;
@@ -17,7 +17,7 @@ const PapersTableExpanded = ({ paper }: Props) => {
 
 	const handleButtonClick = async () => {
 		setIsSummarising(true);
-		const summarised = await getAbstract(paper.id.toString());
+		const summarised = await getAbstractSummary(paper.id.toString());
 		setSummary(summarised);
 		setIsSummarising(false);
 	};

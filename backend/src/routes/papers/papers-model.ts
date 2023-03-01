@@ -127,28 +127,3 @@ export const deletePaper = async (paperId: number): Promise<Paper | ServerError>
 		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to delete paper due to server problem.');
 	}
 };
-
-export const getAbstract = async (paperId: number): Promise<string | ServerError> => {
-	try {
-		const result = await prisma.paper.findUnique({
-			where: {
-				id: paperId,
-			},
-			select: {
-				// can be fullabstract or short abstract
-				shortAbstract: true,
-			},
-		});
-
-		if (result === null) {
-			return new ServerError(HttpStatus.NOT_FOUND, `Abstract from Paper with ID ${paperId} not found.`);
-		}
-
-		const { shortAbstract } = result;
-		return shortAbstract;
-	} catch (e) {
-		// console.log(e);
-		console.log(logToFile(e));
-		return new ServerError(HttpStatus.INTERNAL_SERVER_ERROR, 'Unable to get abstract due to server problem.');
-	}
-};

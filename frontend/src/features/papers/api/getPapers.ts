@@ -7,7 +7,7 @@ export const getPapers = async (): Promise<Papers> => {
 	return response.data;
 };
 
-export const getAbstract = async (paperId: string): Promise<string> => {
+export const getAbstractSummary = async (paperId: string): Promise<string> => {
 	const response = await axios.post(`/api/papers/${paperId}/summarise`);
 	return response.data;
 };

@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { paper, papers, searchedPapers, patchPaper, removePaper, summary } from './papers-controller';
+import { paper, papers, searchedPapers, patchPaper, removePaper, summariseAbstract } from './papers-controller';
 
 const papersRouter = new Router({ prefix: '/papers' });
 
@@ -49,4 +49,4 @@ export default papersRouter;
  * POST /api/papers/:id/summarise
  */
 
-papersRouter.post('/:id/summarise', summary);
+papersRouter.post('/:id/summarise', summariseAbstract);
