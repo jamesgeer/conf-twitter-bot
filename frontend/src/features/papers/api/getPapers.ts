@@ -22,7 +22,8 @@ export const getFilteredPapers = async (payload: PaperSearch): Promise<Papers> =
 	let searchParams = {};
 	for (const [key, value] of Object.entries(payload)) {
 		if (value) {
-			searchParams = { ...searchParams, [key]: value };
+			// add key/value to search query and remove excess whitespace
+			searchParams = { ...searchParams, [key]: value.trim() };
 		}
 	}
 

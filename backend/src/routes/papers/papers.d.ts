@@ -17,11 +17,6 @@ export interface Paper {
 	scrapeDate?: Date | string;
 }
 
-export interface PaperSearch {
-	search?: string;
-	source?: string;
-}
-
 export interface PaperSearchDB {
 	title?: string;
 	source?: string;

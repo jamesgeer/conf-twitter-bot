@@ -2,14 +2,14 @@ import { ParameterizedContext } from 'koa';
 import HttpStatus from 'http-status';
 import {
 	deletePaper,
-	getAbstract,
 	getPaper,
 	getPapers,
 	getSearchedPapers,
 	updatePaper,
 	UpdatePaperType,
+	getAbstract,
 } from './papers-model';
-import { PaperSearch, PaperSearchDB } from './papers';
+import { PaperSearchDB } from './papers';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
 import { getSummary } from '../openai/openai-controller';
@@ -65,10 +65,13 @@ export const removePaper = async (ctx: ParameterizedContext): Promise<void> => {
 	ctx.status = HttpStatus.OK;
 };
 
-export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
-	const obj: PaperSearch = { ...ctx.request.query };
+interface PaperSearch {
+	search?: string;
+	source?: string;
+}
 
-	const { search, source } = obj;
+export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> => {
+	const { search, source }: PaperSearch = ctx.request.query;
 	const queryForDb: PaperSearchDB = { title: search, source };
 
 	const papers = await getSearchedPapers(queryForDb);

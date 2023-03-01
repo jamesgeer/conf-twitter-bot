@@ -52,6 +52,7 @@ interface ImportPaper {
 			await insertPaper(paper);
 		} catch (e) {
 			console.log(e);
+			return;
 		}
 	}
 })();

@@ -1,7 +1,7 @@
 export interface ScrapeHistoryElm {
 	links: string;
 	errors: string;
-	scrapeDate: Date;
+	scrapeDate: Date | string;
 }
 
 export type ScrapeHistory = Array<ScrapeHistoryElm>;

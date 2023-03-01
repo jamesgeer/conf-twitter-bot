@@ -24,7 +24,7 @@ const EditUploadsList = ({ media, setMedia, uploads, setUploads, uploadsToDelete
 		}
 
 		// user wants to delete upload so add to array for deletion
-		if (uploadsToDelete === [] || !uploadsToDelete.includes(upload)) {
+		if (!uploadsToDelete.includes(upload)) {
 			uploadsToDelete.push(upload);
 			return;
 		}
