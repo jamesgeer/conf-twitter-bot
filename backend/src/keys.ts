@@ -13,6 +13,6 @@ export const {
 	APP_URL = 'http://localhost:3000',
 	TWITTER_API_KEY = '',
 	TWITTER_API_SECRET = '',
-	OPENAI_SECRET = '',
+	OPENAI_API_KEY = '',
 	TWITTER_CALLBACK_URL = `${APP_URL}/twitter-oauth-callback`,
 } = process.env;

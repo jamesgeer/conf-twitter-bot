@@ -3,7 +3,7 @@ import HttpStatus from 'http-status';
 import { ServerError } from '../types';
 
 const configuration = new Configuration({
-	apiKey: process.env.OPENAI_SECRET,
+	apiKey: process.env.OPENAI_API_KEY,
 });
 
 const openai = new OpenAIApi(configuration);
