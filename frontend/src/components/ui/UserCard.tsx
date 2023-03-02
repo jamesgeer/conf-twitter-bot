@@ -11,7 +11,7 @@ import {
 	Flex,
 	MenuDivider,
 } from '@chakra-ui/react';
-import { IconSwitchHorizontal, IconLogout, IconChevronDown } from '@tabler/icons';
+import { IconSwitchHorizontal, IconLogout, IconChevronDown } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import React, { useContext } from 'react';
 import { useAccounts } from '../../features/accounts/api/getAccounts';

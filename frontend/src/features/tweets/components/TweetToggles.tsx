@@ -1,4 +1,4 @@
-import { IconCheck } from '@tabler/icons';
+import { IconCheck } from '@tabler/icons-react';
 import { Flex, Button } from '@chakra-ui/react';
 
 interface Props {

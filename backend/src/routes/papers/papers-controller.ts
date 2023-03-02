@@ -4,6 +4,7 @@ import { deletePaper, getPaper, getPapers, getSearchedPapers, updatePaper, Updat
 import { PaperSearchDB } from './papers';
 import { ServerError } from '../types';
 import { handleServerError } from '../util';
+import { getSummary } from '../openai/openai-controller';
 
 export const paper = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id }: { id: string } = ctx.params;
@@ -66,7 +67,29 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 	const queryForDb: PaperSearchDB = { title: search, source };
 
 	const papers = await getSearchedPapers(queryForDb);
+	if (papers instanceof ServerError) {
+		ctx.status = papers.getStatusCode();
+		ctx.body = { message: papers.getMessage() };
+		return;
+	}
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = papers;
+};
+
+export const summariseAbstract = async (ctx: ParameterizedContext): Promise<void> => {
+	const { id }: { id: string } = ctx.params;
+
+	const idNumber = parseInt(id, 10);
+	const paper = await getPaper(idNumber);
+	if (paper instanceof ServerError) {
+		ctx.status = paper.getStatusCode();
+		ctx.body = { message: paper.getMessage() };
+		return;
+	}
+
+	const summaryOfAbstract = await getSummary(paper.shortAbstract);
+
+	ctx.status = HttpStatus.OK;
+	ctx.body = summaryOfAbstract;
 };

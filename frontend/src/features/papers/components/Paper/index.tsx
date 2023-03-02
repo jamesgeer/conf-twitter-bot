@@ -1,5 +1,6 @@
 import { Paper as PaperType } from '../../types';
-import { IconCalendar, IconUsers, IconStack, IconTimeline } from '@tabler/icons';
+import { Text } from '@chakra-ui/react';
+import { IconCalendar, IconUsers, IconStack, IconTimeline } from '@tabler/icons-react';
 import React from 'react';
 import { Heading, Box, HStack, useDisclosure } from '@chakra-ui/react';
 import PaperModal from './PaperModal';

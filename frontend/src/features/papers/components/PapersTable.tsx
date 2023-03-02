@@ -1,5 +1,5 @@
 import { Table, Thead, Tbody, Tr, Th, Td, Box, Text } from '@chakra-ui/react';
-import { IconCirclePlus, IconCircleMinus } from '@tabler/icons';
+import { IconCirclePlus, IconCircleMinus } from '@tabler/icons-react';
 
 import {
 	useReactTable,

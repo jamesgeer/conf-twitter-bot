@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import uuid from 'react-uuid';
-import { IconExternalLink } from '@tabler/icons';
+import { IconExternalLink } from '@tabler/icons-react';
 
 interface Props {
 	paper: PaperType;
