@@ -24,14 +24,10 @@ async function extractPublications(publications: any) {
 		let year: string | null = null;
 		if (publications[i].year != null) {
 			year = publications[i].year.toString();
-		} else {
-			year = null;
 		}
 		let pages: string | null = null;
 		if (publications[i].pages != null) {
 			pages = publications[i].pages.toString();
-		} else {
-			pages = null;
 		}
 		if (publications[i].abstract == null) {
 			publications[i].abstract = 'No abstract available.';

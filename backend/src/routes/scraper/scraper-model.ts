@@ -117,7 +117,7 @@ export async function isRschrUrl(url: string): Promise<boolean> {
 	return url.endsWith('#event-overview');
 }
 
-async function isKarUrl(url: string) {
+export async function isKarUrl(url: string): Promise<boolean> {
 	return url.includes('@kent.ac.uk');
 }
 // returns true if successfully scraped, false otherwise

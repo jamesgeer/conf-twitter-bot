@@ -3,6 +3,7 @@ import prisma from '../../../../lib/prisma';
 import {
 	getHistory,
 	isAcmUrl,
+	isKarUrl,
 	isRschrUrl,
 	scrapeListOfAcmPapers,
 	uploadScrapeHistoryToDatabase,
@@ -61,6 +62,7 @@ describe('tests for the scrape history model', () => {
 describe('paper link conditional tests', () => {
 	const acmUrl = 'https://dl.acm.org/doi/proceedings/10.1145/3475738';
 	const rschrUrl = 'https://2022.splashcon.org/track/splash-2022-oopsla?#event-overview';
+	const karEmail = 's.marr@kent.ac.uk';
 	const wrongUrl = 'https://www.google.com';
 	describe('acm url tests', () => {
 		it('check acm url returns true', async () => {
@@ -82,6 +84,18 @@ describe('paper link conditional tests', () => {
 		});
 		it('check researchr url returns false', async () => {
 			const result = await isRschrUrl(wrongUrl);
+
+			expect(result).toBe(false);
+		});
+	});
+	describe('kar email tests', () => {
+		it('check kar email returns true', async () => {
+			const result = await isKarUrl(karEmail);
+
+			expect(result).toBe(true);
+		});
+		it('check researchr url returns false', async () => {
+			const result = await isKarUrl(wrongUrl);
 
 			expect(result).toBe(false);
 		});
