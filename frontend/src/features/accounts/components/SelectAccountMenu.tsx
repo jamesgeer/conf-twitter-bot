@@ -1,4 +1,4 @@
-import { IconDotsVertical, IconAlertTriangle } from '@tabler/icons';
+import { IconDotsVertical, IconAlertTriangle } from '@tabler/icons-react';
 import { Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react';
 import { useDeleteAccount } from '../api/deleteAccount';
 

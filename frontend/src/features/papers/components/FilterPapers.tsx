@@ -1,5 +1,5 @@
 import { InputGroup, InputLeftElement, Input, Select, Box, Button, Flex } from '@chakra-ui/react';
-import { IconSearch } from '@tabler/icons';
+import { IconSearch } from '@tabler/icons-react';
 import React, { useRef } from 'react';
 
 interface Props {
@@ -48,9 +48,7 @@ const FilterPapers = ({ setSearchInput, debouncedHandleFilter }: Props) => {
 						<option value="rschr">Researchr</option>
 					</Select>
 				</Box>
-				<Box>
-					<Button onClick={handleReset}>Clear all</Button>
-				</Box>
+				<Button onClick={handleReset}>Clear all</Button>
 			</div>
 		</div>
 	);

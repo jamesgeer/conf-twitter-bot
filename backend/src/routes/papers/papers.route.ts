@@ -1,15 +1,52 @@
 import Router from '@koa/router';
-import { papers, searchedPapers } from './papers-controller';
+import koaBody from 'koa-body';
+import { paper, papers, searchedPapers, patchPaper, removePaper, summariseAbstract } from './papers-controller';
 
 const papersRouter = new Router({ prefix: '/papers' });
 
-// GET /api/papers
+/**
+ * Get papers based on filter options
+ * ?search: optional search string
+ * ?source: optional source e.g. acm
+ *
+ * GET /api/papers/filter
+ */
+papersRouter.get('/filter', searchedPapers);
+
+/**
+ * Get paper with ID
+ *
+ * GET: /api/papers/:id
+ */
+papersRouter.get('/:id', paper);
+
+/**
+ * Get all papers
+ *
+ * GET /api/papers
+ */
 papersRouter.get('/', papers);
 
-// GET /api/papers/:search?/:source?
-papersRouter.get('/filter/:search?/:source?', searchedPapers);
+/**
+ * Update paper with ID
+ *
+ * PATCH: /api/papers/:id
+ */
+papersRouter.patch('/:id', koaBody(), patchPaper);
 
-// GET /api/papers/:paperId
-// papersRouter.get('/:paperId', paper);
+/**
+ * Delete paper with ID
+ *
+ * DELETE: /api/papers/:id
+ */
+papersRouter.delete('/:id', removePaper);
 
 export default papersRouter;
+
+/**
+ * Summarise a abstract from paper with ID
+ *
+ * POST /api/papers/:id/summarise
+ */
+
+papersRouter.post('/:id/summarise', summariseAbstract);

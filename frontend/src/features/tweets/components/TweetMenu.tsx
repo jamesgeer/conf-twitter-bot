@@ -1,4 +1,4 @@
-import { IconDotsVertical, IconAlertTriangle, IconPencil } from '@tabler/icons';
+import { IconDotsVertical, IconAlertTriangle, IconPencil } from '@tabler/icons-react';
 import { Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react';
 
 interface Props {

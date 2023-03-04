@@ -7,6 +7,11 @@ export const getPapers = async (): Promise<Papers> => {
 	return response.data;
 };
 
+export const getAbstractSummary = async (paperId: string): Promise<string> => {
+	const response = await axios.post(`/api/papers/${paperId}/summarise`);
+	return response.data;
+};
+
 export const usePapers = () => {
 	return useQuery<Papers, Error>(['papers'], () => getPapers(), {
 		initialData: [],
@@ -17,7 +22,8 @@ export const getFilteredPapers = async (payload: PaperSearch): Promise<Papers> =
 	let searchParams = {};
 	for (const [key, value] of Object.entries(payload)) {
 		if (value) {
-			searchParams = { ...searchParams, [key]: value };
+			// add key/value to search query and remove excess whitespace
+			searchParams = { ...searchParams, [key]: value.trim() };
 		}
 	}
 

@@ -1,30 +1,20 @@
 export interface Paper {
-	type?: string;
-
+	id?: number;
+	doi?: string | null;
+	type?: string | null;
 	title: string;
 	authors: string[];
-	fullAuthors: string;
-
-	doi?: string;
+	fullAuthors?: string | null;
 	url: string;
-	preprint?: string;
-
+	preprint?: string | null;
 	shortAbstract: string;
-	fullAbstract?: string;
-
-	monthYear?: string;
-	pages?: string;
-
-	citations?: number;
-	downloads?: number;
-
+	fullAbstract?: string | null;
+	monthYear?: string | null;
+	pages?: string | null;
+	citations?: number | null;
+	downloads?: number | null;
 	source: string;
 	scrapeDate?: Date | string;
-}
-
-export interface PaperSearch {
-	search?: string;
-	source?: string;
 }
 
 export interface PaperSearchDB {

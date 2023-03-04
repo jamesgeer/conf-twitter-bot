@@ -3,17 +3,16 @@ import { ParameterizedContext } from 'koa';
 import { scrapePapers, getHistory } from './scraper-model';
 
 export const scrape = async (ctx: ParameterizedContext): Promise<void> => {
-	const { urls } = ctx.request.body;
+	const { urls }: { urls: string } = ctx.request.body;
 	const scraped = await scrapePapers(urls);
 
 	if (scraped) {
 		ctx.status = HttpStatus.OK;
-		ctx.body = { message: 'Successful scrape request.' };
-		return;
+		ctx.body = 'Successful scrape request.';
+	} else {
+		ctx.status = HttpStatus.NO_CONTENT;
+		ctx.body = 'Unsuccessful scrape request.';
 	}
-
-	ctx.status = HttpStatus.OK;
-	ctx.body = { message: 'Unsuccessful scrape request.' };
 };
 
 export const history = async (ctx: ParameterizedContext): Promise<void> => {

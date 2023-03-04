@@ -1,5 +1,5 @@
 import { Button, useColorMode } from '@chakra-ui/react';
-import { IconMoon, IconSun } from '@tabler/icons';
+import { IconMoon, IconSun } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 
 const DarkModeButton = () => {
