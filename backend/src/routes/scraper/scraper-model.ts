@@ -4,12 +4,15 @@ import { Paper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
 import { ScrapeHistory } from './scraper';
+import { scrapeKarPapers } from './scraper-kar';
+import { uploadPapersToDatabase } from './upload-papers-to-database';
 
 /*
 	testing: https://2022.splashcon.org/track/splash-2022-oopsla?#event-overview
 https://dl.acm.org/doi/proceedings/10.1145/3475738
  */
 let errors = '';
+
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
 		if (urls === 'TEST') {
@@ -29,6 +32,12 @@ export async function scrapePapers(urls: string): Promise<boolean> {
 			} else if (await isRschrUrl(url.trim())) {
 				const aux = await scrapeListOfRschrPapers(url.trim());
 				if (!aux) {
+					finishedCorrectly = false;
+				}
+			} else if (await isKarUrl(url.trim())) {
+				const aux = await scrapeKarPapers(url.trim(), errors);
+				errors = aux.errors;
+				if (!aux.success) {
 					finishedCorrectly = false;
 				}
 			} else {
@@ -108,6 +117,9 @@ export async function isRschrUrl(url: string): Promise<boolean> {
 	return url.endsWith('#event-overview');
 }
 
+export async function isKarUrl(url: string): Promise<boolean> {
+	return url.includes('@kent.ac.uk');
+}
 // returns true if successfully scraped, false otherwise
 export async function scrapeListOfAcmPapers(url: string, TEST = false): Promise<boolean> {
 	// there's also playwright.firefox , we'll need to compare them at a later date for performance/memory
@@ -173,7 +185,9 @@ export async function scrapeListOfAcmPapers(url: string, TEST = false): Promise<
 				// ignore entry
 			}
 		}
-		return await uploadPapersToDatabase(papers);
+		const result = await uploadPapersToDatabase(papers, errors);
+		errors = result.errors;
+		return result.success;
 	} catch (error) {
 		console.log(error);
 		errors += 'Could not scrape website on acm.\n';
@@ -218,7 +232,7 @@ export async function extractAcmPaper(
 	if (TEST) {
 		doi = Math.random().toString();
 	} else {
-		doi = href?.replace('https://dl.acm.org/doi', '');
+		doi = href;
 	}
 	return {
 		type: paperType,
@@ -259,7 +273,9 @@ export async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		for (let i = 0; i < paperRows; i++) {
 			papers.push(await extractRschrPaper(i, page));
 		}
-		return await uploadPapersToDatabase(papers);
+		const result = await uploadPapersToDatabase(papers, errors);
+		errors = result.errors;
+		return result.success;
 	} catch (error) {
 		errors += 'Could not scrape website on researchr.\n';
 		console.error(error);
@@ -394,53 +410,6 @@ export async function extractRschrPaper(index: number, page: Page): Promise<Pape
 		shortAbstract: abstract,
 		fullAbstract: '',
 	};
-}
-
-export async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
-	if (papers.length === 0) {
-		return false;
-	}
-	for (const thisPaper of papers) {
-		try {
-			switch (thisPaper.source) {
-				case 'acm':
-					// acm always has a doi, so it's easy to find
-					// have to do it this way because upsert requires unique columns
-					await prisma.paper.deleteMany({
-						where: {
-							AND: {
-								doi: thisPaper.doi,
-								source: thisPaper.source,
-							},
-						},
-					});
-					await prisma.paper.create({
-						data: thisPaper,
-					});
-					break;
-				case 'rschr':
-					await prisma.paper.deleteMany({
-						where: {
-							AND: {
-								title: thisPaper.title,
-								source: thisPaper.source,
-							},
-						},
-					});
-					await prisma.paper.create({
-						data: thisPaper,
-					});
-					break;
-				default:
-					errors += `Could not trace website source. ${thisPaper.url}\n`;
-			}
-		} catch (e) {
-			errors += 'Error while uploading to database.\n';
-			console.log(logToFile(e));
-			return false;
-		}
-	}
-	return true;
 }
 
 export async function getHistory(): Promise<ScrapeHistory> {
