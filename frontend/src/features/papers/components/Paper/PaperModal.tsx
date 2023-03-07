@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import uuid from 'react-uuid';
 import { IconExternalLink } from '@tabler/icons-react';
+import { Link as ReactLink } from 'react-router-dom';
 
 interface Props {
 	paper: PaperType;
@@ -37,7 +38,7 @@ const PaperModal = ({ paper, isOpen, onClose }: Props) => {
 			.map<React.ReactNode>((author) => {
 				// TODO: internal link to display author's papers
 				return (
-					<Link key={uuid()} href="#">
+					<Link as={ReactLink} key={uuid()} to={'/papers/' + author.replace(/ /g, '-').toLowerCase()}>
 						{author}
 					</Link>
 				);

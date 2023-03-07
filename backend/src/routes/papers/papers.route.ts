@@ -57,7 +57,11 @@ papersRouter.delete('/:id', removePaper);
 
 papersRouter.post('/:id/summarise', summariseAbstract);
 
-// GET /api/papers/:author
-papersRouter.get('/:author', authorsPapers);
+/**
+ * Gets all papers from author
+ *
+ * // GET /api/papers/author/:author
+ */
+papersRouter.get('/author/:author', authorsPapers);
 
 export default papersRouter;
