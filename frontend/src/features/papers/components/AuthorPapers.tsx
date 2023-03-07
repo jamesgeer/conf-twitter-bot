@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { Paper as PaperType, Papers } from '../types';
 import { useOutletContext } from 'react-router-dom';
 import { getAuthorsPapers } from '../api/getPapers';
-import PaperList from './PaperList';
+import PapersList from './PapersList';
 import { useEffect, useState } from 'react';
 
 const AuthorPapers = () => {
@@ -43,7 +43,7 @@ const AuthorPapers = () => {
 		modifyTitle();
 	}, [author]);
 
-	return <PaperList papers={authorPapers ? authorPapers : []} />;
+	return <PapersList papers={authorPapers ? authorPapers : []} />;
 };
 
 export default AuthorPapers;

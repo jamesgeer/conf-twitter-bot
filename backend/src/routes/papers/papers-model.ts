@@ -57,19 +57,18 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers> 
 
 export async function getAuthorsPapers(author: string): Promise<Papers> {
 	try {
-		const acmPapers = await prisma.acmPaper
-			.findMany({ where: { authors: { has: author } } })
-			.then((paperArray) => <Papers>paperArray);
-		const rschrPapers = await prisma.researchrPaper
-			.findMany({ where: { authors: { has: author } } })
-			.then((paperArray) => <Papers>paperArray);
-		papers = acmPapers.concat(rschrPapers);
+		return await prisma.paper.findMany({
+			where: {
+				authors: {
+					has: author,
+				},
+			},
+		});
 	} catch (e) {
 		console.error(e);
 		console.log(logToFile(e));
-		papers = [];
+		return [];
 	}
-	return papers;
 }
 
 export const insertPaper = async (paper: Paper): Promise<Paper> =>
