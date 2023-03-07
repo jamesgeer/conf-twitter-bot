@@ -1,39 +1,115 @@
 import playwright, { ElementHandle, Page } from 'playwright-chromium';
-import { AcmPaper, RschrPaper, Papers } from '../papers/papers';
+import * as fs from 'fs';
+import { Paper, Papers } from '../papers/papers';
 import { logToFile } from '../../logging/logging';
 import prisma from '../../../lib/prisma';
+import { ScrapeHistory } from './scraper';
+import { scrapeKarPapers } from './scraper-kar';
+import { uploadPapersToDatabase } from './upload-papers-to-database';
+
 /*
 	testing: https://2022.splashcon.org/track/splash-2022-oopsla?#event-overview
 https://dl.acm.org/doi/proceedings/10.1145/3475738
  */
+let errors = '';
+
 export async function scrapePapers(urls: string): Promise<boolean> {
 	try {
+		if (urls === 'TEST') {
+			return true;
+		}
 		const urlsArray = urls.trim().split('\n');
-
+		let finishedCorrectly = true;
 		// go through each URL and check what website it belongs to, then scrape accordingly
 		for (const url of urlsArray) {
 			// eslint-disable-next-line no-await-in-loop
 			if (await isAcmUrl(url.trim())) {
-				// TODO: for testing purposes just console log now
-				// logs out true if the scraping was succesful, false otherwise
-				await scrapeListOfAcmPapers(url.trim()).then((r) => console.log(r));
+				// logs out true if the scraping was successful, false otherwise
+				const aux = await scrapeListOfAcmPapers(url.trim());
+				if (!aux) {
+					finishedCorrectly = false;
+				}
 			} else if (await isRschrUrl(url.trim())) {
-				await scrapeListOfRschrPapers(url.trim()).then((r) => console.log(r));
+				const aux = await scrapeListOfRschrPapers(url.trim());
+				if (!aux) {
+					finishedCorrectly = false;
+				}
+			} else if (await isKarUrl(url.trim())) {
+				const aux = await scrapeKarPapers(url.trim(), errors);
+				errors = aux.errors;
+				if (!aux.success) {
+					finishedCorrectly = false;
+				}
+			} else {
+				finishedCorrectly = false;
+				errors += `Invalid paper link: ${url}\n`;
 			}
 		}
-		return true;
+		let aux = await uploadScrapeHistoryToDatabase(urls, errors);
+		if (!aux) {
+			finishedCorrectly = false;
+		}
+		aux = await cleanScrapeHistoryDatabase();
+		if (!aux) {
+			finishedCorrectly = false;
+		}
+		errors = '';
+		return finishedCorrectly;
 	} catch (e) {
+		await uploadScrapeHistoryToDatabase(urls, errors);
+		errors = '';
 		console.error(e);
 		console.log(logToFile(e));
 		return false;
 	}
 }
 
-async function isAcmUrl(url: string): Promise<boolean> {
+export async function uploadScrapeHistoryToDatabase(urls: string, errors: string): Promise<boolean> {
+	if (urls.length === 0) {
+		return false;
+	}
+	if (errors === '') {
+		errors = 'No errors.';
+	}
+	const errorsArray = errors.split('\n');
+	const errorsSet: Set<string> = new Set(errorsArray);
+	errorsSet.delete('');
+	try {
+		await prisma.scrapeHistory.create({
+			data: {
+				links: urls,
+				errors: Array.from(errorsSet).toString(),
+			},
+		});
+		return true;
+	} catch (e) {
+		console.log(logToFile(e));
+		return false;
+	}
+}
+
+async function cleanScrapeHistoryDatabase(): Promise<boolean> {
+	const date = new Date();
+	date.setDate(date.getDate() - 7); // delete records that are 7 days or older
+	try {
+		await prisma.scrapeHistory.deleteMany({
+			where: {
+				scrapeDate: {
+					lte: date,
+				},
+			},
+		});
+		return true;
+	} catch (e) {
+		console.log(logToFile(e));
+		return false;
+	}
+}
+export async function isAcmUrl(url: string): Promise<boolean> {
 	return url.includes('/dl.acm.org/');
 }
 
-async function isRschrUrl(url: string): Promise<boolean> {
+export async function isRschrUrl(url: string): Promise<boolean> {
 	// every single conference on researchr seems to have its own domain or a different one to the others
 	// the only thing they have in common, is that the papers tab always end with #event-overview
 	// other than that, there'll only be a preliminary check while scraping to make sure that the page
@@ -41,8 +117,11 @@ async function isRschrUrl(url: string): Promise<boolean> {
 	return url.endsWith('#event-overview');
 }
 
+export async function isKarUrl(url: string): Promise<boolean> {
+	return url.includes('@kent.ac.uk');
+}
 // returns true if successfully scraped, false otherwise
-async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
+export async function scrapeListOfAcmPapers(url: string, TEST = false): Promise<boolean> {
 	// there's also playwright.firefox , we'll need to compare them at a later date for performance/memory
 	const browser = await playwright.chromium.launch({
 		headless: true, // setting this to true will not run the UI
@@ -51,8 +130,14 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 		// opens a page
 		const page = await browser.newPage();
 
-		// goes to that URL | TODO: error catching
-		await page.goto(url);
+		if (TEST) {
+			// used for testing
+			const contentHtml = fs.readFileSync(url, 'utf8');
+
+			await page.setContent(contentHtml, { waitUntil: 'domcontentloaded' });
+		} else {
+			await page.goto(url);
+		}
 
 		const paperTypes = await page.$$('.issue-heading');
 		const paperTitleHTags = await page.$$('.issue-item__title');
@@ -63,6 +148,7 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 				await page.click('.removed-items-count', { timeout: 1000 });
 			} catch (error) {
 				if (error instanceof playwright.errors.TimeoutError) {
+					errors += 'Expand authors button could not be clicked on acm.\n';
 					console.log('Expand authors button could not be clicked...');
 					console.log(logToFile(error));
 				}
@@ -73,8 +159,8 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 		const shortAbstracts = await page.$$('.issue-item__abstract');
 		const citations = await page.$$('span.citation');
 		const downloads = await page.$$('span.metric');
-
 		const numPapers = paperTypes.length;
+
 		const papers: Papers = [];
 		console.assert(numPapers === paperTitleHTags.length && numPapers === authorContainers.length);
 
@@ -91,20 +177,26 @@ async function scrapeListOfAcmPapers(url: string): Promise<boolean> {
 						shortAbstracts,
 						citations,
 						downloads,
+						TEST,
 					),
 				);
 			} catch (e) {
+				errors += 'Could not scrape some content on acm.\n';
 				// ignore entry
 			}
 		}
-		return await uploadPapersToDatabase(papers);
+		const result = await uploadPapersToDatabase(papers, errors);
+		errors = result.errors;
+		return result.success;
 	} catch (error) {
+		console.log(error);
+		errors += 'Could not scrape website on acm.\n';
 		return false;
 	} finally {
 		await browser.close();
 	}
 }
-async function extractAcmPaper(
+export async function extractAcmPaper(
 	authorContainers: ElementHandle<SVGElement | HTMLElement>[],
 	i: number,
 	dateAndPages: ElementHandle<SVGElement | HTMLElement>[],
@@ -113,8 +205,10 @@ async function extractAcmPaper(
 	shortAbstracts: ElementHandle<SVGElement | HTMLElement>[],
 	citations: ElementHandle<SVGElement | HTMLElement>[],
 	downloads: ElementHandle<SVGElement | HTMLElement>[],
-): Promise<AcmPaper> {
+	TEST = false,
+): Promise<Paper> {
 	// GRAB AUTHORS
+	/* istanbul ignore next */
 	const authors = await authorContainers[i].$$eval('li a', (authorElm) => {
 		const data: string[] = [];
 		authorElm.forEach((elm) => {
@@ -126,6 +220,7 @@ async function extractAcmPaper(
 	const spans = await dateAndPages[i].$$('span');
 	// TODO: scrape monthYear correctly
 	// const monthYear = await spans[0].textContent().then((data) => data?.replace(', ', ''));
+	/* istanbul ignore next */
 	const href = await paperTitleHTags[i].$eval('a', (hrefElm) => hrefElm.href);
 	let paperType = await paperTypes[i].textContent();
 	if (paperType == null) paperType = '';
@@ -133,12 +228,17 @@ async function extractAcmPaper(
 	if (title == null) title = '';
 	let pages = await spans[0].textContent();
 	if (pages == null) pages = '';
-
+	let doi: string;
+	if (TEST) {
+		doi = Math.random().toString();
+	} else {
+		doi = href;
+	}
 	return {
 		type: paperType,
 		title,
 		url: href,
-		doi: href?.replace('https://dl.acm.org/doi', ''),
+		doi,
 		authors,
 		fullAbstract: '',
 		fullAuthors: '',
@@ -154,7 +254,7 @@ async function extractAcmPaper(
 }
 // returns true if successfully scraped, false otherwise
 
-async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
+export async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 	// there's also playwright.firefox , we'll need to compare them at a later date for performance/memory
 	const browser = await playwright.chromium.launch({
 		headless: true, // setting this to true will not run the UI
@@ -163,19 +263,21 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 		// opens a page
 		const page = await browser.newPage();
 
-		// goes to that URL | TODO: error catching
 		await page.goto(url, { timeout: 100000 });
+
 		// get how many papers there are on the page
 		const paperRows = await page.$$('#event-overview tbody tr').then((v) => v.length);
-
+		await page.screenshot({ path: 'screenshot.png', fullPage: true });
 		// then open them and copy the link to their page
 		const papers: Papers = [];
 		for (let i = 0; i < paperRows; i++) {
 			papers.push(await extractRschrPaper(i, page));
 		}
-
-		return await uploadPapersToDatabase(papers);
+		const result = await uploadPapersToDatabase(papers, errors);
+		errors = result.errors;
+		return result.success;
 	} catch (error) {
+		errors += 'Could not scrape website on researchr.\n';
 		console.error(error);
 		console.log(logToFile(error));
 		return false;
@@ -184,7 +286,7 @@ async function scrapeListOfRschrPapers(url: string): Promise<boolean> {
 	}
 }
 
-async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper> {
+export async function extractRschrPaper(index: number, page: Page): Promise<Paper> {
 	// open the modal
 	await page.click(`div#event-overview tbody tr:nth-child(${index + 1}) td:nth-child(2) a`, {
 		timeout: 1000,
@@ -199,6 +301,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await urlContainer.getAttribute('href');
 		link = aux == null ? '' : aux;
 	} catch (e) {
+		errors += `Could not scrape link for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			link = '';
 		}
@@ -212,6 +315,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await titleContainer.textContent();
 		title = aux == null ? '' : aux;
 	} catch (e) {
+		errors += `Could not scrape title for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			title = '';
 		}
@@ -225,6 +329,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await abstractContainer.textContent();
 		abstract = aux == null ? '' : aux;
 	} catch (e) {
+		errors += `Could not scrape abstract for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			abstract = '';
 		}
@@ -240,6 +345,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await doiContainer.getAttribute('href');
 		doi = aux == null ? '' : aux;
 	} catch (e) {
+		errors += `Could not scrape doi for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			doi = '';
 		}
@@ -255,6 +361,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		const aux: string | null = await preprintContainer.getAttribute('href');
 		preprint = aux == null ? '' : aux;
 	} catch (e) {
+		errors += `Could not scrape preprint for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			preprint = '';
 		}
@@ -267,6 +374,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 			.locator(`.appended:nth-child(${index + 1}) .event-description .media-body h5`)
 			.nth(0);
 		await authorsContainer.waitFor({ timeout: 500 });
+		/* istanbul ignore next */
 		authors = await authorsContainer.evaluateAll((elements) => {
 			const data: string[] = [];
 			elements.forEach((elm) => {
@@ -276,6 +384,7 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 		});
 		if (authors == null) authors = [];
 	} catch (e) {
+		errors += `Could not scrape authors for ${page.url()}.\n`;
 		if (e instanceof playwright.errors.TimeoutError) {
 			authors = [];
 		}
@@ -303,88 +412,21 @@ async function extractRschrPaper(index: number, page: Page): Promise<RschrPaper>
 	};
 }
 
-async function uploadPapersToDatabase(papers: Papers): Promise<boolean> {
-	if (papers.length === 0) {
-		return false;
+export async function getHistory(): Promise<ScrapeHistory> {
+	let history: ScrapeHistory;
+	try {
+		history = await prisma.scrapeHistory
+			.findMany({
+				orderBy: {
+					scrapeDate: 'desc',
+				},
+				take: 10,
+			})
+			.then((historyArray) => <ScrapeHistory>historyArray);
+	} catch (e) {
+		console.error(e);
+		console.log(logToFile(e));
+		history = [];
 	}
-	for (const thisPaper of papers) {
-		try {
-			// eslint-disable-next-line no-await-in-loop
-			if ('type' in thisPaper) {
-				await prisma.acmPaper.upsert({
-					where: {
-						doi: thisPaper.doi,
-					},
-					update: {
-						type: thisPaper.type,
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						monthYear: thisPaper.monthYear,
-						pages: thisPaper.pages,
-						citations: thisPaper.citations,
-						downloads: thisPaper.downloads,
-						source: thisPaper.source,
-					},
-					create: {
-						type: thisPaper.type,
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						monthYear: thisPaper.monthYear,
-						pages: thisPaper.pages,
-						citations: thisPaper.citations,
-						downloads: thisPaper.downloads,
-						source: thisPaper.source,
-					},
-				});
-			} else {
-				// doi is unique and some pages don't actually have it
-				if (thisPaper.doi === '') {
-					thisPaper.doi = null;
-				}
-				// eslint-disable-next-line no-await-in-loop
-				await prisma.researchrPaper.upsert({
-					where: {
-						title: thisPaper.title,
-					},
-					update: {
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						source: thisPaper.source,
-					},
-					create: {
-						title: thisPaper.title,
-						authors: thisPaper.authors,
-						fullAuthors: thisPaper.fullAuthors,
-						doi: thisPaper.doi,
-						url: thisPaper.url,
-						preprint: thisPaper.preprint,
-						shortAbstract: thisPaper.shortAbstract,
-						fullAbstract: thisPaper.fullAbstract,
-						source: thisPaper.source,
-					},
-				});
-			}
-		} catch (e) {
-			console.log(logToFile(e));
-		}
-	}
-	// TODO: add some kind of check in case some papers were not actually created, maybe in the try catch above
-	return true;
+	return history;
 }

@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises';
-import prisma from '../../lib/prisma';
+import { insertPaper } from '../routes/papers/papers-model';
 
 /**
  * Command to run this file:
@@ -9,7 +9,7 @@ import prisma from '../../lib/prisma';
  */
 const file = async (): Promise<string> => {
 	try {
-		return await readFile('./data.json', 'utf8');
+		return await readFile('./papers.json', 'utf8');
 	} catch (e) {
 		console.log(e);
 		return '';
@@ -27,9 +27,10 @@ interface ImportPaper {
 	shortAbstract: string;
 	citations: number;
 	downloads: number;
-	id: number;
-	proceedingsId: number;
+	id?: number;
 	fullAbstract?: string;
+	source: string;
+	proceedingsId?: number;
 }
 
 (async (): Promise<void> => {
@@ -39,47 +40,19 @@ interface ImportPaper {
 	}
 
 	const { papers } = JSON.parse(data);
+
 	let paper: ImportPaper;
 	for (paper of papers) {
+		delete paper?.id;
+		delete paper?.proceedingsId;
+
+		console.log(paper);
+		paper.source = 'acm';
 		try {
-			await prisma.acmPaper.upsert({
-				where: {
-					doi: paper.doi,
-				},
-				update: {
-					type: paper.type,
-					title: paper.title,
-					authors: paper.authors,
-					fullAuthors: '',
-					url: paper.url,
-					preprint: '',
-					shortAbstract: paper.shortAbstract,
-					fullAbstract: paper.fullAbstract,
-					monthYear: paper.monthYear,
-					pages: paper.pages,
-					citations: paper.citations,
-					downloads: paper.downloads,
-					source: 'acm',
-				},
-				create: {
-					type: paper.type,
-					title: paper.title,
-					authors: paper.authors,
-					fullAuthors: '',
-					doi: paper.doi,
-					url: paper.url,
-					preprint: '',
-					shortAbstract: paper.shortAbstract,
-					fullAbstract: paper.fullAbstract,
-					monthYear: paper.monthYear,
-					pages: paper.pages,
-					citations: paper.citations,
-					downloads: paper.downloads,
-					source: 'acm',
-				},
-			});
+			await insertPaper(paper);
 		} catch (e) {
 			console.log(e);
+			return;
 		}
 	}
 })();

@@ -3,7 +3,7 @@
 
 generator client {
     provider      = "prisma-client-js"
-    binaryTargets = ["debian-openssl-1.1.x"]
+    binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -86,35 +86,28 @@ model TwitterOAuth {
     updatedAt     DateTime    @updatedAt
 }
 
-// data model might need some small changes.
-model AcmPaper {
-    id            Int      @id @default(autoincrement())
-    doi           String   @unique
-    type          String
-    title         String
-    authors       String[]
-    fullAuthors   String?
-    url           String
-    preprint      String?
-    shortAbstract String
-    fullAbstract  String?
-    monthYear     String?
-    pages         String?
-    citations     Int?
-    downloads     Int?
-    source        String
+model Paper {
+  id            Int      @id @default(autoincrement())
+  doi           String?
+  type          String?
+  title         String
+  authors       String[]
+  fullAuthors   String?
+  url           String
+  preprint      String?
+  shortAbstract String
+  fullAbstract  String?
+  monthYear     String?
+  pages         String?
+  citations     Int?
+  downloads     Int?
+  source        String
+  scrapeDate    DateTime @default(now())
 }
 
-// data model not complete yet, will be complete once scrapping starts
-model ResearchrPaper {
-    id            Int      @id @default(autoincrement())
-    doi           String?  @unique
-    title         String   @unique
-    authors       String[]
-    fullAuthors   String?
-    url           String
-    preprint      String?
-    shortAbstract String
-    fullAbstract  String?
-    source        String
+model ScrapeHistory {
+  id            Int      @id @default(autoincrement())
+  links         String
+  errors        String
+  scrapeDate    DateTime @default(now())
 }

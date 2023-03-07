@@ -9,6 +9,7 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
+    "@types/jest": "^29.4.0",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
     "concurrently": "^7.4.0",

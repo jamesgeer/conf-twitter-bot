@@ -1,43 +1,20 @@
-export interface AcmPaper {
-	type: string;
-
-	title: string;
-	authors: string[];
-	fullAuthors: string;
-
-	doi: string;
-	url: string;
-	preprint?: string;
-
-	shortAbstract: string;
-	fullAbstract?: string;
-
-	monthYear?: string;
-	pages?: string;
-
-	citations?: number;
-	downloads?: number;
-
-	source: string;
-}
-
-export interface RschrPaper {
-	title: string;
-	authors: string[];
-	fullAuthors?: string;
-	source: string;
-
+export interface Paper {
+	id?: number;
 	doi?: string | null;
+	type?: string | null;
+	title: string;
+	authors: string[];
+	fullAuthors?: string | null;
 	url: string;
-	preprint?: string;
-
+	preprint?: string | null;
 	shortAbstract: string;
-	fullAbstract?: string;
-}
-
-export interface PaperSearch {
-	search?: string;
-	source?: string;
+	fullAbstract?: string | null;
+	monthYear?: string | null;
+	pages?: string | null;
+	citations?: number | null;
+	downloads?: number | null;
+	source: string;
+	scrapeDate?: Date | string;
 }
 
 export interface PaperSearchDB {
@@ -50,4 +27,4 @@ export interface PaperSearchDB {
 //	fullAuthors: string;
 // }
 
-export type Papers = Array<AcmPaper | RschrPaper>;
+export type Papers = Array<Paper>;

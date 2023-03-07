@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/react';
-import { IconX } from '@tabler/icons';
+import { IconX } from '@tabler/icons-react';
 import React from 'react';
 
 interface Props {

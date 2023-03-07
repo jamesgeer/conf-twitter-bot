@@ -1,9 +1,9 @@
-import { AcmPaper, RschrPaper, Papers } from '../types';
+import { Papers } from '../types';
 import { getFilteredPapers, usePapers } from '../api/getPapers';
 import FilterPapers from './FilterPapers';
 import React, { useEffect, useState } from 'react';
 import { debounce } from 'lodash';
-import PaperList from './PaperList';
+import PapersTable from './PapersTable';
 
 const PaperSearch = () => {
 	const [results, setResults] = useState<Papers>();
@@ -16,14 +16,19 @@ const PaperSearch = () => {
 
 	useEffect(() => {
 		const getData = async () => {
-			const filteredPaperData = await getFilteredPapers(searchInput);
+			let filteredPaperData;
+
+			if (searchInput.search !== '' || searchInput.source !== '') {
+				filteredPaperData = await getFilteredPapers(searchInput);
+			} else {
+				filteredPaperData = papers;
+			}
+
 			setResults(filteredPaperData);
 		};
 
-		if (searchInput.search !== '' || searchInput.source !== '') {
-			getData().catch(console.error);
-		}
-	}, [searchInput]);
+		getData().catch(console.error);
+	}, [searchInput, papers]);
 
 	if (isLoading) {
 		return <div>Loading Papers...</div>;
@@ -43,7 +48,7 @@ const PaperSearch = () => {
 	return (
 		<>
 			<FilterPapers setSearchInput={setSearchInput} debouncedHandleFilter={debouncedHandleFilter} />
-			<PaperList papers={results ? results : papers} />
+			<PapersTable papers={results ? results : papers} />
 		</>
 	);
 };

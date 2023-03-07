@@ -1,6 +1,6 @@
 import { Input, FormLabel, useColorMode, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { IconPhoto } from '@tabler/icons';
+import { IconPhoto } from '@tabler/icons-react';
 import uuid from 'react-uuid';
 
 interface Props {

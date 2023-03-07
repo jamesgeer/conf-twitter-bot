@@ -1,11 +1,12 @@
-import { IconDotsVertical, IconAlertTriangle, IconPencil } from '@tabler/icons';
+import { IconDotsVertical, IconAlertTriangle, IconPencil } from '@tabler/icons-react';
 import { Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react';
 
 interface Props {
+	sent: boolean;
 	handleClick: (menuItem: string) => void;
 }
 
-const TweetMenu = ({ handleClick }: Props) => {
+const TweetMenu = ({ sent, handleClick }: Props) => {
 	return (
 		<Menu isLazy>
 			<MenuButton
@@ -16,9 +17,12 @@ const TweetMenu = ({ handleClick }: Props) => {
 				_active={{ bg: 'none' }}
 			></MenuButton>
 			<MenuList onClick={(e) => e.stopPropagation()}>
-				<MenuItem bg="white" icon={<IconPencil />} onClick={() => handleClick('edit')}>
-					Edit
-				</MenuItem>
+				{!sent && (
+					<MenuItem bg="white" icon={<IconPencil />} onClick={() => handleClick('edit')}>
+						Edit
+					</MenuItem>
+				)}
+
 				<MenuItem
 					color="red.500"
 					bg="white"

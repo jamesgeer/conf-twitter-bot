@@ -18,6 +18,8 @@ Using Docker compose, the project can be started using the following command:
 
 `npx prisma migrate dev --name "name_of_migration"` - creates a new migration from the schema file
 
+`npx prisma generate` - creates a new client
+
 `docker-compose up --build` - rebuilds the containers
 
 `wsl --shutdown` - emergency command in case Docker is using too much memory (need restart to start wsl again)

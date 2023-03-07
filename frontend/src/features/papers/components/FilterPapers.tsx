@@ -1,5 +1,5 @@
 import { InputGroup, InputLeftElement, Input, Select, Box, Button, Flex } from '@chakra-ui/react';
-import { IconSearch } from '@tabler/icons';
+import { IconSearch } from '@tabler/icons-react';
 import React, { useRef } from 'react';
 
 interface Props {
