@@ -40,7 +40,7 @@ export const useSearchPapers = (payload: PaperSearch) => {
 	});
 };
 
-export const getAuthorsPapers = async (author: string): Promise<Papers> => {
-	const response = await axios.get(`/api/papers/author/${author}`);
+export const getAuthorsPapers = async (paperId: number, authorIndex: number): Promise<Papers> => {
+	const response = await axios.get(`/api/papers/author`, { params: { paperId, authorIndex } });
 	return response.data;
 };

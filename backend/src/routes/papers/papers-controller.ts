@@ -88,8 +88,7 @@ export const searchedPapers = async (ctx: ParameterizedContext): Promise<void> =
 export const summariseAbstract = async (ctx: ParameterizedContext): Promise<void> => {
 	const { id }: { id: string } = ctx.params;
 
-	const idNumber = parseInt(id, 10);
-	const paper = await getPaper(idNumber);
+	const paper = await getPaper(+id);
 	if (paper instanceof ServerError) {
 		ctx.status = paper.getStatusCode();
 		ctx.body = { message: paper.getMessage() };
@@ -102,21 +101,35 @@ export const summariseAbstract = async (ctx: ParameterizedContext): Promise<void
 	ctx.body = summaryOfAbstract;
 };
 
+interface AuthorParams {
+	paperId: string;
+	authorIndex: string;
+}
+
 export const authorsPapers = async (ctx: ParameterizedContext): Promise<void> => {
-	const { author }: { author: string } = ctx.params;
+	// @ts-ignore Dict error unknown reason
+	const { paperId, authorIndex }: AuthorParams = ctx.request.query;
 
-	// unhandled case with - in name
-	const authorFormatted = author.replace(/-/g, ' ');
-	const name = authorFormatted.split(' ');
-
-	for (let i = 0; i < name.length; i++) {
-		name[i] = name[i][0].toUpperCase() + name[i].substring(1);
+	const paper = await getPaper(+paperId);
+	if (paper instanceof ServerError) {
+		ctx.status = paper.getStatusCode();
+		ctx.body = { message: paper.getMessage() };
+		return;
 	}
 
-	const authorParam = name.join(' ');
+	const author = paper.authors[+authorIndex];
+	if (+authorIndex > author.length) {
+		ctx.status = HttpStatus.NOT_FOUND;
+		return;
+	}
 
-	const papers = await getAuthorsPapers(authorParam);
+	const authorPapers = await getAuthorsPapers(author);
+	if (authorPapers instanceof ServerError) {
+		ctx.status = authorPapers.getStatusCode();
+		ctx.body = { message: authorPapers.getMessage() };
+		return;
+	}
 
 	ctx.status = HttpStatus.OK;
-	ctx.body = papers;
+	ctx.body = authorPapers;
 };

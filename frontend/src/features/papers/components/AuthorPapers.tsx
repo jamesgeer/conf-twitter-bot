@@ -1,12 +1,21 @@
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Paper as PaperType, Papers } from '../types';
 import { useOutletContext } from 'react-router-dom';
 import { getAuthorsPapers } from '../api/getPapers';
 import PapersList from './PapersList';
 import { useEffect, useState } from 'react';
+import PapersTable from './PapersTable';
+
+interface AuthorState {
+	paperId: number;
+	authorIndex: number;
+}
 
 const AuthorPapers = () => {
 	const { author } = useParams();
+	const { state }: any = useLocation();
+	const { paperId, authorIndex }: AuthorState = state;
+
 	const setActive = useOutletContext<
 		React.Dispatch<
 			React.SetStateAction<{
@@ -35,7 +44,7 @@ const AuthorPapers = () => {
 
 	useEffect(() => {
 		const getData = async () => {
-			const filteredPaperData = await getAuthorsPapers(author!);
+			const filteredPaperData = await getAuthorsPapers(paperId, authorIndex);
 			setAuthorPapers(filteredPaperData);
 		};
 
@@ -43,7 +52,7 @@ const AuthorPapers = () => {
 		modifyTitle();
 	}, [author]);
 
-	return <PapersList papers={authorPapers ? authorPapers : []} />;
+	return <PapersTable papers={authorPapers ? authorPapers : []} />;
 };
 
 export default AuthorPapers;

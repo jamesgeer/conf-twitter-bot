@@ -13,6 +13,13 @@ import {
 const papersRouter = new Router({ prefix: '/papers' });
 
 /**
+ * Gets all papers from author
+ *
+ * // GET /api/papers/author
+ */
+papersRouter.get('/author', authorsPapers);
+
+/**
  * Get papers based on filter options
  * ?search: optional search string
  * ?source: optional source e.g. acm
@@ -56,12 +63,5 @@ papersRouter.delete('/:id', removePaper);
  */
 
 papersRouter.post('/:id/summarise', summariseAbstract);
-
-/**
- * Gets all papers from author
- *
- * // GET /api/papers/author/:author
- */
-papersRouter.get('/author/:author', authorsPapers);
 
 export default papersRouter;
