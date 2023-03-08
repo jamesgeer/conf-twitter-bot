@@ -96,6 +96,11 @@ export const summariseAbstract = async (ctx: ParameterizedContext): Promise<void
 	}
 
 	const summaryOfAbstract = await getSummary(paper.shortAbstract);
+	if (summaryOfAbstract instanceof ServerError) {
+		ctx.status = summaryOfAbstract.getStatusCode();
+		ctx.body = { message: summaryOfAbstract.getMessage() };
+		return;
+	}
 
 	ctx.status = HttpStatus.OK;
 	ctx.body = summaryOfAbstract;
