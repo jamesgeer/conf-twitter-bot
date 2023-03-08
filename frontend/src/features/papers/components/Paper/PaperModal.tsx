@@ -38,13 +38,14 @@ const PaperModal = ({ paper, isOpen, onClose }: Props) => {
 			.map<React.ReactNode>((author, index) => {
 				// TODO: internal link to display author's papers
 				return (
-					<ReactLink
+					<Link
+						as={ReactLink}
 						key={uuid()}
 						to={'/papers/' + author.replace(/ /g, '-').toLowerCase()}
 						state={{ paperId: paper.id, authorIndex: index }}
 					>
 						{author}
-					</ReactLink>
+					</Link>
 				);
 			})
 			.reduce((prev, curr) => [prev, ', ', curr]);
