@@ -20,7 +20,7 @@ const Index = () => {
 	return (
 		<div className="container grid grid-cols-10 m-auto">
 			<Sidebar handleClick={handleClick} />
-			<Content active={active} />
+			<Content active={active} setActive={setActive} />
 		</div>
 	);
 };

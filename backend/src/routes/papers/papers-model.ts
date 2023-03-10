@@ -55,6 +55,22 @@ export async function getSearchedPapers(params: PaperSearchDB): Promise<Papers> 
 	}
 }
 
+export async function getAuthorsPapers(author: string): Promise<Papers> {
+	try {
+		return await prisma.paper.findMany({
+			where: {
+				authors: {
+					has: author,
+				},
+			},
+		});
+	} catch (e) {
+		console.error(e);
+		console.log(logToFile(e));
+		return [];
+	}
+}
+
 export const insertPaper = async (paper: Paper): Promise<Paper> =>
 	prisma.paper.create({
 		data: paper,

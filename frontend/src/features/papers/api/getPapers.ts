@@ -39,3 +39,8 @@ export const useSearchPapers = (payload: PaperSearch) => {
 		initialData: [],
 	});
 };
+
+export const getAuthorsPapers = async (paperId: number, authorIndex: number): Promise<Papers> => {
+	const response = await axios.get(`/api/papers/author`, { params: { paperId, authorIndex } });
+	return response.data;
+};

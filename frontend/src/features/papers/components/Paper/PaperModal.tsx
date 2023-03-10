@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import uuid from 'react-uuid';
 import { IconExternalLink } from '@tabler/icons-react';
+import { Link as ReactLink } from 'react-router-dom';
 
 interface Props {
 	paper: PaperType;
@@ -34,10 +35,15 @@ const PaperModal = ({ paper, isOpen, onClose }: Props) => {
 	// maps over array and puts a comma after each author except for the last
 	const paperModalAuthors = () => {
 		return paper.authors
-			.map<React.ReactNode>((author) => {
+			.map<React.ReactNode>((author, index) => {
 				// TODO: internal link to display author's papers
 				return (
-					<Link key={uuid()} href="#">
+					<Link
+						as={ReactLink}
+						key={uuid()}
+						to={'/papers/' + author.replace(/ /g, '-').toLowerCase()}
+						state={{ paperId: paper.id, authorIndex: index }}
+					>
 						{author}
 					</Link>
 				);

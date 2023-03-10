@@ -16,9 +16,13 @@ const PapersTableExpanded = ({ paper }: Props) => {
 
 	const handleButtonClick = async () => {
 		setIsSummarising(true);
-		const summarised = await getAbstractSummary(paper.id.toString());
-		setSummary(summarised);
-		setIsSummarising(false);
+		try {
+			const summarised = await getAbstractSummary(paper.id.toString());
+			setSummary(summarised);
+			setIsSummarising(false);
+		} catch (e) {
+			console.log(e);
+		}
 	};
 
 	return (

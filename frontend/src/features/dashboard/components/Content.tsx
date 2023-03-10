@@ -5,12 +5,19 @@ import ToggleListGrid from './toggleListGrid';
 import React, { useState } from 'react';
 import TweetForm from '../../tweets/components/Tweet';
 import ActiveTitle from './ActiveTitle';
+import { Outlet } from 'react-router-dom';
 
 interface Props {
 	active: { index: number; title: string };
+	setActive: React.Dispatch<
+		React.SetStateAction<{
+			index: number;
+			title: string;
+		}>
+	>;
 }
 
-const Content = ({ active }: Props) => {
+const Content = ({ active, setActive }: Props) => {
 	const tweet = {
 		id: 0,
 		accountId: 0,
@@ -26,9 +33,7 @@ const Content = ({ active }: Props) => {
 			<TweetForm isEdit={false} setIsEdit={null} initTweet={tweet} />
 			<hr className="my-8" />
 			<ActiveTitle title={active.title} />
-			{active.title === 'Tweets' && <Tweets />}
-			{active.title === 'Papers' && <PaperSearch />}
-			{active.title === 'Scraper' && <Scraper />}
+			<Outlet context={setActive} />
 		</div>
 	);
 };
