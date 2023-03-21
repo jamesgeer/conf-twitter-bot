@@ -7,9 +7,10 @@ import { getAbstractSummary } from '../api/getPapers';
 
 interface Props {
 	paper: Paper;
+	tweetContentRef: React.RefObject<HTMLTextAreaElement>;
 }
 
-const PapersTableExpanded = ({ paper }: Props) => {
+const PapersTableExpanded = ({ paper, tweetContentRef }: Props) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [summary, setSummary] = useState('');
 	const [isSummarising, setIsSummarising] = useState(false);
@@ -22,6 +23,12 @@ const PapersTableExpanded = ({ paper }: Props) => {
 			setIsSummarising(false);
 		} catch (e) {
 			console.log(e);
+		}
+	};
+
+	const handleInsertDetails = () => {
+		if (tweetContentRef.current) {
+			tweetContentRef.current.value = 'New value';
 		}
 	};
 
@@ -54,6 +61,7 @@ const PapersTableExpanded = ({ paper }: Props) => {
 					{paper.downloads && `Downloads: ${paper.downloads}`}
 				</Box>
 			</Box>
+			<button onClick={handleInsertDetails}>Test</button>
 			{isOpen && <PaperModal paper={paper} isOpen={isOpen} onClose={onClose} />}
 		</SimpleGrid>
 	);

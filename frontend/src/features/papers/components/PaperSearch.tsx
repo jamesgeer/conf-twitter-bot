@@ -4,6 +4,7 @@ import FilterPapers from './FilterPapers';
 import React, { useEffect, useState } from 'react';
 import { debounce } from 'lodash';
 import PapersTable from './PapersTable';
+import { useOutletContext } from 'react-router-dom';
 
 const PaperSearch = () => {
 	const [results, setResults] = useState<Papers>();
@@ -11,6 +12,10 @@ const PaperSearch = () => {
 		search: '',
 		source: '',
 	});
+
+	//need to take tweetContentRef not useActive aswell
+	const context: any = useOutletContext();
+	const tweetContentRef: React.RefObject<HTMLTextAreaElement> = context.tweetContentRef;
 
 	const { isLoading, error, data: papers } = usePapers();
 
@@ -48,7 +53,7 @@ const PaperSearch = () => {
 	return (
 		<>
 			<FilterPapers setSearchInput={setSearchInput} debouncedHandleFilter={debouncedHandleFilter} />
-			<PapersTable papers={results ? results : papers} />
+			<PapersTable papers={results ? results : papers} tweetContentRef={tweetContentRef} />
 		</>
 	);
 };

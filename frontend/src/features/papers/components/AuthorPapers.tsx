@@ -16,14 +16,16 @@ const AuthorPapers = () => {
 	const { state }: any = useLocation();
 	const { paperId, authorIndex }: AuthorState = state;
 
-	const setActive = useOutletContext<
-		React.Dispatch<
-			React.SetStateAction<{
-				index: number;
-				title: string;
-			}>
-		>
-	>();
+	const context: any = useOutletContext();
+
+	const setActive: React.Dispatch<
+		React.SetStateAction<{
+			index: number;
+			title: string;
+		}>
+	> = context.setActive;
+
+	const tweetContentRef: React.RefObject<HTMLTextAreaElement> = context.tweetContentRef;
 
 	const [authorPapers, setAuthorPapers] = useState<Papers>();
 
@@ -52,7 +54,7 @@ const AuthorPapers = () => {
 		modifyTitle();
 	}, [author]);
 
-	return <PapersTable papers={authorPapers ? authorPapers : []} />;
+	return <PapersTable papers={authorPapers ? authorPapers : []} tweetContentRef={tweetContentRef} />;
 };
 
 export default AuthorPapers;

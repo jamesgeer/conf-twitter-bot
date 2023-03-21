@@ -2,7 +2,7 @@ import Tweets from '../../tweets/components/Tweets';
 import PaperSearch from '../../papers/components/PaperSearch';
 import Scraper from '../../scraper/components/Scraper';
 import ToggleListGrid from './toggleListGrid';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import TweetForm from '../../tweets/components/Tweet';
 import ActiveTitle from './ActiveTitle';
 import { Outlet } from 'react-router-dom';
@@ -27,13 +27,15 @@ const Content = ({ active, setActive }: Props) => {
 		sent: false,
 	};
 
+	const tweetContentRef = useRef<HTMLTextAreaElement>(null);
+
 	return (
 		<div className="col-span-8">
 			<h2 className="text-xl font-bold mb-8">Dashboard</h2>
-			<TweetForm isEdit={false} setIsEdit={null} initTweet={tweet} />
+			<TweetForm isEdit={false} setIsEdit={null} initTweet={tweet} tweetContentRef={tweetContentRef} />
 			<hr className="my-8" />
 			<ActiveTitle title={active.title} />
-			<Outlet context={setActive} />
+			<Outlet context={{ setActive, tweetContentRef }} />
 		</div>
 	);
 };

@@ -18,9 +18,10 @@ import uuid from 'react-uuid';
 
 interface Props {
 	papers: Papers;
+	tweetContentRef: React.RefObject<HTMLTextAreaElement>;
 }
 
-const PapersTable = ({ papers }: Props) => {
+const PapersTable = ({ papers, tweetContentRef }: Props) => {
 	const [sorting, setSorting] = useState<SortingState>([]);
 
 	const columnHelper = createColumnHelper<Paper>();
@@ -111,7 +112,7 @@ const PapersTable = ({ papers }: Props) => {
 				{row.getIsExpanded() ? (
 					<Tr key={uuid()}>
 						<Td colSpan={headers.length}>
-							<PapersTableExpanded paper={row.original} />
+							<PapersTableExpanded paper={row.original} tweetContentRef={tweetContentRef} />
 						</Td>
 					</Tr>
 				) : null}

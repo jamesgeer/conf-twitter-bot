@@ -22,16 +22,16 @@ interface Props {
 	isEdit: boolean;
 	setIsEdit: React.Dispatch<React.SetStateAction<boolean>> | null;
 	initTweet: Tweet;
+	tweetContentRef: React.RefObject<HTMLTextAreaElement>;
 }
 
 export interface DateTimeHandle {
 	getDateTime: () => string;
 }
 
-const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
+const TweetForm = ({ isEdit, setIsEdit, initTweet, tweetContentRef }: Props) => {
 	const { account } = useContext(AccountContext) as AccountContextProps;
 
-	const contentRef = useRef<HTMLTextAreaElement | null>(null);
 	const scheduleRef = useRef<DateTimeHandle>();
 
 	const [tweet, setTweet] = useState<Tweet>(initTweet);
@@ -80,8 +80,12 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 		e.preventDefault();
 		resetFormErrors();
 
-		// @ts-ignore
-		if (!validTextInput(contentRef.current?.value) || !validScheduledDateTime(scheduleRef.current?.getDateTime())) {
+		if (
+			// @ts-ignore
+			!validTextInput(tweetContentRef.current?.value) ||
+			// @ts-ignore
+			!validScheduledDateTime(scheduleRef.current?.getDateTime())
+		) {
 			return;
 		}
 
@@ -91,7 +95,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 	const tweetPayload = (): HTTPTweet => {
 		// to appease typescript's "possibly null" error
 		const dateTime = scheduleRef.current ? scheduleRef.current?.getDateTime() : '';
-		const content = contentRef.current ? contentRef.current?.value : '';
+		const content = tweetContentRef.current ? tweetContentRef.current?.value : '';
 
 		return {
 			...(isEdit && { tweetId: tweet.id }), // add tweet id if tweet is in edit mode
@@ -159,7 +163,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 		if (!media) {
 			await createTweetMutation.mutateAsync(tweetPayload()).then(() => {
 				// @ts-ignore
-				contentRef.current.value = ''; // clear content
+				tweetContentRef.current.value = ''; // clear content
 			});
 			return;
 		}
@@ -168,7 +172,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 		const payload = { tweetPayload: tweetPayload(), mediaPayload: mediaPayload() };
 		await createTweetWithUploadMutation.mutateAsync(payload).then(() => {
 			// @ts-ignore
-			contentRef.current.value = ''; // clear content
+			tweetContentRef.current.value = ''; // clear content
 			setMedia(undefined); // clear uploads
 		});
 	};
@@ -200,7 +204,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet }: Props) => {
 					/>
 				</div>
 				<div className="text-xl mt-2 w-full">
-					<TweetContent contentRef={contentRef} initContent={initContent} />
+					<TweetContent tweetContentRef={tweetContentRef} initContent={initContent} />
 					{isEdit ? (
 						<EditUploadsList
 							media={media}
