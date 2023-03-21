@@ -9,9 +9,10 @@ import { Badge } from '@chakra-ui/react';
 
 interface Props {
 	tweet: Tweet;
+	tweetContentRef: React.RefObject<HTMLTextAreaElement>;
 }
 
-const SingleTweet = ({ tweet }: Props) => {
+const SingleTweet = ({ tweet, tweetContentRef }: Props) => {
 	const [isEdit, setIsEdit] = useState(false);
 
 	const { id, content, dateTime, uploads, sent } = tweet;
@@ -40,7 +41,7 @@ const SingleTweet = ({ tweet }: Props) => {
 		return (
 			<div className="border-b border-slate-200 pb-4 flex justify-between">
 				<div>
-					<div className="flex items-center justify-center">
+					<div>
 						<small>{tweetDate}</small>
 						{sent && (
 							<Badge fontSize={12} ml="4" colorScheme="blue">
@@ -56,7 +57,11 @@ const SingleTweet = ({ tweet }: Props) => {
 		);
 	};
 
-	return isEdit ? <TweetForm isEdit={isEdit} setIsEdit={setIsEdit} initTweet={tweet} /> : myTweet();
+	return isEdit ? (
+		<TweetForm isEdit={isEdit} setIsEdit={setIsEdit} initTweet={tweet} tweetContentRef={tweetContentRef} />
+	) : (
+		myTweet()
+	);
 };
 
 export default SingleTweet;

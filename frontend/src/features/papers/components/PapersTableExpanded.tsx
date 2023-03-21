@@ -26,16 +26,18 @@ const PapersTableExpanded = ({ paper, tweetContentRef }: Props) => {
 		}
 	};
 
-	const handleInsertDetails = () => {
+	const handleInsertDetails = (e: React.MouseEvent<HTMLElement>) => {
 		if (tweetContentRef.current) {
-			tweetContentRef.current.value = 'New value';
+			tweetContentRef.current.value += e.currentTarget.textContent + '\n \n';
 		}
 	};
 
 	return (
 		<SimpleGrid columns={2} spacing={10}>
 			<Flex direction={'column'}>
-				<Box>{paper.fullAbstract ? paper.fullAbstract : paper.shortAbstract}</Box>
+				<Box onClick={handleInsertDetails} cursor={'pointer'}>
+					{paper.fullAbstract ? paper.fullAbstract : paper.shortAbstract}
+				</Box>
 				<Button mt={4} mb={4} isLoading={isSummarising} onClick={handleButtonClick}>
 					<IconSparkles />
 				</Button>
@@ -43,7 +45,9 @@ const PapersTableExpanded = ({ paper, tweetContentRef }: Props) => {
 					{summary ? (
 						<>
 							<Text as="b">Summary: </Text>
-							{summary}
+							<Text onClick={handleInsertDetails} cursor={'pointer'}>
+								{summary}
+							</Text>
 						</>
 					) : (
 						''
@@ -56,12 +60,11 @@ const PapersTableExpanded = ({ paper, tweetContentRef }: Props) => {
 				</Button>
 				{/*<Box>{paperSourceButton()}</Box>*/}
 				{/*<Box>{paperModalAuthors()}</Box>*/}
-				<Box>
+				<Box onClick={handleInsertDetails} cursor={'pointer'}>
 					{paper.monthYear && `Published: ${paper.monthYear},`} {paper.pages && `Pages: ${paper.pages},`}{' '}
 					{paper.downloads && `Downloads: ${paper.downloads}`}
 				</Box>
 			</Box>
-			<button onClick={handleInsertDetails}>Test</button>
 			{isOpen && <PaperModal paper={paper} isOpen={isOpen} onClose={onClose} />}
 		</SimpleGrid>
 	);

@@ -131,6 +131,7 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet, tweetContentRef }: Props) => 
 						break;
 
 					case HttpStatus.INTERNAL_SERVER_ERROR:
+						console.log('HIT');
 						formError('Internal server error.');
 						break;
 				}

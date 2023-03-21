@@ -3,6 +3,7 @@ import { useTweets } from '../api/getTweets';
 import SingleTweet from './SingleTweet';
 import { useEffect, useState } from 'react';
 import TweetToggles from './TweetToggles';
+import { useOutletContext } from 'react-router-dom';
 
 const Tweets = () => {
 	const [isList, setListActive] = useState({
@@ -17,6 +18,9 @@ const Tweets = () => {
 	const { isLoading, error, data: tweets } = useTweets();
 
 	const [toggledTweets, setToggledTweets] = useState<TweetArray>(tweets);
+
+	const context: any = useOutletContext();
+	const tweetContentRef: React.RefObject<HTMLTextAreaElement> = context.tweetContentRef;
 
 	useEffect(() => {
 		if (toggles.all) {
@@ -51,7 +55,7 @@ const Tweets = () => {
 		return (
 			<div className={isList.activeLayout === 'list' ? 'grid gap-4' : 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'}>
 				{toggledTweets.map((tweet: Tweet) => (
-					<SingleTweet key={tweet.id} tweet={tweet} />
+					<SingleTweet key={tweet.id} tweet={tweet} tweetContentRef={tweetContentRef} />
 				))}
 			</div>
 		);
