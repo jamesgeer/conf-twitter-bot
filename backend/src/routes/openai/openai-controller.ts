@@ -33,7 +33,7 @@ export const getSummary = async (abstract: string): Promise<string | ServerError
 		});
 
 		if (completion.data.choices[0].text) {
-			result = completion.data.choices[0].text;
+			result = completion.data.choices[0].text.trim();
 		}
 
 		console.log(completion.data);

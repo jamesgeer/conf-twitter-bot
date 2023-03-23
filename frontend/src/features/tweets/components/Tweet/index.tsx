@@ -57,6 +57,11 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet, tweetContentRef }: Props) => 
 			formError('Tweet did not contain any content!');
 			return false;
 		}
+
+		if (text.length > 280) {
+			formError('Maximum character limit is 280. You have entered ' + text.length + ' characters.');
+			return false;
+		}
 		return true;
 	};
 
@@ -131,7 +136,6 @@ const TweetForm = ({ isEdit, setIsEdit, initTweet, tweetContentRef }: Props) => 
 						break;
 
 					case HttpStatus.INTERNAL_SERVER_ERROR:
-						console.log('HIT');
 						formError('Internal server error.');
 						break;
 				}
